@@ -57,3 +57,32 @@
     (assoc default-quantum-system
            :amplitudes (into [1] (repeat (dec num-amplitudes) 0)))))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;; binary stuff  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn twos-compliment [num]
+  (loop [v (into [] (map false? num)) idx 0]
+    (if (false? (nth v idx))
+      (lazy-cat (assoc v idx true) (repeat true))
+      (recur
+        (assoc v idx false)
+        (+ 1 idx)))))
+    
+
+(defn to-binary [num] ; not two's complement binary representation of num
+  (loop [ret [] idx 0 en (Math/abs num)]; used internally by logbitp
+    (let [numy (bit-shift-right en idx)]
+      (if (= 0 numy)
+        (if (< num 0)
+          (twos-compliment (reverse ret))
+          (lazy-cat (reverse ret) (repeat false)))
+        (recur
+          (cons (= 1 (bit-and 1 numy)) ret)
+          (+ 1 idx)
+          en)))))
+
+
+(defn logbitp [index integer]
+  (nth (to-binary integer) index))
+
