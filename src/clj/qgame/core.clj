@@ -70,9 +70,9 @@
         (+ 1 idx)))))
     
 
-(defn to-binary [num] ; not two's complement binary representation of num
+(defn to-binary [num] ; two's complement binary representation of num
   (loop [ret [] idx 0 en (Math/abs num)]; used internally by logbitp
-    (let [numy (bit-shift-right en idx)]
+    (let [numy (bit-shift-right en idx)]; is an infinite sequence, don't index in without (take)
       (if (= 0 numy)
         (if (< num 0)
           (twos-compliment (reverse ret))
