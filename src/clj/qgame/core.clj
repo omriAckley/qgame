@@ -86,9 +86,27 @@
 (defn logbitp [index integer]
   (nth (to-binary integer) index))
 
-;; set-address-components
 
-;; map-qubit-combinations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; quantum computer manipulation utilities
+
+;; set-address-components
+(defn set-address-components [qsys count qubits]
+  "Sets (amplitude-address qsys) to refer to a particular amplitude, as
+indicated by the bits in the integer count."
+  (dotimes [i (count qubits)]
+    (replace (nth (amplitude-address qsys) (nth i qubits))
+          (if (bit-test count i) 1 0))))
+               
+; map-qubit-combinations
+(defn map-qubit-combinations [qsys function qubits]
+  "Calls function once for each of the 1/0 combinations of the provided
+qubits, with the right-most qubit varying the fastest."
+  (def qubits (reverse qubits))
+  (let [number-of-iterations (Math/pow 2 (count qubits))]
+    (dotimes [i number-of-iterations]
+      (set-address-components qsys i qubits)
+      (function))))
 
 ;; get-addressed-amplitude
 
