@@ -92,10 +92,10 @@
 
 ;; set-address-components
 (defn set-address-components [qsys count qubits]
-  "Sets (amplitude-address qsys) to refer to a particular amplitude, as
+  "Sets amplitude-address to refer to a particular amplitude, as
 indicated by the bits in the integer count."
   (dotimes [i (count qubits)]
-    (replace (nth (amplitude-address qsys) (nth i qubits))
+    (replace (nth amplitude-address (nth i qubits))
           (if (bit-test count i) 1 0))))
                
 ; map-qubit-combinations
