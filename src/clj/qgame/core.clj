@@ -86,3 +86,24 @@
 (defn logbitp [index integer]
   (nth (to-binary integer) index))
 
+;; set-address-components
+
+;; map-qubit-combinations
+
+;; get-addressed-amplitude
+
+;; set-addressed-amplitude
+
+;; matrix-multiply
+
+;; extract-column
+
+;; install-column
+
+;; apply-operator
+
+;; qc-output-probabilities
+
+;; multi-qsys-output-probabilities
+
+;; expected-oracles
