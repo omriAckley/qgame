@@ -110,7 +110,30 @@ qubits, with the right-most qubit varying the fastest."
 
 ;; get-addressed-amplitude
 
+(defn unless
+	"Unless"
+	[test-form form]
+	(when (not test-form)
+		(eval form)))
+	
+(defn get-addressed-amplitude
+	"Returns the amplitude currently addressed by (amplitude-address qsys)"
+	[qsys]
+	(let [numerical-address (atom 0)]
+		(dotimes [i (:number-of-qubits qsys)]
+			(unless (zero? (nth (:amplitude-address qsys) i))
+				(swap! numerical-address (+ numerical-address (Math/pow 2 i)))))
+			(nth (:amplitudes qsys) @numerical-address)))
+
 ;; set-addressed-amplitude
+(defn set-addressed-amplitude
+	"Sets the amplitude currently addressed by (amplitude-address qsys) to new-value"
+	[qsys new-value]
+	(let [numerical-address (atom 0)]
+		(dotimes [i (:number-of-qubits qsys)]
+			(unless (zero? (nth (:amplitude-address qsys) i))
+				(swap! numerical-address (+ numerical-address (Math/pow 2 i)))))
+			(update-in qsys [:amplitudes] #(assoc % @numerical-address new-value)))))
 
 ;; matrix-multiply
 
