@@ -43,48 +43,33 @@
         (zero? n) (* z y)
         :else (recur n (* z y) (* z z))))))
 
+
 (def default-quantum-system
   {:amplitudes []
    :prior-probability 1
    :oracle-count 0
    :measurement-history ()
    :instruction-history ()
-   :program ()})
+   :program ()
+   :number-of-qubits 1})
+
 
 (defn new-quantum-system
   [num-qubits]
   (let [num-amplitudes (expt 2 num-qubits)]
     (assoc default-quantum-system
-           :amplitudes (into [1] (repeat (dec num-amplitudes) 0)))))
+           :amplitudes (into [1] (repeat (dec num-amplitudes) 0))
+           :number-of-qubits num-qubits)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;; binary stuff  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;; LISP stuff  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn twos-compliment [num]
-  (loop [v (into [] (map false? num)) idx 0]
-    (if (false? (nth v idx))
-      (lazy-cat (assoc v idx true) (repeat true))
-      (recur
-        (assoc v idx false)
-        (+ 1 idx)))))
-    
-
-(defn to-binary [num] ; two's complement binary representation of num
-  (loop [ret [] idx 0 en (Math/abs num)]; used internally by logbitp
-    (let [numy (bit-shift-right en idx)]; is an infinite sequence, don't index in without (take)
-      (if (= 0 numy)
-        (if (< num 0)
-          (twos-compliment (reverse ret))
-          (lazy-cat (reverse ret) (repeat false)))
-        (recur
-          (cons (= 1 (bit-and 1 numy)) ret)
-          (+ 1 idx)
-          en)))))
-
-
-(defn logbitp [index integer]
-  (nth (to-binary integer) index))
+(defn subst [to from col]
+  (if (not (coll? col))
+    (if (= col from) to col)
+    (cons (subst to from (first col))
+          (subst to from (next col)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -148,3 +133,71 @@ qubits, with the right-most qubit varying the fastest."
 ;; multi-qsys-output-probabilities
 
 ;; expected-oracles
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; top level functions
+;;
+;; are entirely untested, but should theoretically work
+;;
+
+
+(defn run-qsys [qsys]
+  (if (or (empty? (:program qsys))
+          (zero? (:prior-probability qsys)))
+    (list qsys)
+    (let [instruction (first (:program qsys))
+          qsys (assoc qsys :instruction-history
+                      (concat (:instruction-history qsys) (list instruction)))]
+      (if (= (first instruction) 'halt)
+        (list qsys)
+        (if (= (first instruction) 'measure)
+          (let [measurement-qubit (second instruction)
+                probabilities (qc-output-probabilities qsys (list measurement-qubit))]
+            (concat
+              (run-qsys
+                (force-to 1 mesurement-qubit
+                          (make-qsys 
+                            :number-of-qubits (:number-of-qubits qsys)
+                            :amplitudes (:amplitudes qsys)
+                            :prior-probability (second probabilities)
+                            :oracle-count (:oracle-count qsys)
+                            :measurement-history (concat (:measurement-history qsys)
+                                                         (list (list measurement-history 
+                                                                     'is 1)))
+                            :instruction-history (:instruction-history qsys)
+                            :program (without-if-branch (rest (:program qsys))))))
+              (run-qsys
+                (force-to 0 measurement-qubit
+                          (make-qsys
+                            :number-of-qubits (:number-of-qubits qsys)
+                            :amplitudes (:amplitudes qsys)
+                            :prior-probability (first probabilities)
+                            :oracle-count (:oracle-count qsys)
+                            :measurement-history (concat (:measurement-history qsys)
+                                                         (list (list measurement-qubit
+                                                                     'is 0)))
+                            :instruction-history (:instruction-history qsys)
+                            :program (without-if-branch (rest (:program qsys))))))))
+          (let [resulting-sy (apply (first instruction) (cons qsys (rest instruction)))
+                resulting-sys (assoc (:program resulting-sy) 
+                                     (rest (:program resulting-sy)))]
+            (run-qsys resulting-sys)))))))
+
+
+
+(defn execute-quantum-program
+  ([pgm num-qubits]
+    (run-qsys (make-qsys
+                :number-of-qubits num-qubits
+                :program (subst nil 'ORACLE-TT pgm))))
+  ([pgm num-qubits oracle-tt]
+    (run-qsys (make-qsys
+                :number-of-qubits num-qubits
+                :program (subst oracle-tt 'ORACLE-TT pgm)))))
+
+
