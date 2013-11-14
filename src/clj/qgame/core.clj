@@ -248,6 +248,13 @@ qubits, with the right-most qubit varying the fastest."
 				(list 0 0 0 1)))
 	      (list q1 q2)))
 
+;; printamps
+(defn printamps
+      "For use in quantum programs; causes the amplitudes of the executing quantum system to be printed."
+      [qsys]
+      (println (amplitudes qsys)
+	       qsys))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
