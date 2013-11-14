@@ -216,6 +216,23 @@ qubits, with the right-most qubit varying the fastest."
 				(list 0 0 0 (Math/exp (* (Math/sqrt -1.0) alpha)))))
 	      (list q1 q2)))
 
+;; U2
+(defn u2
+      "Quantum U2 gate, implemented as:
+      e^(i(-phi-psi+alpha))*cos(theta) e^(i(-phi+psi+alpha))*sin(-theta)
+      e^(i(phi-psi+alpha))*sin(theta)   e^(i(phi+psi+alpha))*cos(theta)"
+      [qsys q phi theta psi alpha]
+      (apply-operator
+	      qsys
+	      (let [i (Math/sqrt -1.0)]
+		   (make-array
+			   '(2 2)
+			   :initial-contents
+			   (list (list (* (Math/exp (* i (+ (- phi) (- psi) alpha))) (Math/cos theta))
+				       (* (Math/exp (* i (+ (- phi) psi alpha))) (Math/sin (- theta))))
+				 (list (* (Math/exp (* i (+ phi (- psi) alpha))) (Math/sin theta))
+				       (* (Math/exp (* i (+ phi psi alpha))) (Math/cos theta))))))
+	      (list q)))
 
 
 
