@@ -256,6 +256,12 @@ qubits, with the right-most qubit varying the fastest."
       (println (amplitudes qsys)
 	       qsys))
 
+;; insp
+(defn insp
+      "For use in quantum programs; causes the inspector to be invoked on the executing quantum system."
+      [qsys]
+      (inspect qsys)
+      qsys)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
