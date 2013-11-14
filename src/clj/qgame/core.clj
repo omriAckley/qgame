@@ -136,6 +136,47 @@ qubits, with the right-most qubit varying the fastest."
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; other quantum gates
+
+(defn qnot 
+  "Quantum NOT gate"
+  [qsys q]
+  (apply-operator qsys 
+                  '('(0 1)
+                      '(1 0))
+                  (list q)))
+
+
+(defn cnot
+  "Quantum Controlled NOT gate"
+  [qsys q1 q2]
+  (apply-operator qsys 
+                  '('(1 0 0 0)
+                      '(0 1 0 0)
+                      '(0 0 0 1)
+                      '(0 0 1 0))
+                  (list q1 q2)))
+
+(defn srn
+  "Quantum Square-Root-of-NOT gate"
+  [qsys q]
+  (apply-operator
+   qsys 
+   (make-array '(2 2)
+               :initial-contents 
+               (list (list (/ 1 (sqrt 2.0L0))  (- (/ 1 (sqrt 2.0L0))))
+                     (list (/ 1 (sqrt 2.0L0))  (/ 1 (sqrt 2.0L0)))
+                     ))
+   (list q)))
+
+(defn nand 
+  "Quantum NAND gate"
+  [qsys q1 q2 q3]
+  (apply-operator
+   qsys 
+   (binary-operator-matrix '(1 1 1 0))
+   (list q1 q2 q3)))
 
 
 
