@@ -202,6 +202,22 @@ qubits, with the right-most qubit varying the fastest."
 				(list (- (Math/sin theta)) (Math/cos theta))))
 	      (list q)))
 
+;; cphase
+(defn cphase
+      "Quantum conditional phase gate"
+      [qsys q1 q2 alpha]
+      (apply-operator
+	      qsys
+	      (make-array '(4 4)
+			  :initial-contents
+			  (list (list 1 0 0 0)
+				(list 0 1 0 0)
+				(list 0 0 1 0)
+				(list 0 0 0 (Math/exp (* (Math/sqrt -1.0) alpha)))))
+	      (list q1 q2)))
+
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
