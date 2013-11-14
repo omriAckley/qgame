@@ -234,6 +234,19 @@ qubits, with the right-most qubit varying the fastest."
 				       (* (Math/exp (* i (+ phi psi alpha))) (Math/cos theta))))))
 	      (list q)))
 
+;;swap
+(defn swap
+      "A quantum gate that swaps the amplitudes for the two specified qubits"
+      [qsys q1 q2]
+      (apply-operator
+	      qsys
+	      (make-array '(4 4)
+			  :initial-contents
+			  (list (list 1 0 0 0)
+				(list 0 0 1 0)
+				(list 0 1 0 0)
+				(list 0 0 0 1)))
+	      (list q1 q2)))
 
 
 
