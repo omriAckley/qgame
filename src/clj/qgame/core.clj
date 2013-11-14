@@ -177,6 +177,18 @@ qubits, with the right-most qubit varying the fastest."
    qsys 
    (binary-operator-matrix '(1 1 1 0))
    (list q1 q2 q3)))
+   
+;; hadamard gate
+(defn hadamard
+      "Quantum Hadamard gate"
+      [qsys q]
+      (apply-operator
+	      qsys
+	      (make-array '(2 2)
+			  :initial-contents
+			  (list (list (/ 1 (Math/sqrt 2.0L0)) (/ 1 (Math/sqrt 2.0L0)))
+				(list (/ 1 (Math/sqrt 2.0L0)) (- (/ 1 (Math/sqrt 2.0L0))))))
+      (list q)))
 
 
 
