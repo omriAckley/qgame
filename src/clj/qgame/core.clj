@@ -190,6 +190,18 @@ qubits, with the right-most qubit varying the fastest."
 				(list (/ 1 (Math/sqrt 2.0L0)) (- (/ 1 (Math/sqrt 2.0L0))))))
       (list q)))
 
+;; u-theta
+(defn u-theta
+      "Quantum U-theta (roration) gate"
+      [qsys q theta]
+      (apply-operator
+	      qsys
+	      (make-array '(2 2)
+			  :initial-concents
+			  (list (list (Math/cos theta) (Math/sin theta))
+				(list (- (Math/sin theta)) (Math/cos theta))))
+	      (list q)))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
