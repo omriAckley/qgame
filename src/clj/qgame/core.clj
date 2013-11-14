@@ -165,8 +165,8 @@ qubits, with the right-most qubit varying the fastest."
    qsys 
    (make-array '(2 2)
                :initial-contents 
-               (list (list (/ 1 (sqrt 2.0L0))  (- (/ 1 (sqrt 2.0L0))))
-                     (list (/ 1 (sqrt 2.0L0))  (/ 1 (sqrt 2.0L0)))
+               (list (list (/ 1 (Math/sqrt 2.0L0))  (- (/ 1 (Math/sqrt 2.0L0))))
+                     (list (/ 1 (Math/sqrt 2.0L0))  (/ 1 (Math/sqrt 2.0L0)))
                      ))
    (list q)))
 
