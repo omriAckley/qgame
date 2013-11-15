@@ -2,7 +2,6 @@
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.resource :as resources]
             [ring.util.response :as response])
-  (:use (clojure.inspector))
   (:gen-class))
 
 (defn render-app []

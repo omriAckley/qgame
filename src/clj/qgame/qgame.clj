@@ -2,7 +2,8 @@
   (:refer-clojure :exclude [* - + == /])
   (:use clojure.core.matrix)
   (:use clojure.core.matrix.operators)
-  (:use [clojure.math.numeric-tower :only [expt]]))
+  (:use [clojure.math.numeric-tower :only [expt]])
+  (:use clojure.insepctor))
 
 (def default-quantum-system
   {:amplitudes []
