@@ -224,6 +224,42 @@ qubits, with the right-most qubit varying the fastest."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; utilities for measurement and branching
+
+(defn end 
+  "Marks the end of a measurement branch; has no effect when used
+in a quantum program in any other context." 
+       [qsys]
+  qsys)
+
+(defn distance-to-next-unmatched-end 
+  "Returns 0 if there is no unmatched (end) in list; otherwise returns
+the number of instructions to the next unmatched (end) (counting the (end))."
+  [list & 
+   (num-measures 0) (num-ends 0) 
+   (distance-so-far 0)]
+  (if (nil? list) 
+    0
+    (if (= (ffirst list) 'end)
+      (if (zero? num-measures)
+        (+ 1 distance-so-far)
+        (if (odd? num-ends) ;; then this one closes a measure
+          (distance-to-next-unmatched-end (rest list)
+                                          (- num-measures 1) (- num-ends 1)
+                                          (+ 1 distance-so-far))
+          (distance-to-next-unmatched-end (rest list)
+                                          num-measures (+ num-ends 1) 
+                                          (+ 1 distance-so-far))))
+      (if (= (ffirst list) 'measure)
+        (distance-to-next-unmatched-end (rest list)
+                                        (+ num-measures 1) num-ends
+                                        (+ 1 distance-so-far))
+        (distance-to-next-unmatched-end (rest list)
+                                        num-measures num-ends
+                                        (+ 1 distance-so-far))))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; top level functions
 ;;
 ;; are entirely untested, but should theoretically work
