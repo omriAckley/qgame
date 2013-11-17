@@ -258,6 +258,100 @@ the number of instructions to the next unmatched (end) (counting the (end))."
                                         num-measures num-ends
                                         (+ 1 distance-so-far))))))
 
+(defn without-if-branch 
+  "Assuming that a MEASURE form has just been removed from the given
+program, returns the remainder of the program without the IF (measure-1)
+branch."
+  [program]
+  (let [(distance-to-first-unmatched-end 
+          (distance-to-next-unmatched-end program))
+         (distance-from-first-to-second-unmatched-end
+          (distance-to-next-unmatched-end
+           (nthcdr distance-to-first-unmatched-end program)))]
+    (if (zero? distance-to-first-unmatched-end)
+      ;; it's all the if part
+      nil
+      ;; there is some else part
+      (if (zero? distance-from-first-to-second-unmatched-end)
+        ;; the else never ends
+        (subseq program distance-to-first-unmatched-end)
+        ;; the else does end
+        (concat (subseq program
+                        distance-to-first-unmatched-end
+                        (+ distance-to-first-unmatched-end
+                           distance-from-first-to-second-unmatched-end
+                           -1))
+                (subseq program (+ distance-to-first-unmatched-end
+                                   distance-from-first-to-second-unmatched-end
+                                   )))))))
+
+(defn without-else-branch (program)
+  "Assuming that a MEASURE form has just been removed from the given
+program, returns the remainder of the program without the ELSE (measure-0)
+branch."
+  (let* ((distance-to-first-unmatched-end 
+          (distance-to-next-unmatched-end program))
+         (distance-from-first-to-second-unmatched-end
+          (distance-to-next-unmatched-end
+           (nthcdr distance-to-first-unmatched-end program))))
+    (if (zero? distance-to-first-unmatched-end)
+      ;; it's all the if part
+      program
+      ;; there is some else part
+      (if (zero? distance-from-first-to-second-unmatched-end)
+        ;; the else never ends
+        (subseq program 0 (- distance-to-first-unmatched-end 1))
+        ;; the else does end
+        (concat (subseq program 0 (- distance-to-first-unmatched-end 1))
+                (subseq program (+ distance-to-first-unmatched-end
+                                   distance-from-first-to-second-unmatched-end
+                                   )))))))
+        
+(comment
+Test code for without-if-branch and without-else-branch:
+
+(setq p1 '((foo) (bar) (end) (baz) (bingo) (end) (biff) (boff)))
+(setq p2 '(  (foo) (bar) 
+             (measure 0) (blink) (end) (blank) (end) 
+           (end) 
+             (baz) (bingo) 
+             (measure 1) (plonk) (end) (plank) (end)
+           (end) 
+           (biff) (boff)))
+(setq p3 '(  (foo) (bar) 
+             (measure 0) (blink) (measure 0)(end)(end)(end) (blank) (end) 
+           (end) 
+             (baz) (bingo) 
+             (measure 1) (plonk) (end) (plank) (measure 0)(end)(end)(end)
+           (end) 
+           (biff) (boff)))
+
+(without-if-branch p1)
+(without-if-branch p2)
+(without-if-branch p3)
+(without-else-branch p1)
+(without-else-branch p2)
+(without-else-branch p3)
+
+
+(setq p4 '((end) (measure 1) (end) (end) (measure 1) (end)))
+(without-if-branch p4)
+(without-else-branch p4)
+)
+
+(defn force-to (measured-value qubit qsys)
+  "Collapses a quantum system to the provided measured-value for the provided
+qubit."
+  (map-qubit-combinations
+   qsys
+   (fn []
+       (let [(pre-column (extract-column qsys (list qubit))) ;Not sure what to do about the columns - Mitchel
+              (new-column (case measured-value
+                            (0 (list (first pre-column) 0))
+                            (1 (list 0 (second pre-column)))))]
+         (install-column qsys new-column (list qubit))))
+   (remove qubit (qubit-numbers qsys)))
+  qsys)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; top level functions
