@@ -285,15 +285,16 @@ branch."
                                    distance-from-first-to-second-unmatched-end
                                    )))))))
 
-(defn without-else-branch (program)
+(defn without-else-branch 
   "Assuming that a MEASURE form has just been removed from the given
 program, returns the remainder of the program without the ELSE (measure-0)
 branch."
-  (let* ((distance-to-first-unmatched-end 
+  [program]
+  (let [(distance-to-first-unmatched-end 
           (distance-to-next-unmatched-end program))
          (distance-from-first-to-second-unmatched-end
           (distance-to-next-unmatched-end
-           (nthcdr distance-to-first-unmatched-end program))))
+           (nthcdr distance-to-first-unmatched-end program)))]
     (if (zero? distance-to-first-unmatched-end)
       ;; it's all the if part
       program
