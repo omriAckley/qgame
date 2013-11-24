@@ -92,8 +92,77 @@ qubits, with the right-most qubit varying the fastest."
 ;; qc-output-probabilities
 
 ;; multi-qsys-output-probabilities
+(defn multi-qsys-output-probabilities 
+  "Returns a list of the probabilities for all combinations for the
+given qubits, in binary order with the rightmost qubit varying fastest.
+This function takes a LIST of quantum systems as input and sums the
+results across all systems."
+  [qsys-list qubits]
+  (let ((probabilities
+         (map (fn [qsys] 
+                     (qc-output-probabilities qsys qubits))
+                 qsys-list)))
+    (labels ((add-lists (l1 l2) ;not sure how to translate this
+               (if (nil? l1) 
+                 nil
+                 (cons (+ (first l1) (first l2))
+                       (add-lists (rest l1) (rest l2))))))
+      (reduce (doc add-lists probabilities)))))
 
-;; expected-oracles
+;; expected-oracles 
+(defn expected-oracles 
+  "Returns the expected number of oracle calls for the given
+set of quantum systems."
+  [qsys-list]
+  (reduce (doc +)
+          (map (fn [qsys]
+                      (* (prior-probability qsys)
+                         (oracle-count qsys)))
+                  qsys-list)))
+    
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; oracle gates
+
+(defn binary-operator-matrix 
+  "Returns a matrix operator for a binary function with the
+given tt-right-column as the right column of its truth table."
+  [tt-right-column]
+  (let [(column-length (length tt-right-column))
+         (operator-size (* 2 column-length))
+         (matrix (make-array (list operator-size operator-size)
+                             :initial-element 0))]
+    (dotimes (i column-length)
+      (let ((offset (* i 2)))
+        (if (zero? (nth i tt-right-column))
+          (setf (aref matrix offset offset) 1
+                (aref matrix (+ 1 offset) (+ 1 offset)) 1)
+          (setf (aref matrix offset (+ 1 offset)) 1
+                (aref matrix (+ 1 offset) offset) 1))))
+    matrix))
+
+(defn oracle 
+  "Applies the oracle operator built from tt-right-column, which
+is the right column of the corresponding truth table."
+  [qsys tt-right-column & qubits]
+  (incf (oracle-count qsys))
+  (apply-operator
+   qsys
+   (binary-operator-matrix tt-right-column)
+   qubits))
+
+(defn limited-oracle 
+  "If (oracle-count qsys) is less than max-calls then this applies 
+the oracle operator built from tt-right-column, which is the right 
+column of the corresponding truth table. Otherwise this does nothing."
+  [qsys max-calls tt-right-column & qubits]
+  (if (< (oracle-count qsys) max-calls)
+    (progn (incf (oracle-count qsys)) ;The site I found suggests do, but I am not sure how to make that work - Mitchel
+           (apply-operator
+            qsys
+            (binary-operator-matrix tt-right-column)
+            qubits))
+    qsys))
 
 
 
