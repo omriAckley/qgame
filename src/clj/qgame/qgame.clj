@@ -3,7 +3,8 @@
   (:use clojure.core.matrix)
   (:use clojure.core.matrix.operators)
   (:use [clojure.math.numeric-tower :only [expt]])
-  (:use clojure.insepctor))
+  (:use clojure.insepctor)
+  (:use [clojure.walk :only [postwalk-replace]])
 
 (def default-quantum-system
   {:amplitudes []
