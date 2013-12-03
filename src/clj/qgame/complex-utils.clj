@@ -9,9 +9,31 @@
    [1  0]]) ;Will work fine for multiplication
 
 (defn exp-xi
+  "Given some x, outputs the complex matrix equivalent of e^xi."
   [x]
   [[(cos x) (- (sin x))]
    [(sin x)    (cos x) ]])
+
+(defn complex-abs
+  "Returns the absolute value of some number that may or may not be represented in complex matrix form."
+  [x]
+  (if (number? x)
+    (Math/abs x)
+    (reduce + (map complex-abs (first x)))))
+
+(defn complex-conjugate
+  "Returns the complex conjugate of some number that may or may not be represented in complex matrix form. The complex conjugate of a+bi is a-bi."
+  [x]
+  (unless (complement number?) x
+          (let [[[a neg-b]] x]
+            [[a (- neg-b)]
+             [neg-b a]])))
+
+(defn number-to-cmatrix
+  "Given a real number, returns it in complex matrix form."
+  [x]
+  [[x 0]
+   [0 x]])
 
 (defn cmap-to-cmatrix
  "Given a complex number a+bi in hash-map form {:a a :b b}, returns it in matrix form:
