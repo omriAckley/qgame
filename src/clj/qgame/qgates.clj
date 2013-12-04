@@ -2,9 +2,9 @@
   (:refer-clojure :exclude [* - + == /])
   (:use [clojure.core.matrix]
         [clojure.core.matrix.operators])
-  (:use [qgame.complex-utils]
-        [qgame.gen-utils]
-        [qgame.matrix-utils]
+  (:use [qgame.complexUtils]
+        [qgame.genUtils]
+        [qgame.matrixUtils]
         [qgame.qutils]))
 
 (defn apply-operator

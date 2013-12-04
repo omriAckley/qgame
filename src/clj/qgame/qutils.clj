@@ -1,6 +1,6 @@
 (ns qgame.qutils
-  (:use [qgame.complex-utils]
-        [qgame.gen-utils]))
+  (:use [qgame.complexUtils]
+        [qgame.genUtils]))
 
 (defn get-num-qubits
   "Given the amplitudes (or any collection of equal length), returns the number of qubits in the system."
