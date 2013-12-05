@@ -8,7 +8,7 @@
         [qgame.qutils]))
 
 (defn apply-operator
-  "For each set of indices, applies some operator to the amplitudes at those indices."
+  "For each set of indices (calculated given the qubits to operate on), applies some operator to the amplitudes at those indices."
   [amplitudes operator qubits]
   (->> (get-num-qubits amplitudes)
     (qubits-to-amplitude-indices qubits)
@@ -38,20 +38,18 @@
 (defn anonymous-qgate
   "Create an anonymous quantum gate from a gate matrix. Especially useful for oracle gates."
   [matrix]
-  (fn [q-system & qubits]
-    (update-in q-system [:amplitudes]
-               apply-operator
-               (to-operator matrix)
-               qubits)))
+  (fn [amplitudes & qubits]
+    (apply-operator amplitudes
+                    (to-operator matrix)
+                    qubits)))
 
 (defmacro defn-qgate
-  "Expects zero or more named args that are used to calculate the gate matrix. It expands to define a function that takes a quantum system, those named args, and some number of qubits, and outputs a quantum system with amplitudes updated by applying the gate matrix as an operator."
+  "Expects zero or more named args that are used to calculate the gate matrix. It expands to define a function that takes amplitudes, those named args, and some number of qubits, and outputs amplitudes updated by applying the gate matrix as an operator."
   [nm args matrix]
-  `(defn ~nm [~'q-system ~@args ~'& ~'qubits]
-     (update-in ~'q-system [:amplitudes]
-                apply-operator
-                (to-operator ~matrix)
-                ~'qubits)))
+  `(defn ~nm [amplitudes# ~@args ~'& qubits#]
+     (apply-operator amplitudes#
+                     (to-operator ~matrix)
+                     qubits#)))
 
 (defn-qgate qnot []
   [[0 1]
