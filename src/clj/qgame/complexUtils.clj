@@ -49,6 +49,16 @@ Such that matrix multiplication can stand in for arithmetic multiplication."
   [[[a neg-b]]]
   {:a a :b (- neg-b)})
 
+(defn cmatrix-realpart
+	"get a from a cmatrix"
+	[[[a neg-b]]]
+	a)
+
+(defn cmatrix-imagepart
+	"get b from a cmatrix"
+	[[[a neg-b]]]
+	(- 0 neg-b))
+
 (defn cmap-to-cstring
   "Given a complex number a+bi in hash-map form {:a a :b b}, returns the string 'a+bi' or 'a-bi' as the case may be (omitting zeros)."
   [{:keys [a b]}]
