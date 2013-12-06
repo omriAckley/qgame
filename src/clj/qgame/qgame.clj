@@ -96,40 +96,15 @@
     oracle (execute-qgate branches oracle-qgate args)
     (execute-qgate branches (resolve i-sym) args)))
 
-(defn end-else [arg]
-  (loop [to '()
-         end '()
-         from arg]
-    (if (empty? from)
-      to
-      (let [elt (first from)
-            elt-is-end (= 'end (first elt))]
-        (recur
-          (if (not elt-is-end)
-            (concat to (list elt))
-            (if (= 1 (first end))
-              (concat to '((else)))
-              (concat to '((end)))))
-          (outside-help to end elt)
-          (rest from))))))
 
-(defn outside-help [to end elt]
-  (if (and (not= (first elt) 'measure)
-           (not= (first elt) 'end))
-    end
-    (if (= (first elt) 'measure)
-      (cons 1 end)
-      (if (= (first elt) 'end)
-        (if (= (first end) 1)
-          (cons 0 (rest end))
-          (rest end))))))
+;end-else is now called 'end-to-else-branch' and lives in qgame.genUtils
 
 (defn execute-program
   "Executes and renders a list of qgame instructions. At the end, it merges any unclosed branches."
   [{:keys [num-qubits renderer oracle]}
    instructions]
   (let [init-qsystem (new-quantum-system num-qubits)
-        elsed-instructions (end-else instructions)
+        elsed-instructions (end-to-else-branch instructions)
         oracle-qgate (->> (unless nil? oracle [0])
                        binary-gate-matrix
                        anonymous-qgate)
