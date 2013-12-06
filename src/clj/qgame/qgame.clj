@@ -130,3 +130,20 @@
                     (else)
                     (end)
                    (end)))
+
+;End-end test
+(end-to-else-branch
+  '((hadamard 0)
+              (measure 0)
+              (hadamard 1)
+              (measure 1)
+              (end)
+              (end)
+              (end)
+              (hadamard 2)
+              (measure 2)
+              (end)
+              (end)
+              (end)))
+              
+     
