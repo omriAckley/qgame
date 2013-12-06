@@ -96,17 +96,46 @@
     oracle (execute-qgate branches oracle-qgate args)
     (execute-qgate branches (resolve i-sym) args)))
 
+(defn end-else [arg]
+  (loop [to '()
+         end '()
+         from arg]
+    (if (empty? from)
+      to
+      (let [elt (first from)
+            elt-is-end (= 'end (first elt))]
+        (recur
+          (if (not elt-is-end)
+            (concat to (list elt))
+            (if (= 1 (first end))
+              (concat to '((else)))
+              (concat to '((end)))))
+          (outside-help to end elt)
+          (rest from))))))
+
+(defn outside-help [to end elt]
+  (if (and (not= (first elt) 'measure)
+           (not= (first elt) 'end))
+    end
+    (if (= (first elt) 'measure)
+      (cons 1 end)
+      (if (= (first elt) 'end)
+        (if (= (first end) 1)
+          (cons 0 (rest end))
+          (rest end))))))
+
 (defn execute-program
   "Executes and renders a list of qgame instructions. At the end, it merges any unclosed branches."
   [{:keys [num-qubits renderer oracle]}
    instructions]
   (let [init-qsystem (new-quantum-system num-qubits)
+        elsed-instructions (end-else instructions)
         oracle-qgate (->> (unless nil? oracle [0])
                        binary-gate-matrix
                        anonymous-qgate)
         final-branches (reduce (partial execute-instruction renderer oracle-qgate)
                                (-> init-qsystem list list)
-                               instructions)]
+                               elsed-instructions)]
     (apply concat final-branches)))
 
 ;;Examples
@@ -122,28 +151,11 @@
                    (measure 0)
                     (hadamard 1)
                     (measure 1)
-                    (else)
+                    (end)
                     (end)
                    (else)
                     (hadamard 2)
                     (measure 2)
-                    (else)
+                    (end)
                     (end)
                    (end)))
-
-;End-end test
-(end-to-else-branch
-  '((hadamard 0)
-              (measure 0)
-              (hadamard 1)
-              (measure 1)
-              (end)
-              (end)
-              (end)
-              (hadamard 2)
-              (measure 2)
-              (end)
-              (end)
-              (end)))
-              
-     
