@@ -36,9 +36,12 @@
     n
     (recur (inc n)))))
 
+   
+
 (defn counter [arg]
   "used internally by sublist"
   (loop [from arg
+         elt (first (first from))
          cnt 0
          goal 2
          found 0]
@@ -46,49 +49,35 @@
       (+ 1 cnt)
       (recur
         (rest from)
+        (first (first from))
         (+ 1 cnt)
-        (if (= 'measure (first from))
+        (if (= 'measure elt)
           (+ 2 goal)
           goal)
-        (if (= 'end (first from))
+        (if (= 'end elt)
           (+ 1 found)
-          found)))))        
+          found)))))  
 
-(defn sublist [arg]
-  "internal fn for end-to-else-branch"
+
+(defn end-to-else-branch [arg]
+  "Converts (arg) program with (end)(end) after (measure) to (else)(end) format"
   (loop [to '()
          else true
          from arg]
     (if (or (and (not else)
-                 (= 'end (first from)))
+                 (= 'end (first (first from))))
             (empty? from))
       (filter #(not= nil %) (concat to (list (first from))))
       (recur
-        (if (= 'measure (first from))
-          (concat to (cons 'measure (sublist (rest from))))
+        (if (= 'measure (first (first from)))
+          (concat to (list (first from)) (end-to-else-branch (rest from)))
           (if (and else
-                   (= 'end (first from)))
-            (concat to '(else))  
+                   (= 'end (first (first from))))
+            (concat to '((else)))  
             (concat to (list (first from)))))
-        (if (= 'end (first from))
+        (if (= 'end (first (first from)))
           false
           else)
-        (if (not= 'measure (first from))
+        (if (not= 'measure (first (first from)))
           (rest from)
           (drop (counter (rest from)) from))))))
-
-(defn end-to-else-branch [program]
-  "Converts (program) with (end)(end) after (measure) to (else)(end) format"
-  (loop [convert (sublist (flatten program))
-         to '()]
-    (if (empty? convert)
-      to
-      (recur
-        (if (and (not= 'end (first convert))
-                 (not= 'else (first convert)))
-          (drop 2 convert)
-          (drop 1 convert))
-        (if (or (= 'end (first convert))
-                (= 'else (first convert)))
-          (concat to (list (list (first convert))))
-          (concat to (list (take 2 convert))))))))
