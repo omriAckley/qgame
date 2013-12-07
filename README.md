@@ -5,23 +5,28 @@ A Clojure library for simulating quantum computation, which is a reimplementatio
 ## Usage
 
 To import using [leingingen](http://leiningen.org/), include this is in your project.clj dependecies:
+
 	[[qgame "0.1.0"]]
 
 Then from a REPL:
-	**user>** (use 'qgame.core)
-	**>** nil
+
+	user> (use 'qgame.core)
+	> nil
 
 From here, the central function is `execute-program`, which will take a hash-map of options and a quoted list of instructions to execute. For example:
-	**user>** (execute-program {:num-qubits 1}
+
+	user> (execute-program {:num-qubits 1}
 	                           '((qnot 0)))
-	**>** ({:amplitudes [[[0 0] [0 0]] [[1 0] [0 1]]], :prior-probability 1, :oracle-count 0, :measurement-history ()})
+	> ({:amplitudes [[[0 0] [0 0]] [[1 0] [0 1]]], :prior-probability 1, :oracle-count 0, :measurement-history ()})
+
 Which doesn't look so pretty. To prettify slightly:
-    **user>** (->> (execute-program {:num-qubits 1}
+
+	user> (->> (execute-program {:num-qubits 1}
 	                               '((qnot 0)))
 	              first
 	              :amplitudes
 	              (mapv cmatrix-to-cstring))
-	**>** ["0" "1"]
+	> ["0" "1"]
 
 ## Syntax
 
