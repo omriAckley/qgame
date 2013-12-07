@@ -6,7 +6,7 @@ A Clojure library for simulating quantum computation, which is a reimplementatio
 
 To import using [leingingen](http://leiningen.org/), include this is in your project.clj dependecies:
 
-	[[qgame "0.1.0"]]
+	[[org.clojars.hippiccolo/qgame "0.1.0"]]
 
 Then from a REPL:
 
