@@ -6,11 +6,11 @@ A Clojure library for simulating quantum computation, which is a reimplementatio
 
 To import using [leingingen](http://leiningen.org/), include this is in your project.clj dependecies:
 
-	[[org.clojars.hippiccolo/qgame "0.1.1"]]
+	[[org.clojars.hippiccolo/qgame "0.1.2"]]
 
 Then from a REPL:
 
-	user> (use 'qgame.core 'qgame.qgates)
+	user> (use 'qgame.api)
 	> nil
 
 From here, the central function is `execute-program`, which will take a hash-map of options and a quoted list of instructions to execute. For example:
@@ -21,8 +21,6 @@ From here, the central function is `execute-program`, which will take a hash-map
 
 Which doesn't look so pretty. To prettify slightly:
 
-	user > (use 'qgame.utils.complex)
-	> nil
 	user> (->> (execute-program {:num-qubits 1}
 	                            '((qnot 0)))
 	           first
