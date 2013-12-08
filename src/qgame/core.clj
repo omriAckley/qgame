@@ -6,8 +6,7 @@
   (:use [qgame.utils.general]
         [qgame.utils.complex]
         [qgame.qgates]
-        [qgame.amplitudes]
-        [qgame.pprint])
+        [qgame.amplitudes])
   (:gen-class))
 
 (defn new-quantum-system

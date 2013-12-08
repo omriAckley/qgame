@@ -4,7 +4,8 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :url "https://github.com/omriBernstein/qgame"
   :dependencies [[org.clojure/clojure "1.4.0"]
-                 [net.mikera/core.matrix "0.14.0"]]
+                 [net.mikera/core.matrix "0.14.0"]
+                 [potemkin "0.3.4"]]
   :javac-options ["-target" "1.6" "-source" "1.6" "-Xlint:-options"]
   :aot [qgame.core]
   :main qgame.core)
