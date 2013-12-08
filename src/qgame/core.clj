@@ -131,7 +131,7 @@ Actually, it outputs [instruction new-branch-counters], where a 1 will be append
                                parsed-instructions)]
     (apply concat final-branches)))
 
-(defn -main [& args])
+;;(defn -main [& args])
 
 ;;Example
 #_(-> (new-quantum-system 2)
