@@ -37,5 +37,5 @@
    cmatrix-to-cstring]
   [qgame.pprint
    all-to-floats
-   all-to-cstring
+   all-to-cstrings
    pprint-branch])
