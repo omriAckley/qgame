@@ -131,39 +131,3 @@ Actually, it outputs [instruction new-branch-counters], where a 1 will be append
     (apply concat final-branches)))
 
 (defn- -main [& args])
-
-;;Example
-#_(-> (new-quantum-system 2)
-  :amplitudes
-  (hadamard 0)
-  (hadamard 1)
-  (u-theta (/ Math/PI 5) 0)
-  (cnot 0 1)
-  (hadamard 1))
-#_(should output [[0.572 0.572]
-                  [0.416 -0.416]])
-
-;;Eseentially, same as above
-#_(pprint-branch
-    (execute-program {:num-qubits 2}
-                     `((hadamard 0)
-                       (hadamard 1)
-                       (u-theta ~(/ Math/PI 5) 0)
-                       (cnot 0 1)
-                       (hadamard 1))))
-
-;;Measurement example
-#_(pprint-branch
-    (execute-program {:num-qubits 3}
-                     '((hadamard 0)
-                       (measure 0)
-                        (hadamard 1)
-                        (measure 1)
-                        (end)
-                        (end)
-                       (end)
-                        (hadamard 2)
-                        (measure 2)
-                        (end)
-                        (end)
-                       (end))))
