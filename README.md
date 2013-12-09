@@ -1,10 +1,6 @@
 # qgame
 
-**q**uantum
-**g**ate
-**a**nd
-**m**easurement
-**e**mulator
+**q**uantum **g**ate **a**nd **m**easurement **e**mulator
 
 A Clojure library for simulating [quantum computation](http://en.wikipedia.org/wiki/Quantum_computer), which is a reimplementation of [Lee Spector's QGAME in Common Lisp](http://faculty.hampshire.edu/lspector/qgame.html). This library is strictly for the data crunching involved in such an endeavor. For a visual qgame REPL, see [here](https://github.com/zhx2013/qgame-seesaw).
 
@@ -90,7 +86,7 @@ Now using a simple customized step-by-step renderer:
 	(end)
 	(oracle <qubitA>...<qubit?>)
 
-The `oracle` quantum gate takes anywhere from 1 to N qubits, where N is the total number of qubits for a given quantum system. There is more on oracles [later](#Oracles).
+The `oracle` quantum gate takes anywhere from 1 to N qubits, where N is the total number of qubits for a given quantum system. There is more on oracles [later](#oracles).
 
 ## Terminology
 
