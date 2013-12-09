@@ -1,10 +1,16 @@
 # qgame
 
-A Clojure library for simulating quantum computation, which is a reimplementation of [Lee Spector's QGAME in Common Lisp](http://faculty.hampshire.edu/lspector/qgame.html). This library is strictly data crunching. For a visual qgame REPL, see [here](https://github.com/zhx2013/qgame-seesaw).
+**q**uantum
+**g**ate
+**a**nd
+**m**easurement
+**e**mulator
+
+A Clojure library for simulating [quantum computation](http://en.wikipedia.org/wiki/Quantum_computer), which is a reimplementation of [Lee Spector's QGAME in Common Lisp](http://faculty.hampshire.edu/lspector/qgame.html). This library is strictly for the data crunching involved in such an endeavor. For a visual qgame REPL, see [here](https://github.com/zhx2013/qgame-seesaw).
 
 ## Usage
 
-To import using [leingingen](http://leiningen.org/), include this is in your project.clj dependecies:
+To import using [leingingen](http://leiningen.org/), include this is in your project.clj dependencies:
 
 	[[org.clojars.hippiccolo/qgame "0.1.2"]]
 
@@ -13,13 +19,20 @@ Then from a REPL:
 	user> (use 'qgame.api)
 	> nil
 
-From here, the central function is `execute-program`, which will take a hash-map of options and a quoted list of instructions to execute. For example:
+Or in your namespace declaration:
+
+	(ns your-mind-blowing-namespace
+	  (:use [qgame.api]))
+
+## Quick demo
+
+The central function is `execute-program`, which will take a hash-map of options and a quoted list of instructions to execute. For example:
 
 	user> (execute-program {:num-qubits 1}
 	                       '((qnot 0)))
 	> ({:amplitudes [[[0 0] [0 0]] [[1 0] [0 1]]], :prior-probability 1, :oracle-count 0, :measurement-history ()})
 
-Which doesn't look so pretty. To prettify slightly:
+Which doesn't look so pretty (because the amplitudes are represented in a complex matrix form). To prettify slightly:
 
 	user> (->> (execute-program {:num-qubits 1}
 	                            '((qnot 0)))
@@ -28,6 +41,74 @@ Which doesn't look so pretty. To prettify slightly:
 	           (mapv cmatrix-to-cstring))
 	> ["0" "1"]
 
-## Syntax
+Or still pretty, but somewhat verbose:
 
-Soon to be written.
+	user> (pprint-branch
+	        (execute-program {:num-qubits 1}
+	                         '((qnot 0))))
+	({:amplitudes [0 1],
+       :prior-probability 1.0,
+       :oracle-count 0.0,
+       :measurement-history ()})
+	> nil
+
+Now using a simple customized step-by-step renderer:
+
+	user> (execute-program {:num-qubits 1
+	                        :renderer (fn [branches instruction]
+	                                    (println)
+	                                    (pprint-branch (first branches))
+	                                    (println (apply str "Calling " (first instruction) " on qubit " (rest instruction))))}
+	                       '((qnot 0)
+	                         (qnot 0)))
+	
+	({:amplitudes [1 0],
+       :prior-probability 1.0,
+       :oracle-count 0.0,
+       :measurement-history ()})
+     Calling qnot on qubit 0
+
+	({:amplitudes [0 1],
+	  :prior-probability 1.0,
+	  :oracle-count 0.0,
+	  :measurement-history ()})
+	Calling qnot on qubit 0
+	> ({:amplitudes [[[1 0] [0 1]] [[0 0] [0 0]]], :prior-probability 1, :oracle-count 0, :measurement-history ()})
+
+## Valid instructions
+
+	(qnot <qubit>)
+	(cnot <qubitA> <qubitB>)
+	(srn <qubit>)
+	(nand <qubitA> <qubitB> <qubitC>)
+	(hadamard <qubit>)
+	(u-theta <theta> <qubit>)
+	(cphase <alpha> <qubitA> <qubitB>)
+	(u2 <phi> <theta> <psi> <alpha> <qubit>)
+	(swap <qubitA> <qubitB>)
+	(measure <qubit>)
+	(end)
+	(oracle <qubitA>...<qubit?>)
+
+The `oracle` quantum gate takes anywhere from 1 to N qubits, where N is the total number of qubits for a given quantum system. There is more on oracles [later](#Oracles).
+
+## Terminology
+
+A program is a list of instructions. An instruction is a list that starts with a symbol and often has parameters following it. The symbol should either resolve to one of the branch operators, `measure` or `end`, or a quantum gate. In the case of a quantum gate, the parameters will either be paramters for a quantum gate matrix, or qubits. A quantum gate matrix is any [unitary matrix](http://en.wikipedia.org/wiki/Unitary_matrix). A qubit is simply a number between 0 and N-1, where N is the total number of qubits. More generally, a quantum gate is a function that takes amplitudes, zero or more parameters, and one or more qubits. It returns the result of matrix multiplying some (possibly parameterized) gate matrix by certain sub-vectors of amplitudes--the sub-vectors are calculated by considering the relevant qubits. More simply, a quantum gate instruction could be thought of as a function that takes a quantum system and returns that quantum system with amplitudes updated by applying the quantum gate on the relevant qubits. For example, `(qnot 0)` is a quantum gate instruction that `qnot`s some quantum system at qubit 0.
+
+A quantum system is a hash-map of `:amplitudes`, `:prior-probability`, `:measurement-history`, and `:oracle-count`. The :amplitudes vector contains amplitudes for all the possible combinations of qubit states. For example, with three qubits, there would be eight amplitudes, each corresponding to one of: 000, 001, 010, 011, 100, 101, 110, 111--think of each right-most digit as the state of qubit 0, each middle digit as the state of qubit 1, and each left-most digit as the state of qubit 2. An amplitude's base-10 index can therefore be converted to a binary number to determine which possible state it corresponds to (the amplitude at index 3, whose binary equivalent is 011, is the amplitude for the possible state where qubit 0 equals 1, qubit 1 equal 1, and qubit 2 equals 0). A prior probability denotes the likelihood of having arrived at given quantum system. This is modified by measurement only. The measurement history keeps track of the results of measurements a quantum system has been subject to. The oracle count shows how many times the oracle gate has been called on this quantum system. A branch is a list of quantum systems. 
+
+## Interpreter flow
+
+During program execution, a list of branches is maintained, where only the head branch (the first branch in the list of branches) is acted upon by quantum gates. The head branch is updated by mapping the quantum gate instruction down each of the quantum systems it contains. Control operators are a different story. A measurement creates two branches by duplicating the head branch, and then altering the first copy so that all its quantum systems have the given qubit collapsed to the 1 state, and the second copy so that all of its quantum systems have the given qubit collapsed to the 0 state. The "one" branch is the new head branch. The first subsequent `(end)` instruction will act like an "else", swapping the first two branches so that the "zero" branch is the new head branch--and all quantum gate instructions will now act on this branch. The second `(end)` instruction will truly end the measurement, merging the first two branches into one, so that together they will form the new head branch. Any nested measurements must come to a complete end, i.e. they must have encountered two `(end)`s, before the "parent" measurement.
+
+## Oracles
+
+An oracle can be passed as a keyword argument to `execute-program`. To clarify, an "oracle" is different than an "oracle quantum gate". The latter (like all quantum gates) is a function that can be applied to some amplitudes. An "oracle", on the other hand, is expected to be the right column of some truth table. For example, the truth table for logical NAND is:
+
+	0 0 | 1
+	0 1 | 1
+	1 0 | 1
+	1 1 | 0
+
+And so it's right column is `1 1 1 0`. If `execute-program` received `{:oracle [1 1 1 0]}`, it would construct the gate matrix equivalent of logical NAND, convert that to a quantum gate, and then use that as the oracle quantum gate. Ultimately, this quantum gate would be a function that takes amplitudes and three qubits. It would use the first two qubits as "input", and treat the third as output. If the first two qubits were both equal to 1, the third qubit would be set to 0. Otherwise, it would be set to 1. However, since qubits can be "sort of 0" and "sort of 1" at the same damn time, this quantum gate actually alters the third qubit in "fuzzier" ways.
