@@ -1,8 +1,6 @@
-# qgame
+# **q**<sub><sup><sub><sup>uantum</sup></sub></sup></sub><span> </span>**g**<sub><sup><sub><sup>ate</sup></sub></sup></sub><span> </span>**a**<sub><sup><sub><sup>nd</sup></sub></sup></sub><span> </span>**m**<sub><sup><sub><sup>easurement</sup></sub></sup></sub><span> </span>**e**<sub><sup><sub><sup>mulator</sup></sub></sup></sub><span> </span>
 
-**q**uantum **g**ate **a**nd **m**easurement **e**mulator
-
-A Clojure library for simulating [quantum computation](http://en.wikipedia.org/wiki/Quantum_computer), which is a reimplementation of [Lee Spector's QGAME in Common Lisp](http://faculty.hampshire.edu/lspector/qgame.html). This library is strictly for the data crunching involved in such an endeavor. For a visual qgame REPL, see [here](https://github.com/zhx2013/qgame-seesaw).
+A reimplementation of [Lee Spector's QGAME in Common Lisp](http://faculty.hampshire.edu/lspector/qgame.html). This Clojure library is strictly for the data crunching involved in simulating [quantum computation](http://en.wikipedia.org/wiki/Quantum_computer). For a visual qgame REPL, see [here](https://github.com/zhx2013/qgame-seesaw).
 
 ## Usage
 
@@ -102,9 +100,12 @@ During program execution, a list of branches is maintained, where only the head 
 
 An oracle can be passed as a keyword argument to `execute-program`. To clarify, an "oracle" is different than an "oracle quantum gate". The latter (like all quantum gates) is a function that can be applied to some amplitudes. An "oracle", on the other hand, is expected to be the right column of some truth table. For example, the truth table for logical NAND is:
 
-	0 0 | 1
-	0 1 | 1
-	1 0 | 1
-	1 1 | 0
+<table>
+  <tr> <td><strong>A</strong></td> <td><strong>B</strong></td> <td><strong>NAND</strong></td> </tr>
+  <tr> <td>0</td> <td>0</td> <td>1</td> </tr>
+  <tr> <td>0</td> <td>1</td> <td>1</td> </tr>
+  <tr> <td>1</td> <td>0</td> <td>1</td> </tr>
+  <tr> <td>1</td> <td>1</td> <td>0</td> </tr>
+</table>
 
 And so it's right column is `1 1 1 0`. If `execute-program` received `{:oracle [1 1 1 0]}`, it would construct the gate matrix equivalent of logical NAND, convert that to a quantum gate, and then use that as the oracle quantum gate. Ultimately, this quantum gate would be a function that takes amplitudes and three qubits. It would use the first two qubits as "input", and treat the third as output. If the first two qubits were both equal to 1, the third qubit would be set to 0. Otherwise, it would be set to 1. However, since qubits can be "sort of 0" and "sort of 1" at the same damn time, this quantum gate actually alters the third qubit in "fuzzier" ways.
