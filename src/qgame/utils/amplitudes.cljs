@@ -1,26 +1,28 @@
-(ns qgame.amplitudes
+(ns qgame.utils.amplitudes
   "Various functions for working with amplitudes."
-  (:use [qgame.utils.complex]
-        [qgame.utils.general]))
+  (:require [qgame.utils.math :as m :refer [abs
+                                            multiply]]
+            [qgame.utils.general :as g :refer [bit-size
+                                               itermap]]))
 
 (defn get-num-qubits
   "Given the amplitudes (or any collection of equal length), returns the number of qubits in the system."
   [amplitudes]
-  (bit-size (count amplitudes)))
+  (g/bit-size (count amplitudes)))
 
 (defn amplitude-to-probability
   "Converts an amplitude to its probability by doing |a|^2."
   [amplitude]
-  (let [abs-val (complex-abs amplitude)]
-    (* abs-val abs-val)))
+  (let [abs-val (m/abs amplitude)]
+    (m/multiply abs-val abs-val)))
 
 (defn qubits-to-amplitude-indices
   "Given which qubits should be involved in a computation, determines the appropriate amplitude indices to be affected."
   [qubits tot-num-qubits]
   (let [excluded-qubits (remove (set qubits)
                                 (range tot-num-qubits))]
-    (for [seed-index (itermap bit-flip [0] excluded-qubits)]
-      (itermap bit-flip [seed-index] qubits))))
+    (for [seed-index (g/itermap bit-flip [0] excluded-qubits)]
+      (g/itermap bit-flip [seed-index] qubits))))
 
 (defn qubit-state-amplitudes
   "Gets the amplitudes for a particualr qubit in a particular binary state."
@@ -28,7 +30,7 @@
   (let [excluded-qubits (remove #{qubit}
                                 (range (get-num-qubits amplitudes)))
         seed-index (* binary-state (bit-set 0 qubit))
-        indices (itermap bit-flip [seed-index] excluded-qubits)]
+        indices (g/itermap bit-flip [seed-index] excluded-qubits)]
     (map (partial get amplitudes) indices)))
 
 (defn probability-of

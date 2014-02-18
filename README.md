@@ -1,22 +1,22 @@
 # **q**<sub><sup><sub><sup>uantum</sup></sub></sup></sub><span> </span>**g**<sub><sup><sub><sup>ate</sup></sub></sup></sub><span> </span>**a**<sub><sup><sub><sup>nd</sup></sub></sup></sub><span> </span>**m**<sub><sup><sub><sup>easurement</sup></sub></sup></sub><span> </span>**e**<sub><sup><sub><sup>mulator</sup></sub></sup></sub><span> </span>
 
-A reimplementation of [Lee Spector's QGAME in Common Lisp](http://faculty.hampshire.edu/lspector/qgame.html). This Clojure library is strictly for the data crunching involved in simulating [quantum computation](http://en.wikipedia.org/wiki/Quantum_computer). For a visual qgame REPL, see [here](https://github.com/zhx2013/qgame-seesaw).
+A reimplementation of [Lee Spector's QGAME in Common Lisp](http://faculty.hampshire.edu/lspector/qgame.html). This ClojureScript library is strictly for the data crunching involved in simulating [quantum computation](http://en.wikipedia.org/wiki/Quantum_computer). For a visual qgame REPL (based on a Clojure beta version of this project), see [here](https://github.com/zhx2013/qgame-seesaw).
 
 ## Usage
 
 To import using [leingingen](http://leiningen.org/), include this is in your project.clj dependencies:
 
-	[[org.clojars.hippiccolo/qgame "0.1.2"]]
+	[[org.clojars.hippiccolo/qgame "0.2.0"]]
 
 Then from a REPL:
 
-	user> (use 'qgame.api)
+	user> (require '[qgame.interpreter.core :as qgame])
 	> nil
 
 Or in your namespace declaration:
 
 	(ns your-mind-blowing-namespace
-	  (:use [qgame.api]))
+	  (:require [qgame.interpreter.core :as qgame]]))
 
 ## Quick demo
 
@@ -24,50 +24,24 @@ The central function is `execute-program`, which will take a hash-map of options
 
 	user> (execute-program {:num-qubits 1}
 	                       '((qnot 0)))
-	> ({:amplitudes [[[0 0] [0 0]] [[1 0] [0 1]]], :prior-probability 1, :oracle-count 0, :measurement-history ()})
-
-Which doesn't look so pretty (because the amplitudes are represented in a complex matrix form). To prettify slightly:
-
-	user> (->> (execute-program {:num-qubits 1}
-	                            '((qnot 0)))
-	           first
-	           :amplitudes
-	           (mapv cmatrix-to-cstring))
-	> ["0" "1"]
-
-Or still pretty, but somewhat verbose:
-
-	user> (pprint-branch
-	        (execute-program {:num-qubits 1}
-	                         '((qnot 0))))
-	({:amplitudes [0 1],
-       :prior-probability 1.0,
-       :oracle-count 0.0,
-       :measurement-history ()})
-	> nil
+	> ({:amplitudes [0 1], :prior-probability 1, :oracle-count 0, :measurement-history ()})
 
 Now using a simple customized step-by-step renderer:
 
 	user> (execute-program {:num-qubits 1
 	                        :renderer (fn [branches instruction]
 	                                    (println)
-	                                    (pprint-branch (first branches))
+	                                    (pprintln (first branches))
 	                                    (println (apply str "Calling " (first instruction) " on qubit " (rest instruction))))}
 	                       '((qnot 0)
 	                         (qnot 0)))
 	
-	({:amplitudes [1 0],
-       :prior-probability 1.0,
-       :oracle-count 0.0,
-       :measurement-history ()})
+	{:amplitudes [1 0], :prior-probability 1, :oracle-count 0, :measurement-history ()}
      Calling qnot on qubit 0
 
-	({:amplitudes [0 1],
-	  :prior-probability 1.0,
-	  :oracle-count 0.0,
-	  :measurement-history ()})
+	{:amplitudes [0 1], :prior-probability 1, :oracle-count 0, :measurement-history ()}
 	Calling qnot on qubit 0
-	> ({:amplitudes [[[1 0] [0 1]] [[0 0] [0 0]]], :prior-probability 1, :oracle-count 0, :measurement-history ()})
+	> ({:amplitudes [1 0], :prior-probability 1, :oracle-count 0, :measurement-history ()})
 
 ## Valid instructions
 

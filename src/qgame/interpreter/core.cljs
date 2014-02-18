@@ -1,40 +1,61 @@
-(ns qgame.core
+(ns qgame.interpreter.core
   "The guts of qgame: interprets and runs instructions to a simulated quantum computer."
-  (:refer-clojure :exclude [* - + == /])
-  (:use [clojure.core.matrix]
-        [clojure.core.matrix.operators])
-  (:use [qgame.utils.general]
-        [qgame.utils.complex]
-        [qgame.qgates]
-        [qgame.amplitudes])
-  (:gen-class))
+  (:require-macros [qgame.macros :as macros :refer [unless]])
+  (:require [qgame.utils.general :as g :refer [update-sub]]
+            [qgame.utils.amplitudes :as a :refer [probability-of
+                                                  qubits-to-amplitude-indices
+                                                  get-num-qubits]]
+            [qgame.interpreter.qgates :as q :refer [binary-gate-matrix
+                                                    anonymous-qgate
+                                                    qnot
+                                                    cnot
+                                                    srn
+                                                    nand
+                                                    hadamard
+                                                    u-theta
+                                                    c-phase
+                                                    u2
+                                                    swap]]
+            [qgame.interpreter.parser :as p :refer [parse-program
+                                                    parse-string]]
+            [qgame.interpreter.warning :as w :refer [warnings
+                                                     warn]]))
+
+(def allowed-qgates
+  (atom {'qnot q/qnot
+         'cnot q/cnot
+         'srn q/srn
+         'nand q/nand
+         'hadamard q/hadamard
+         'u-theta q/u-theta
+         'c-phase q/c-phase
+         'u2 q/u2
+         'swap q/swap}))
 
 (defn new-quantum-system
   "Given some number of qubits, returns the default quantum system, but with 2^num-qubits amplitudes."
   [num-qubits]
   (let [num-amplitudes (bit-shift-left 1 num-qubits)]
     {:amplitudes (->> 0
-                   (repeat (dec num-amplitudes))
-                   (into [1])
-                   (mapv number-to-cmatrix))
+                      (repeat (dec num-amplitudes))
+                      (into [1]))
      :prior-probability 1
      :oracle-count 0
      :measurement-history ()}))
 
-(def threshold 0)
-
 (defn force-to
   "Forces a given qubit to a given binary state. It does so by forcing the opposite of that binary state to have an amplitude of zero. Also update the qsystem's prior probability."
   [qsys qubit binary-state]
-  (let [qsys (-> qsys
-               (update-in [:measurement-history] conj [qubit binary-state])
-               (assoc-in [:prior-probability] (probability-of qsys qubit binary-state)))
-        all-indices (qubits-to-amplitude-indices [qubit] (get-num-qubits (:amplitudes qsys)))
+  (let [threshold 0
+        qsys (-> qsys
+                 (update-in [:measurement-history] conj [qubit binary-state])
+                 (assoc-in [:prior-probability] (a/probability-of qsys qubit binary-state)))
+        all-indices (a/qubits-to-amplitude-indices [qubit] (a/get-num-qubits (:amplitudes qsys)))
         relevant-indices (map #(nth % (- 1 binary-state))
                               all-indices)]
     (when (> (:prior-probability qsys) threshold) 
       (update-in qsys [:amplitudes]
-                 update-sub (constantly (repeat [[0 0][0 0]])) relevant-indices))))
+                 g/update-sub (constantly (repeat 0)) relevant-indices))))
 
 (defn measure
   "Splits the head branch into two branches: one in which the qubit has been forced to the 1 state, and the other in which the qubit has been forced to the 0 state."
@@ -48,8 +69,8 @@
   "Swaps the first two items in a collection. If the collection contains only one item, will return the collection as is. In the context of program execution, switches between executing qgates on the current forced-1 branch and the current forced-0 branch, if they exist."
   [[head-branch alternate-branch & remaining]]
   (->> [head-branch alternate-branch]
-    (take-while identity)
-    (into remaining)))
+       (take-while identity)
+       (into remaining)))
 
 (defn concat-first-two
   "Concatenates the first two items in a collection. If the collection contains only one item, will return the collection as is. In the context of program execution, this merges any current forced-1 and forced-0 branches."
@@ -94,40 +115,23 @@
     else (swap-first-two branches)
     end (concat-first-two branches)
     oracle (execute-oracle-qgate branches oracle-qgate args)
-    (execute-qgate branches (resolve i-sym) args)))
-
-(defn parse-instruction
-  "Outputs an instruction, changing an '(end) to an '(else) if the head of the branch counters equals 1.
-Actually, it outputs [instruction new-branch-counters], where a 1 will be appended onto branch counters if the instruction is a measure instruction, and if the instruction is end, it will turn the head to 0 if it is 1, or remove the head if it is 0."
-  [[_ [head & remaining :as branch-counters]]
-   [i-sym :as instruction]]
-  (case i-sym
-    measure [instruction (cons 1 branch-counters)]
-    end (case head
-          0 ['(end) remaining]
-          1 ['(else) (cons 0 remaining)]
-          [nil branch-counters])
-    [instruction branch-counters]))
-
-(defn to-else-syntax
-  "Converts a list of instructions in '((measure)...(end)...(end)) syntax to '((measure)...(else)...(end)) syntax."
-  [instructions]
-  (->> instructions
-       (reductions parse-instruction [nil ()])
-       (keep first)))
+    (execute-qgate branches (get @allowed-qgates i-sym) args)))
 
 (defn execute-program
-  "Executes and renders a list of qgame instructions. At the end, it merges any unclosed branches."
+  "Executes and renders a list of qgame instructions, i.e. a qgame program. At the end, it merges any unclosed branches."
   [{:keys [num-qubits renderer oracle]}
-   instructions]
+   program]
+  (reset! warnings [])
   (let [init-qsystem (new-quantum-system num-qubits)
-        parsed-instructions (to-else-syntax instructions)
-        oracle-qgate (->> (unless nil? oracle [0])
-                       binary-gate-matrix
-                       anonymous-qgate)
+        parsed-program (p/parse-program program)
+        oracle-qgate (->> (macros/unless nil? oracle [0])
+                          q/binary-gate-matrix
+                          q/anonymous-qgate)
         final-branches (reduce (partial execute-instruction renderer oracle-qgate)
                                (-> init-qsystem list list)
-                               parsed-instructions)]
+                               parsed-program)]
     (apply concat final-branches)))
 
-(defn- -main [& args])
+(defn execute-string
+  [s]
+  (execute-program (parse-string s)))
