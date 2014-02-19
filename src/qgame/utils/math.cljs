@@ -96,10 +96,14 @@
    (.exp math (math.complex. 0 x)))
 
 ;Matrix math
+
+(def ordered-collection?
+   (some-fn vector? list? seq?))
+
 (defn- to-matrix
    "Internal function for converting a collection to a math.js matrix, leaving any non-collection unchanged."
    [x]
-   (if (coll? x)
+   (if (ordered-collection? x)
       (math.matrix. (to-array x))
       x))
 
