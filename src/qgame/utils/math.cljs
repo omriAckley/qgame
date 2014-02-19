@@ -180,8 +180,8 @@
       id-mat (.eye math m n)
       conj-trans (conjugate-transpose mat)]
       (mat=? id-mat
-         (round (multiply mat conj-trans) 5)
-         (round (multiply conj-trans mat) 5))))
+         (nested-to-matrix (round (multiply mat conj-trans) 5))
+         (nested-to-matrix (round (multiply conj-trans mat) 5)))))
 
 ;Helpful utilities
 (defn to-string
