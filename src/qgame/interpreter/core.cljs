@@ -28,7 +28,7 @@
          'nand q/nand
          'hadamard q/hadamard
          'u-theta q/u-theta
-         'c-phase q/c-phase
+         'cphase q/cphase
          'u2 q/u2
          'swap q/swap}))
 

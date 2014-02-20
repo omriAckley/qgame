@@ -18,6 +18,18 @@
             :oracle-count 0
             :measurement-history ()}))
 
+;Example with complex numbers
+#_(execute-program {:num-qubits 2}
+                   '((hadamard 0)
+                     (hadamard 1)
+                     (u-theta 0.6283 0)
+                     (cphase 0.1234 1 0)
+                     (hadamard 1)))
+;(should output approx
+;          ({:amplitudes [0.988 #<0.156 + 0.01i> 0 #<5.948e-4 - 0.01i>],
+;            :prior-probability 1,
+;            :oracle-count 0,
+;            :measurement-history ()}))
 
 ;Measurement example
 #_(execute-program {:num-qubits 3}

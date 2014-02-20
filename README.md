@@ -6,7 +6,7 @@ A reimplementation of [Lee Spector's QGAME in Common Lisp](http://faculty.hampsh
 
 To import using [leingingen](http://leiningen.org/), include this is in your project.clj dependencies:
 
-	[[org.clojars.hippiccolo/qgame "0.2.4"]]
+	[[org.clojars.hippiccolo/qgame "0.2.5"]]
 
 Then from a REPL:
 

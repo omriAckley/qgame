@@ -1,4 +1,4 @@
-(defproject org.clojars.hippiccolo/qgame "0.2.4"
+(defproject org.clojars.hippiccolo/qgame "0.2.5"
   :description "Quantum Gate And Measurement Emulator, or qgame. An instruction-level quantum computing simulator. Ported from Lee Spector's QGAME (written in Common Lisp)."
   :license {:name "MIT License"
             :url "http://http://en.wikipedia.org/wiki/MIT_License"}
