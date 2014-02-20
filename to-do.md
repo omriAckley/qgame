@@ -1,3 +1,5 @@
+Unify with the old Common Lisp QGAME's argument order for quantum gates.
+
 Functions `execute-string` and `parse-string` that will allow for math expression evaluation.
 
 Error handling for parsing and execution, so that any arbitrary string can be evaluated without JavaScript-level errors. Non-viable qgame programs should either return `nil` or throw a non-blocking exception or something like that.
