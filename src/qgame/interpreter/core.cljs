@@ -13,13 +13,13 @@
                                                     nand
                                                     hadamard
                                                     u-theta
-                                                    c-phase
+                                                    cphase
                                                     u2
                                                     swap]]
             [qgame.interpreter.parser :as p :refer [parse-program
                                                     parse-string]]
             [qgame.interpreter.warning :as w :refer [warnings
-                                                     warn]]))
+                                                     warn!]]))
 
 (def allowed-qgates
   (atom {'qnot q/qnot
@@ -134,4 +134,4 @@
 
 (defn execute-string
   [s]
-  (execute-program (parse-string s)))
+  (apply execute-program (parse-string s)))

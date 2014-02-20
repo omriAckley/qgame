@@ -17,7 +17,7 @@
   "Extra '(end)' encountered")
 
 (defmethod problem-to-message :lingering-status
-  [_ log]
+  [_ s]
   (case s
     "then_clause" "Some '(measure)' missing two '(end)'s"
     "else_clause" "Some '(measure)' missing an '(end)'"

@@ -3,6 +3,8 @@
   (:use [qgame.interpreter.core :only [execute-program]])
   (:require [qgame.utils.math :as m :refer [round]]))
 
+(enable-console-print!)
+
 ;Example
 (execute-program {:num-qubits 2}
                 '((hadamard 0)
@@ -52,20 +54,16 @@
 ;;With custom step-by-step renderer
 (execute-program {:num-qubits 3
                   :renderer (fn [branches instruction]
-                              (println)
                               (println "head branch amplitudes...")
                               (doseq [qsys (first branches)]
-                                (print "  ")
-                                (-> qsys
-                                  :amplitudes
-                                  (m/round 3)
-                                  println))
-                              (print "instruction: ")
-                              (println (case (first instruction)
-                                         measure (str "measure and branch on qubit " (second instruction))
-                                         else "switch branches"
-                                         end "merge branches"
-                                         (apply str (first instruction) " on qubit " (rest instruction))))
+                                (println (str "   ")
+                                  (-> qsys :amplitudes (m/round 3))))
+                              (println (str "action:")
+                                (case (first instruction)
+                                  measure (str "measure and branch on qubit " (second instruction))
+                                  else "switch branches"
+                                  end "merge branches"
+                                  (apply str (first instruction) " on qubit " (rest instruction))))
                               (println "--------------------------------------------"))}
                  '((hadamard 0)
                    (measure 0)

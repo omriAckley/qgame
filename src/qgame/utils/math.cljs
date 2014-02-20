@@ -4,9 +4,35 @@
       [clojure.walk :as w :refer [postwalk
                                   prewalk]]))
 
-;Constants
 (def math (js/mathjs))
 
+;Collection to matrix, and matrix to collection conversion
+(defn- to-matrix
+   "Internal function for converting a collection to a math.js matrix, leaving any non-collection unchanged."
+   [x]
+   (if (sequential? x)
+      (math.matrix. (to-array x))
+      x))
+
+(defn- nested-to-matrix
+   "Internal function for converting any/all nested collections to math.js matrices."
+   [coll]
+   (w/postwalk to-matrix coll))
+
+(defn- to-vec
+   "Internal function for converting a math.js matrix and/or a JavaScript array to a vector, leaving any non-math.js-matrix or non-array unchanged."
+   [x]
+   (cond
+      (array? x) (vec x)
+      (= (.typeof math x) "matrix") (vec (.toArray x))
+      :else x))
+
+(defn- nested-to-vec
+   "Internal function for converting any/all nested math.js matrices to vectors."
+   [mat]
+   (w/prewalk to-vec mat))
+
+;Constants
 (def pi (.-pi math))
 
 (def sqrt2 (.-SQRT2 math))
@@ -95,36 +121,7 @@
    [x]
    (.exp math (math.complex. 0 x)))
 
-;Matrix math
-
-(def ordered-collection?
-   (some-fn vector? list? seq?))
-
-(defn- to-matrix
-   "Internal function for converting a collection to a math.js matrix, leaving any non-collection unchanged."
-   [x]
-   (if (ordered-collection? x)
-      (math.matrix. (to-array x))
-      x))
-
-(defn- nested-to-matrix
-   "Internal function for converting any/all nested collections to math.js matrices."
-   [coll]
-   (w/postwalk to-matrix coll))
-
-(defn- to-vec
-   "Internal function for converting a math.js matrix and/or a JavaScript array to a vector, leaving any non-math.js-matrix or non-array unchanged."
-   [x]
-   (cond
-      (array? x) (vec x)
-      (= (.typeof math x) "matrix") (vec (.toArray x))
-      :else x))
-
-(defn- nested-to-vec
-   "Internal function for converting any/all nested math.js matrices to vectors."
-   [mat]
-   (w/prewalk to-vec mat))
-
+;Matrix operations
 (defn- rand-2D-complex
    "Creates a 2D math.js matrix with elements equal to a random complex number with real part between positive and minus real-bound, and with imaginary part between positive and minus imag-bound."
    ([m n bound]
@@ -143,12 +140,12 @@
 (defn- mat=?
    "Internal function for testing whether two matrices are equal (i.e. dimensions are the same, and corresponding elements are equal)."
    ([mat01 mat02]
-      (set! result true)
       (if (some false? (.equal math (.size mat01) (.size mat02)))
-         (set! result false)
-         (.forEach (.equal math mat01 mat02)
-            (fn [val] (when (false? val) (set! result false)))))
-      result)
+         false
+         (->> (.equal math mat01 mat02)
+            nested-to-vec
+            flatten
+            (every? true?))))
    ([mat01 mat02 & more]
       (and (mat=? mat01 mat02) (apply mat=? mat02 more))))
 

@@ -2,10 +2,6 @@
 /lib
 /classes
 /checkouts
-/out
-/repl
-/src/repl-connect.cljs
-connected.html
 pom.xml
 pom.xml.asc
 *.jar
@@ -15,3 +11,8 @@ pom.xml.asc
 .lein-plugins
 .lein-repl-history
 .nrepl-port
+
+out
+repl
+src/repl-connect.cljs
+connected.html

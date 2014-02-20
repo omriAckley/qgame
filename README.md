@@ -6,7 +6,7 @@ A reimplementation of [Lee Spector's QGAME in Common Lisp](http://faculty.hampsh
 
 To import using [leingingen](http://leiningen.org/), include this is in your project.clj dependencies:
 
-	[[org.clojars.hippiccolo/qgame "0.2.0"]]
+	[[org.clojars.hippiccolo/qgame "0.2.3"]]
 
 Then from a REPL:
 
@@ -22,19 +22,19 @@ Or in your namespace declaration:
 
 The central function is `execute-program`, which will take a hash-map of options and a quoted list of instructions to execute. For example:
 
-	user> (execute-program {:num-qubits 1}
-	                       '((qnot 0)))
+	user> (qgame/execute-program {:num-qubits 1}
+	                             '((qnot 0)))
 	> ({:amplitudes [0 1], :prior-probability 1, :oracle-count 0, :measurement-history ()})
 
 Now using a simple customized step-by-step renderer:
 
-	user> (execute-program {:num-qubits 1
-	                        :renderer (fn [branches instruction]
-	                                    (println)
-	                                    (pprintln (first branches))
-	                                    (println (apply str "Calling " (first instruction) " on qubit " (rest instruction))))}
-	                       '((qnot 0)
-	                         (qnot 0)))
+	user> (qgame/execute-program {:num-qubits 1
+	                              :renderer (fn [branches instruction]
+	                                          (println)
+	                                          (pprintln (first branches))
+	                                          (println (apply str "Calling " (first instruction) " on qubit " (rest instruction))))}
+	                             '((qnot 0)
+	                               (qnot 0)))
 	
 	{:amplitudes [1 0], :prior-probability 1, :oracle-count 0, :measurement-history ()}
      Calling qnot on qubit 0
