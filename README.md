@@ -4,16 +4,13 @@ A reimplementation of [Lee Spector's QGAME in Common Lisp](http://faculty.hampsh
 
 ## Usage
 
-To import using [leingingen](http://leiningen.org/), include this is in your project.clj dependencies:
+To import using [leingingen](http://leiningen.org/), include these is in your project.clj `defproject` declaration (in addition to whatever other configurations you want):
 
-	[[org.clojars.hippiccolo/qgame "0.2.5"]]
+	:dependencies [[org.clojars.hippiccolo/qgame "0.2.5"]]
+	:cljsbuild {:builds [{:compiler {:foreign-libs [{:file "http://cdnjs.cloudflare.com/ajax/libs/mathjs/0.18.1/math.min.js"
+	                                                 :provides ["math.js"]}]}}]}
 
-Then from a REPL:
-
-	user> (require '[qgame.interpreter.core :as qgame])
-	> nil
-
-Or in your namespace declaration:
+Then in your ClojureScript namespace declaration:
 
 	(ns your-mind-blowing-namespace
 	  (:require [qgame.interpreter.core :as qgame]]))
