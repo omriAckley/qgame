@@ -15,8 +15,8 @@
   [nm args matrix]
   `(defn ~nm [amplitudes# ~@args ~'& qubits#]
      (qgame.interpreter.qgates/apply-operator amplitudes#
-                     (qgame.interpreter.qgates/to-operator ~matrix)
-                     qubits#)))
+                                              (qgame.interpreter.qgates/to-operator ~matrix)
+                                              qubits#)))
 
 (defmacro get-repl-listen-port
   "Gets the cljsbuild repl listen port (as a string, not a number) at compile time. Defaults to \"9000\"."

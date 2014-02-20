@@ -45,7 +45,7 @@
       (recur (revise open-branches instruction)
              (conj parsed-program (parse-instruction instruction open-branches))
              remaining))))
-  
+
 (defn parse-string
   [s]
-  (parse-program (r/read-string s)))
+  [{:num-qubits 2} (parse-program (r/read-string s))])
