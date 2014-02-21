@@ -11,8 +11,9 @@ pom.xml.asc
 .lein-plugins
 .lein-repl-history
 .nrepl-port
+qgame.sublime-project
+qgame.sublime-workspace
 
-out
-repl
-src/repl-connect.cljs
-connected.html
+/out
+/repl
+/.repl

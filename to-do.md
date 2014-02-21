@@ -1,3 +1,5 @@
+Test oracle gates.
+
 Unify with the old Common Lisp QGAME's argument order for quantum gates.
 
 Functions `execute-string` and `parse-string` that will allow for math expression evaluation.

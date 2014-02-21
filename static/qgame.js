@@ -31354,7 +31354,7 @@ clojure.browser.repl.connect = function connect(repl_server_url) {
     return iframe.style.display = "none";
   });
 };
-goog.provide("repl_connect");
+goog.provide("brepl_connect");
 goog.require("cljs.core");
 goog.require("clojure.browser.repl");
 goog.require("clojure.browser.repl");
