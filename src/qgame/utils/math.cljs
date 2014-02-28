@@ -128,6 +128,20 @@
   [x]
   (.exp math (math.complex. 0 x)))
 
+(defn- radians-to-degrees
+  "Converts a number in radians to a number in degrees."
+  [x]
+  (-> x (divide math.tau) (multiply 360)))
+
+(defn phase
+  "For some complex a+bi, returns the phase."
+  [x]
+  (->> x
+       nested-to-matrix
+       (.arg math)
+       radians-to-degrees
+       nested-to-vec))
+
 ;Matrix operations
 (defn- rand-2D-complex
   "Creates a 2D math.js matrix with elements equal to a random complex number with real part between positive and minus real-bound, and with imaginary part between positive and minus imag-bound."

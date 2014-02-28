@@ -1,7 +1,9 @@
 (ns qgame.utils.amplitudes
   "Various functions for working with amplitudes."
   (:require [qgame.utils.math :as m :refer [abs
-                                            multiply]]
+                                            add
+                                            multiply
+                                            phase]]
             [qgame.utils.general :as g :refer [bit-size
                                                itermap]]))
 
@@ -25,7 +27,7 @@
       (g/itermap bit-flip [seed-index] qubits))))
 
 (defn qubit-state-amplitudes
-  "Gets the amplitudes for a particualr qubit in a particular binary state."
+  "Gets the amplitudes for a particular qubit in a particular binary state."
   [amplitudes qubit binary-state]
   (let [excluded-qubits (remove #{qubit}
                                 (range (get-num-qubits amplitudes)))
@@ -39,3 +41,10 @@
   (let [sub-amplitudes (qubit-state-amplitudes amplitudes qubit binary-state)
         probabilities (map amplitude-to-probability sub-amplitudes)]
     (reduce + probabilities)))
+
+(defn get-phase-of
+  "Given some quantum system, a qubit, and a binary state, returns the current phase of that qubit's state's amplitude."
+  [{amplitudes :amplitudes} qubit binary-state]
+  (let [sub-amplitudes (qubit-state-amplitudes amplitudes qubit binary-state)
+        amplitude (reduce add sub-amplitudes)]
+    (phase amplitude)))
