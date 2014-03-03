@@ -19,7 +19,7 @@
       (recur (inc n)))))
 
 (defmacro defn-qgate
-  "Expects zero or more named args that are used to calculate the gate matrix. It expands to define a function that takes amplitudes, those named args, and some number of qubits, and outputs amplitudes updated by applying the gate matrix as an operator."
+  "Expects zero or more named params that are used to calculate the gate matrix. It expands to define a function that takes amplitudes, those named params, and some number of qubits, and outputs amplitudes updated by applying the gate matrix as an operator."
   [nm param-names matrix]
   `(defn ~nm [amplitudes# ~'& runtime-args#]
      (let [split-point# (- (count runtime-args#) ~(count param-names))
