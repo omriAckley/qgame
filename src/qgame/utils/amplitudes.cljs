@@ -21,7 +21,7 @@
 (defn qubits-to-amplitude-indices
   "Given which qubits should be involved in a computation, determines the appropriate amplitude indices to be affected."
   [qubits tot-num-qubits]
-  (let [excluded-qubits (remove (set qubits)
+  (let [excluded-qubits (remove (reduce conj #{} qubits) ;Qubits cannot directly be cast into a set because of a bug when it is initially an RSeq
                                 (range tot-num-qubits))]
     (for [seed-index (g/itermap bit-flip [0] excluded-qubits)]
       (g/itermap bit-flip [seed-index] qubits))))

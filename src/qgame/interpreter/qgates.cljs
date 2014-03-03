@@ -19,7 +19,7 @@
   "For each set of indices (calculated given the qubits to operate on), applies some operator to the amplitudes at those indices."
   [amplitudes operator qubits]
   (->> (a/get-num-qubits amplitudes)
-       (a/qubits-to-amplitude-indices qubits)
+       (a/qubits-to-amplitude-indices (reverse qubits)) ;This reversal is so that qubit argument order matches the old Common Lisp qgame.
        (reduce operator amplitudes)))
 
 (defn to-operator

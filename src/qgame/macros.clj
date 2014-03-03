@@ -10,13 +10,24 @@
       ~else
       ~then)))
 
+(defn- bit-size
+  "Given some positive integer x, gives the number of bits needed to represent it."
+  [x]
+  (loop [n 1]
+    (if (<= x (bit-shift-left 1 n))
+      n
+      (recur (inc n)))))
+
 (defmacro defn-qgate
   "Expects zero or more named args that are used to calculate the gate matrix. It expands to define a function that takes amplitudes, those named args, and some number of qubits, and outputs amplitudes updated by applying the gate matrix as an operator."
-  [nm args matrix]
-  `(defn ~nm [amplitudes# ~@args ~'& qubits#]
-     (qgame.interpreter.qgates/apply-operator amplitudes#
-                                              (qgame.interpreter.qgates/to-operator ~matrix)
-                                              qubits#)))
+  [nm param-names matrix]
+  `(defn ~nm [amplitudes# ~'& runtime-args#]
+     (let [split-point# (- (count runtime-args#) ~(count param-names))
+           [qubits#
+            ~param-names] (split-at split-point# runtime-args#)]
+       (qgame.interpreter.qgates/apply-operator amplitudes#
+                                                (qgame.interpreter.qgates/to-operator ~matrix)
+                                                qubits#))))
 
 (defmacro get-repl-listen-port
   "Gets the cljsbuild repl listen port (as a string, not a number) at compile time. Defaults to \"9000\"."

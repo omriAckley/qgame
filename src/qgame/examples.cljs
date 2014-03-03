@@ -9,8 +9,8 @@
 #_(execute-program {:num-qubits 2}
                    '((hadamard 0)
                      (hadamard 1)
-                     (u-theta 0.62832 0)
-                     (cnot 0 1)
+                     (u-theta 0 0.62832)
+                     (cnot 1 0)
                      (hadamard 1)))
 ;should output approx
 ;({:amplitudes [0.572 0.572 0.416 -0.416]
@@ -23,8 +23,8 @@
 #_(execute-program {:num-qubits 2}
                    '((hadamard 0)
                      (hadamard 1)
-                     (u-theta 0.6283 0)
-                     (cphase 0.1234 1 0)
+                     (u-theta 0 0.6283)
+                     (cphase 0 1 0.1234)
                      (hadamard 1)))
 ;should output approx
 ;({:amplitudes [0.988 #<0.156 + 0.01i> 0 #<5.948e-4 - 0.01i>],
@@ -36,7 +36,7 @@
 ;Example with oracle
 #_(execute-program {:num-qubits 3
                     :oracle [1 1 1 0]}
-                   '((oracle 2 1 0)))
+                   '((oracle 0 1 2)))
 ;should output approx
 ;({:amplitudes [0 0 0 0 1 0 0 0],
 ;  :prior-probability 1,
