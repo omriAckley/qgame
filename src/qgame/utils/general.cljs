@@ -27,3 +27,17 @@
     (if (<= x (bit-shift-left 1 n))
       n
       (recur (inc n)))))
+
+(defn anywhere? ;Inspiration creds to DaoWen's find-in
+  "Returns the truthy value of pred upon first encountering it in x, going deeper into x if still unfound."
+  [pred x]
+  (or (pred x)
+      (and (coll? x)
+           (some (partial anywhere? pred) x))))
+
+(defn regex-join
+  [& re-or-strs]
+  (->> re-or-strs
+       (map #(if-let [src (.-source %)] src %))
+       (apply str)
+       re-pattern))

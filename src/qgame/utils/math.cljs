@@ -39,6 +39,15 @@
   [mat]
   (w/prewalk to-vec mat))
 
+(defn matrix-safe
+  "Calls a function on math.js-matrix-converted arguments then converts the result back to vectors."
+  ([f x]
+   (-> x nested-to-matrix f nested-to-vec))
+  ([f x y]
+   (let [x* (nested-to-matrix x)
+         y* (nested-to-matrix y)]
+     (nested-to-vec (f x* y*)))))
+
 ;Constants
 (def pi (.-pi math))
 
@@ -52,28 +61,22 @@
 (defn abs
   "Absolute value."
   [x]
-  (->> x
-       nested-to-matrix
-       (.abs math)
-       nested-to-vec))
+  #_(-> x nested-to-matrix abs nested-to-vec)
+  (matrix-safe math.abs x))
 
 (defn round
   "Rounds a number (or collection of numbers) to a certain number of digits."
   ([x]
    (round x 0))
   ([x digits]
-   (-> x
-       nested-to-matrix
-       (math.round digits)
-       nested-to-vec)))
+   (matrix-safe #(math.round % digits) x)))
 
 (defn add
   "Adds the given collections and numbers. Collections must have matching dimensions."
   ([x]
    (add x 0))
   ([x y]
-   (nested-to-vec (.add math (nested-to-matrix x)
-                        (nested-to-matrix y))))
+   (matrix-safe math.add x y))
   ([x y & more]
    (reduce add (add x y) more)))
 
@@ -82,67 +85,57 @@
   ([x]
    (subtract 0 x))
   ([x y]
-   (nested-to-vec (.subtract math (nested-to-matrix x)
-                             (nested-to-matrix y))))
+   (matrix-safe math.subtract x y))
   ([x y & more]
    (reduce subtract (subtract x y) more)))
 
 (defn multiply
   "Multiplies the given collections and numbers. Collections must have correct dimensions for matrix multiplication (i.e. for left collection size m x n, the right collection must be n x m)."
   [x y]
-  (nested-to-vec (.multiply math (nested-to-matrix x)
-                            (nested-to-matrix y))))
+  (matrix-safe math.multiply x y))
 
 (defn divide
   "Divides the given collections and numbers. Collections must have correct dimensions for matrix division (i.e. for left collection size m x n, the right collection must be n x m)."
   [x y]
-  (nested-to-vec (.divide math (nested-to-matrix x)
-                          (nested-to-matrix y))))
+  (matrix-safe math.divide x y))
 
 (defn sqrt
   "Square root."
   [x]
-  (->> x
-       nested-to-matrix
-       (.sqrt math)
-       nested-to-vec))
+  (matrix-safe math.sqrt x))
 
 (defn cos
   "Cosine."
   [x]
-  (->> x
-       nested-to-matrix
-       (.cos math)
-       nested-to-vec))
+  #_(-> x nested-to-matrix math.cos nested-to-vec)
+  (matrix-safe math.cos x))
 
 (defn sin
   "Sine."
   [x]
-  (->> x
-       nested-to-matrix
-       (.sin math)
-       nested-to-vec))
+  (matrix-safe math.sin x))
 
 (defn exp-xi
-  "For some x, calculates e^(xi)."
+  "For some real x, calculates e^(xi)."
   [x]
-  (.exp math (math.complex. 0 x)))
+  (math.exp (math.complex. 0 x)))
 
 (defn- radians-to-degrees
   "Converts a number in radians to a number in degrees."
   [x]
-  (-> x (divide math.tau) (multiply 360)))
+  (-> x (divide (.-tau math)) (multiply 360)))
 
-(defn phase
+(defn to-phase
   "For some complex a+bi, returns the phase."
   [x]
-  (->> x
-       nested-to-matrix
-       (.arg math)
-       radians-to-degrees
-       nested-to-vec))
+  (matrix-safe (comp radians-to-degrees math.arg) x))
 
 ;Matrix operations
+(defn det
+  "Returns the determinant of some matrix"
+  [mat]
+  (matrix-safe math.det mat))
+
 (defn- rand-2D-complex
   "Creates a 2D math.js matrix with elements equal to a random complex number with real part between positive and minus real-bound, and with imaginary part between positive and minus imag-bound."
   ([m n bound]
@@ -161,9 +154,9 @@
 (defn- mat=?
   "Internal function for testing whether two matrices are equal (i.e. dimensions are the same, and corresponding elements are equal)."
   ([mat01 mat02]
-   (if (some false? (.equal math (.size mat01) (.size mat02)))
+   (if (some false? (math.equal (.size mat01) (.size mat02)))
      false
-     (->> (.equal math mat01 mat02)
+     (->> (math.equal mat01 mat02)
           nested-to-vec
           flatten
           (every? true?))))
@@ -180,26 +173,19 @@
 (defn complex-conjugate
   "Returns the complex conjugate of some number. The complex conjugate of a+bi is a-bi."
   [x]
-  (->> x
-       nested-to-matrix
-       (.conj math)
-       nested-to-vec))
+  (matrix-safe math.conj x))
 
 (defn conjugate-transpose
   "The result of tranposing a 2D matrix whose elements have been complex conjugated."
-  [x]
-  (->> x
-       complex-conjugate
-       nested-to-matrix
-       (.transpose math)
-       nested-to-vec))
+  [mat]
+  (complex-conjugate (matrix-safe math.transpose mat)))
 
 (defn unitary?
   "Predicate test for whether a given collection, when converted to a matrix, is unitary. A matrix M is unitary if M multiplied by its conjugate transpose and its conjugate transpose multiplied by it are both equal to the identity matrix."
   [coll]
   (let [mat (nested-to-matrix coll)
         [m n] (.size mat)
-        id-mat (.eye math m n)
+        id-mat (math.eye m n)
         conj-trans (conjugate-transpose mat)]
     (mat=? id-mat
            (nested-to-matrix (round (multiply mat conj-trans) 5))
@@ -213,4 +199,4 @@
 (defn eval-math-string
   "Evaluates a string as a mathematical expressions. For example (eval-math-string \"e^(pi*i)\") should return -1."
   [s]
-  (round (.eval math s) 5))
+  (round (math.eval s) 9))

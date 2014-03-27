@@ -1,17 +1,18 @@
-(ns qgame.interpreter.qgates
+(ns qgame.simulator.qgates
   "Functions for defining and working with quantum gates. In qgame semantics, a quantum gate is a function that takes an amplitudes vector, zero or more args (which can paramaterize the gate matrix), and one or more qubits. It then returns a new vector of amplitidues with the (possibly parameterized) gate matrix multiplied at the sub-indices corresponding to the given qubits."
-  (:require-macros [qgame.macros :as macros :refer [defn-qgate]])
+  (:require-macros [qgame.macros :as macros :refer [def-qgate]])
   (:require [qgame.utils.math :as m :refer [square?
                                             unitary?
                                             multiply
                                             divide
-                                            sqrt
+                                            sqrt2
                                             cos
                                             sin
                                             subtract
                                             exp-xi
                                             add]]
-            [qgame.utils.general :as g :refer [update-sub]]
+            [qgame.utils.general :as g :refer [update-sub
+                                               bit-size]]
             [qgame.utils.amplitudes :as a :refer [get-num-qubits
                                                   qubits-to-amplitude-indices]]))
 
@@ -52,48 +53,63 @@
                     (to-operator matrix)
                     qubits)))
 
-(macros/defn-qgate qnot []
+(defn to-oracle
+  [& tt-right-column]
+  {:fn-meta {:type :Oracle
+             :name "oracle"}
+   :caller (-> tt-right-column
+               binary-gate-matrix
+               anonymous-qgate)
+   :num-qubits (inc (g/bit-size (count tt-right-column)))
+   :tt-right-column tt-right-column})
+
+(def with_oracle
+  {:fn-meta {:type :ParseTime
+             :name "with_oracle"}
+   :caller to-oracle})
+
+(macros/def-qgate qnot []
                    [[0 1]
                     [1 0]])
 
-(macros/defn-qgate cnot []
+(macros/def-qgate cnot []
                    [[1 0 0 0]
                     [0 1 0 0]
                     [0 0 0 1]
                     [0 0 1 0]])
 
-(macros/defn-qgate srn []
+(macros/def-qgate srn []
                    (m/multiply
-                     (m/divide (m/sqrt 2) 2)
+                     (m/divide m/sqrt2 2)
                      [[1 -1]
                       [1  1]]))
 
-(macros/defn-qgate nand []
+(macros/def-qgate nand []
                    (binary-gate-matrix [1 1 1 0]))
 
-(macros/defn-qgate hadamard []
+(macros/def-qgate hadamard []
                    (m/multiply
                      (m/divide (m/sqrt 2) 2)
                      [[1  1]
                       [1 -1]]))
 
-(macros/defn-qgate u-theta [theta]
+(macros/def-qgate utheta [theta]
                    [[            (m/cos theta)  (m/sin theta)]
                     [(m/subtract (m/sin theta)) (m/cos theta)]])
 
-(macros/defn-qgate cphase [alpha]
+(macros/def-qgate cphase [alpha]
                    [[1 0 0  0              ]
                     [0 1 0  0              ]
                     [0 0 1  0              ]
                     [0 0 0  (m/exp-xi alpha)]])
 
-(macros/defn-qgate u2 [phi theta psi alpha]
+(macros/def-qgate u2 [phi theta psi alpha]
                    [[(m/multiply (m/cos theta)              (m/exp-xi (m/add (m/subtract phi) (m/subtract psi) alpha)))
                      (m/multiply (m/sin (m/subtract theta)) (m/exp-xi (m/add (m/subtract phi) psi              alpha)))]
                     [(m/multiply (m/sin theta)              (m/exp-xi (m/add phi              (m/subtract psi) alpha)))
                      (m/multiply (m/cos theta)              (m/exp-xi (m/add phi              psi              alpha)))]])
 
-(macros/defn-qgate swap []
+(macros/def-qgate swap []
                    [[1 0 0 0]
                     [0 0 1 0]
                     [0 1 0 0]
