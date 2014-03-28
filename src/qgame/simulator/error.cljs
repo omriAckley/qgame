@@ -99,6 +99,14 @@
   [title instruction]
   (str "Function type " (get-in instruction [:fn-meta :type]) " has no execution specs."))
 
+(defmethod get-message "Math evaluation error"
+  [title token]
+  (str "Text " (:text token) " is recognized as math, but will not evaluate as math."))
+
+(defmethod get-message "Math evaluation on name target error"
+  [title rule]
+  (str "Text " (:target rule) " is recognized as math, but will not evaluate as math."))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Warning messages
 

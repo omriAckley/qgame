@@ -67,35 +67,42 @@
   (reduce-kv replace-word s name-map))
 
 (defn safe-eval-math
+  "Evaluates the string as a math expression, returning nil on failure."
   [s]
-  (m/eval-math-string s))
+  (try (m/eval-math-string s)
+    (catch :default _ nil)))
 
 (defn replace-math
   "Replaces any matched math with its evaluate."
   [s]
   (s/replace s math-string-pattern safe-eval-math))
 
+(defn apply-rules
+  [name-map s]
+  (let [post-name-replace (replace-named name-map s)
+        math-string? (match-only math-string-pattern post-name-replace)]
+    (if math-string?
+      (safe-eval-math post-name-replace)
+      post-name-replace)))
+
 (defn parser-execute-token
   "Executes parsing rules on the given token."
   [name-map token]
-  (let [token* (->> token
-                    :text
-                    (replace-named name-map)
-                    replace-math
-                    (assoc token :post-rules))]
-    [name-map token*]))
+  [name-map
+   (if-let [post-rules (apply-rules name-map (:text token))]
+     (assoc token :post-rules post-rules)
+     (error! "Math evaluation error" token))])
 
 (defn parser-execute-rule
   "Executes parsing rules on the given rule."
   [name-map rule]
   (if (:forget rule)
     [(dissoc name-map (:name-target rule)) rule]
-    (let [rule* (->> (:target rule)
-                     (replace-named name-map)
-                     replace-math
-                     (assoc rule :target))
-          entry ((juxt :replace-name :target) rule*)]
-      [(conj name-map entry) rule*])))
+    (if-let [target-post-rules (apply-rules name-map (:target rule))]
+      (let [rule* (assoc rule :target target-post-rules)
+            entry ((juxt :replace-name :target) rule*)]
+        [(conj name-map entry) rule*])
+      [name-map (error! "Math evaluation on name target error" rule)])))
 
 (defn execute-parser-rules
   "Executes all parser rules on the given bites."
