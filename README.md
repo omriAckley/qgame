@@ -22,24 +22,22 @@ The central function is `interpret`, which will take a string of instructions, w
 	user> (qgame/interpret "qnot A")
 	> ({:amplitudes [0 1], :prior-probability 1, :oracle-count 0, :measurement-history ()})
 
-*DOESN'T WORK RIGHT NOW*
 Now using a simple customized step-by-step renderer:
 
-	user> (qgame/execute-program {:num-qubits 1
-	                              :renderer (fn [branches instruction]
-	                                          (println)
-	                                          (pprintln (first branches))
-	                                          (println (apply str "Calling " (first instruction) " on qubit " (rest instruction))))}
-	                             '((qnot 0)
-	                               (qnot 0)))
+	user> (qgame/interpret {:in-exec (fn [branches instruction]
+							     		(println "\n")
+							     		(println (:amplitudes (first (first branches))) "\n")
+							     		(println (apply str "Calling " (-> instruction :fn-meta :name)
+							     						" on " (->> instruction :qubits (map :text))) "\n"))}
+	                       "qnot 0
+	                       qnot 0")
 	
-	{:amplitudes [1 0], :prior-probability 1, :oracle-count 0, :measurement-history ()}
-     Calling qnot on qubit 0
+	[1 0]
+    Calling qnot on 0
 
-	{:amplitudes [0 1], :prior-probability 1, :oracle-count 0, :measurement-history ()}
-	Calling qnot on qubit 0
+	[0 1]
+	Calling qnot on 0
 	> ({:amplitudes [1 0], :prior-probability 1, :oracle-count 0, :measurement-history ()})
-*END OF STUFF THAT DOESN'T WORK*
 
 ## Valid instructions
 

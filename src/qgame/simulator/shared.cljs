@@ -14,9 +14,9 @@
                                                   swap
                                                   with_oracle]]))
 
-(def ^:dynamic *stage* "Interpretation")
+(def stage (atom "Interpretation"))
 
-(declare ^:dynamic *current-qgame-fn*)
+(def current-qgame-fn (atom nil))
 
 (def canonical-functions
   (atom {"qnot" q/qnot
@@ -33,3 +33,5 @@
          "else" f/else
          "end" f/end
          "with_oracle" q/with_oracle}))
+
+(def on-error (atom nil))

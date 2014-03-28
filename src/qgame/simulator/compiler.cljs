@@ -1,7 +1,7 @@
 (ns qgame.simulator.compiler
   "Compiles parsed programs into executable programs."
   (:require [clojure.walk :as w :refer [postwalk]])
-  (:use [qgame.simulator.shared :only [*stage*
+  (:use [qgame.simulator.shared :only [stage
                                        canonical-functions]])
   (:use-macros [qgame.macros :only [warn!]]))
 
@@ -55,14 +55,14 @@
 (defn compile
   "Given a parsed program with 'measure...end...end' syntax, converts it to 'measure...else...end' syntax. It also determines certain execution parameters."
   [program]
-  (binding [*stage* "Compilation"]
-    (loop [open-branches ()
-           largest-qubit-index 0
-           compiled []
-           [expression & remaining :as uncompiled] program]
-      (if (empty? uncompiled)
-        (wrap-up open-branches compiled largest-qubit-index)
-        (recur (revise open-branches expression)
-               (->> expression :qubits (map (comp inc :value)) (apply max largest-qubit-index))
-               (conj compiled (compile-expression expression open-branches))
-               remaining)))))
+  (reset! stage "Compilation")
+  (loop [open-branches ()
+         largest-qubit-index 0
+         compiled []
+         [expression & remaining :as uncompiled] program]
+    (if (empty? uncompiled)
+      (wrap-up open-branches compiled largest-qubit-index)
+      (recur (revise open-branches expression)
+             (->> expression :qubits (map (comp inc :value)) (apply max largest-qubit-index))
+             (conj compiled (compile-expression expression open-branches))
+             remaining))))

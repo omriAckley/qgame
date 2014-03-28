@@ -3,8 +3,9 @@
                                                   param-pattern
                                                   word-pattern
                                                   bit-pattern]])
-  (:use [qgame.simulator.shared :only [*stage*
-                                       *current-qgame-fn*]]))
+  (:use [qgame.simulator.shared :only [stage
+                                       current-qgame-fn
+                                       on-error]]))
 
 (defmulti get-message
   (fn [title context] title))
@@ -12,8 +13,8 @@
 (defn to-error
   [title context]
   (assoc context :error
-    {:stage *stage*
-     :current-qgame-fn *current-qgame-fn*
+    {:stage @stage
+     :current-qgame-fn @current-qgame-fn
      :title title
      :message (get-message title context)}))
 
@@ -22,16 +23,20 @@
    (log-and-return-error! title {}))
   ([title context]
    (let [{{:keys [stage current-qgame-fn title message]} :error :as context+}
-         (to-error title context)]
-     (js/console.log "qgame error during " stage ", in qgame function " current-qgame-fn ": " title "\n" message)
-     (js/console.log "More context..." (clj->js context+))
+         (to-error title context)
+         report
+         {:message (str "qgame error during " stage ", in qgame function " current-qgame-fn ": " title "\n" message)
+          :more (clj->js context+)}]
+     (js/console.log (:message report) "\n" (:more report))
+     (when-let [on-err @on-error]
+       (on-err context+))
      context+)))
 
 (defn to-warning
   [title context]
   (assoc context :warning
-    {:stage *stage*
-     :current-qgame-fn *current-qgame-fn*
+    {:stage @stage
+     :current-qgame-fn @current-qgame-fn
      :title title
      :message (get-message title context)}))
 
@@ -40,9 +45,13 @@
    (log-and-return-warning! title {}))
   ([title context]
    (let [{{:keys [stage current-qgame-fn title message]} :warning :as context+}
-         (to-warning title context)]
-     (js/console.log "qgame error warning " stage ", in qgame function " current-qgame-fn ": " title "\n" message)
-     (js/console.log "More context..." (clj->js context+))
+         (to-warning title context)
+         report
+         {:message (str "qgame warning during " stage ", in qgame function " current-qgame-fn ": " title "\n" message)
+          :more (clj->js context+)}]
+     (js/console.log (report :message) "\n" (report :more))
+     (when-let [on-err @on-error]
+       (on-err context+))
      context+)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

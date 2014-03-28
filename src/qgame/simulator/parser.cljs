@@ -1,11 +1,11 @@
 (ns qgame.simulator.parser
   "Parses already-read strings into compilable objects."
   (:require [qgame.utils.math :as m :refer [eval-math-string]]
-            [qgame.utils.general :as g :refer [anywhere?
-                                               regex-join]]
+            [qgame.utils.general :as g :refer [regex-join
+                                               errant?]]
             [clojure.string :as s :refer [split
                                           replace]])
-  (:use [qgame.simulator.shared :only [*stage*
+  (:use [qgame.simulator.shared :only [stage
                                        canonical-functions]])
   (:require-macros [qgame.macros :as mac :refer [unless
                                                  if-let*]])
@@ -203,24 +203,18 @@
              [new-program remaining])]
        (recur new-program* remaining*)))))
 
-(defn errant
-  "Predicate for testing whether an expression has any errors, even nested errors."
-  [expression]
-  (g/anywhere? (every-pred map? :error)
-               expression))
-
 (defn wrap-up
   "Wraps up the parsing stage."
   [program]
-  (remove errant program))
+  (remove g/errant? program))
 
 (defn parse
   "Converts an already-read program into a compilable list of expressions."
   [program]
-  (binding [*stage* "Parsing"]
-    (->> program
-         (reduce execute-parser-rules
-                 {:name-map {} :new-bites []})
-         :new-bites
-         parse-expressions
-         wrap-up)))
+  (reset! stage "Parsing")
+  (->> program
+       (reduce execute-parser-rules
+               {:name-map {} :new-bites []})
+       :new-bites
+       parse-expressions
+       wrap-up))

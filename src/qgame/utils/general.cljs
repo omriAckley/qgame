@@ -41,3 +41,9 @@
        (map #(if-let [src (.-source %)] src %))
        (apply str)
        re-pattern))
+
+(defn errant?
+  "Predicate for testing whether an expression has any errors, even nested errors."
+  [expression]
+  (anywhere? (every-pred map? :error)
+             expression))

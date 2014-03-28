@@ -5,7 +5,7 @@
                                           replace-first
                                           split]]
             [qgame.utils.general :as g :refer [regex-join]])
-  (:use [qgame.simulator.shared :only [*stage*]]))
+  (:use [qgame.simulator.shared :only [stage]]))
 
 (defn split-into-lines
   "Splits and numbers by lines, omitting blank lines."
@@ -48,7 +48,7 @@
 (defn read
   "Converts a raw string into parse-able bites."
   [program]
-  (binding [*stage* "Reading"]
-    (->> program
-         split-into-lines
-         (mapcat split-into-bites))))
+  (reset! stage "Reading")
+  (->> program
+       split-into-lines
+       (mapcat split-into-bites)))

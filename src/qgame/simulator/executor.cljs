@@ -4,7 +4,7 @@
             [qgame.utils.amplitudes :as a :refer [probability-of
                                                   qubits-to-amplitude-indices
                                                   get-num-qubits]])
-  (:use [qgame.simulator.shared :only [*stage*
+  (:use [qgame.simulator.shared :only [stage
                                        canonical-functions]])
   (:use-macros [qgame.macros :only [error!]]))
 
@@ -62,9 +62,9 @@
 
 (defn execute
   [{:keys [program num-qubits renderer]}]
-  (binding [*stage* "Execution"]
-    (let [init-qsystem (new-quantum-system num-qubits)
-          final-branches (reduce (partial execute-instruction renderer)
-                                 (-> init-qsystem list list)
-                                 program)]
-      (apply concat final-branches))))
+  (reset! stage "Execution")
+  (let [init-qsystem (new-quantum-system num-qubits)
+        final-branches (reduce (partial execute-instruction renderer)
+                               (-> init-qsystem list list)
+                               program)]
+    (apply concat final-branches)))

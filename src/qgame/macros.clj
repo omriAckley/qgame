@@ -51,11 +51,11 @@
 (defmacro error!
   "Expands to an a log-and-return-error! call with the added dynamic context of the current calling function, or rather the function in which this macro expands."
   [& body]
-  `(binding [qgame.simulator.shared/*current-fn* ~'js/arguments.callee.name]
+  `(do (reset! qgame.simulator.shared/current-qgame-fn ~'js/arguments.callee.name)
      (qgame.simulator.error/log-and-return-error! ~@body)))
 
 (defmacro warn!
   "Expands to an a log-and-return-warning! call with the added dynamic context of the current calling function, or rather the function in which this macro expands."
   [& body]
-  `(binding [qgame.simulator.shared/*current-fn* ~'js/arguments.callee.name]
+  `(do (reset! qgame.simulator.shared/current-qgame-fn ~'js/arguments.callee.name)
      (qgame.simulator.error/log-and-return-warning! ~@body)))
