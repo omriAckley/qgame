@@ -29413,202 +29413,6 @@ qgame.utils.amplitudes.tangle_of = function tangle_of(p__4874, qubit_a, qubit_b)
   var rho_a = new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [a1 + a2, b1 + b2], null), new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [c1 + c2, d1 + d2], null)], null);
   return 4 * qgame.utils.math.det.call(null, rho_a);
 };
-var seq__4888_4908 = cljs.core.seq.call(null, new cljs.core.PersistentVector(null, 11, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "description", "description", 3584325486), "|UU\x3e+|DD\x3e", new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714), new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [0.70711, 0, 0, 0.70711], null)], null), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, 
-"description", "description", 3584325486), "|UU\x3e+|UD\x3e+|DU\x3e+|DD\x3e", new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714), new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [0.5, 0.5, 0.5, 0.5], null)], null), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "description", "description", 3584325486), "|UD\x3e+|DU\x3e", new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714), new cljs.core.PersistentVector(null, 
-4, 5, cljs.core.PersistentVector.EMPTY_NODE, [0, 0.70711, 0.70711, 0], null)], null), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "description", "description", 3584325486), "||UU\x3e+|DD\x3e\x3e+||UU\x3e+|UD\x3e+|DU\x3e+|DD\x3e\x3e", new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714), new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [0.61237, 0.35355, 0.35355, 0.61237], null)], null), new cljs.core.PersistentArrayMap(null, 
-2, [new cljs.core.Keyword(null, "description", "description", 3584325486), "|UUU\x3e+|UUD\x3e+|DDU\x3e+|UUD\x3e", new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714), new cljs.core.PersistentVector(null, 8, 5, cljs.core.PersistentVector.EMPTY_NODE, [0.5, 0.5, 0, 0, 0, 0, 0.5, 0.5], null)], null), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "description", "description", 3584325486), "|UUU\x3e+|DDD\x3e", new cljs.core.Keyword(null, "amplitudes", "amplitudes", 
-1792075714), new cljs.core.PersistentVector(null, 8, 5, cljs.core.PersistentVector.EMPTY_NODE, [0.70711, 0, 0, 0, 0, 0, 0, 0.70711], null)], null), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "description", "description", 3584325486), "||UUU\x3e+|UUD\x3e+|DDU\x3e+|DDD\x3e\x3e+||UUU\x3e+|UUD\x3e+|UDU\x3e+|UDD\x3e+|DUU\x3e+|DUD\x3e+|DDU\x3e+|DDD\x3e\x3e", new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714), new cljs.core.PersistentVector(null, 8, 5, cljs.core.PersistentVector.EMPTY_NODE, 
-[0.43301, 0.43301, 0.25, 0.25, 0.25, 0.25, 0.43301, 0.43301], null)], null), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "description", "description", 3584325486), "|UUUU\x3e+|UUUD\x3e+|UUDU\x3e+|UUDD\x3e+|DDUU\x3e+|DDUD\x3e+|DDDU\x3e+|DDDD\x3e", new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714), new cljs.core.PersistentVector(null, 16, 5, cljs.core.PersistentVector.EMPTY_NODE, [0.35355, 0.35355, 0.35355, 0.35355, 0, 0, 0, 0, 0, 0, 0, 0, 0.35355, 0.35355, 
-0.35355, 0.35355], null)], null), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "description", "description", 3584325486), "|UUUU\x3e+|DDDD\x3e", new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714), new cljs.core.PersistentVector(null, 16, 5, cljs.core.PersistentVector.EMPTY_NODE, [0.70711, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.70711], null)], null), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "description", "description", 
-3584325486), "|UUUU\x3e+|UUDD\x3e+|DDUU\x3e+|DDDD\x3e", new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714), new cljs.core.PersistentVector(null, 16, 5, cljs.core.PersistentVector.EMPTY_NODE, [0.5, 0, 0, 0.5, 0, 0, 0, 0, 0, 0, 0, 0, 0.5, 0, 0, 0.5], null)], null), new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "description", "description", 3584325486), "||UUUU\x3e+|UUUD\x3e+|UUDU\x3e+|UUDD\x3e+|DDUU\x3e+|DDUD\x3e+|DDDU\x3e+|DDDD\x3e\x3e+||UUUU\x3e+|UDUU\x3e+|DUUU\x3e+|DDUU\x3e+|UUDD\x3e+|UDDD\x3e+|DUDD\x3e+|DDDD\x3e\x3e", 
-new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714), new cljs.core.PersistentVector(null, 16, 5, cljs.core.PersistentVector.EMPTY_NODE, [0.35355, 0.25, 0.25, 0.35355, 0.25, 0, 0, 0.25, 0.25, 0, 0, 0.25, 0.35355, 0.25, 0.25, 0.35355], null)], null)], null));
-var chunk__4890_4909 = null;
-var count__4891_4910 = 0;
-var i__4892_4911 = 0;
-while (true) {
-  if (i__4892_4911 < count__4891_4910) {
-    var case_4912 = cljs.core._nth.call(null, chunk__4890_4909, i__4892_4911);
-    var map__4894_4913 = case_4912;
-    var map__4894_4914__$1 = cljs.core.seq_QMARK_.call(null, map__4894_4913) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4894_4913) : map__4894_4913;
-    var amplitudes_4915 = cljs.core.get.call(null, map__4894_4914__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
-    var description_4916 = cljs.core.get.call(null, map__4894_4914__$1, new cljs.core.Keyword(null, "description", "description", 3584325486));
-    var n_4917 = qgame.utils.general.bit_size.call(null, cljs.core.count.call(null, amplitudes_4915));
-    cljs.core.println.call(null, "\nCase : ", description_4916);
-    var seq__4895_4918 = cljs.core.seq.call(null, qgame.utils.amplitudes.get_pairs.call(null, cljs.core.reverse.call(null, cljs.core.range.call(null, n_4917))));
-    var chunk__4897_4919 = null;
-    var count__4898_4920 = 0;
-    var i__4899_4921 = 0;
-    while (true) {
-      if (i__4899_4921 < count__4898_4920) {
-        var pair_4922 = cljs.core._nth.call(null, chunk__4897_4919, i__4899_4921);
-        var letters_4923 = cljs.core.mapv.call(null, function(seq__4895_4918, chunk__4897_4919, count__4898_4920, i__4899_4921, seq__4888_4908, chunk__4890_4909, count__4891_4910, i__4892_4911, pair_4922, map__4894_4913, map__4894_4914__$1, amplitudes_4915, description_4916, n_4917, case_4912) {
-          return function(p1__4887_SHARP_) {
-            return qgame.utils.amplitudes.to_letter.call(null, n_4917 - 1 - p1__4887_SHARP_);
-          };
-        }(seq__4895_4918, chunk__4897_4919, count__4898_4920, i__4899_4921, seq__4888_4908, chunk__4890_4909, count__4891_4910, i__4892_4911, pair_4922, map__4894_4913, map__4894_4914__$1, amplitudes_4915, description_4916, n_4917, case_4912), pair_4922);
-        var tangle_4924 = cljs.core.apply.call(null, qgame.utils.amplitudes.tangle_of, case_4912, pair_4922);
-        cljs.core.println.call(null, "\n", letters_4923, ":", tangle_4924);
-        var G__4925 = seq__4895_4918;
-        var G__4926 = chunk__4897_4919;
-        var G__4927 = count__4898_4920;
-        var G__4928 = i__4899_4921 + 1;
-        seq__4895_4918 = G__4925;
-        chunk__4897_4919 = G__4926;
-        count__4898_4920 = G__4927;
-        i__4899_4921 = G__4928;
-        continue;
-      } else {
-        var temp__4092__auto___4929 = cljs.core.seq.call(null, seq__4895_4918);
-        if (temp__4092__auto___4929) {
-          var seq__4895_4930__$1 = temp__4092__auto___4929;
-          if (cljs.core.chunked_seq_QMARK_.call(null, seq__4895_4930__$1)) {
-            var c__4151__auto___4931 = cljs.core.chunk_first.call(null, seq__4895_4930__$1);
-            var G__4932 = cljs.core.chunk_rest.call(null, seq__4895_4930__$1);
-            var G__4933 = c__4151__auto___4931;
-            var G__4934 = cljs.core.count.call(null, c__4151__auto___4931);
-            var G__4935 = 0;
-            seq__4895_4918 = G__4932;
-            chunk__4897_4919 = G__4933;
-            count__4898_4920 = G__4934;
-            i__4899_4921 = G__4935;
-            continue;
-          } else {
-            var pair_4936 = cljs.core.first.call(null, seq__4895_4930__$1);
-            var letters_4937 = cljs.core.mapv.call(null, function(seq__4895_4918, chunk__4897_4919, count__4898_4920, i__4899_4921, seq__4888_4908, chunk__4890_4909, count__4891_4910, i__4892_4911, pair_4936, seq__4895_4930__$1, temp__4092__auto___4929, map__4894_4913, map__4894_4914__$1, amplitudes_4915, description_4916, n_4917, case_4912) {
-              return function(p1__4887_SHARP_) {
-                return qgame.utils.amplitudes.to_letter.call(null, n_4917 - 1 - p1__4887_SHARP_);
-              };
-            }(seq__4895_4918, chunk__4897_4919, count__4898_4920, i__4899_4921, seq__4888_4908, chunk__4890_4909, count__4891_4910, i__4892_4911, pair_4936, seq__4895_4930__$1, temp__4092__auto___4929, map__4894_4913, map__4894_4914__$1, amplitudes_4915, description_4916, n_4917, case_4912), pair_4936);
-            var tangle_4938 = cljs.core.apply.call(null, qgame.utils.amplitudes.tangle_of, case_4912, pair_4936);
-            cljs.core.println.call(null, "\n", letters_4937, ":", tangle_4938);
-            var G__4939 = cljs.core.next.call(null, seq__4895_4930__$1);
-            var G__4940 = null;
-            var G__4941 = 0;
-            var G__4942 = 0;
-            seq__4895_4918 = G__4939;
-            chunk__4897_4919 = G__4940;
-            count__4898_4920 = G__4941;
-            i__4899_4921 = G__4942;
-            continue;
-          }
-        } else {
-        }
-      }
-      break;
-    }
-    cljs.core.println.call(null, "\n");
-    var G__4943 = seq__4888_4908;
-    var G__4944 = chunk__4890_4909;
-    var G__4945 = count__4891_4910;
-    var G__4946 = i__4892_4911 + 1;
-    seq__4888_4908 = G__4943;
-    chunk__4890_4909 = G__4944;
-    count__4891_4910 = G__4945;
-    i__4892_4911 = G__4946;
-    continue;
-  } else {
-    var temp__4092__auto___4947 = cljs.core.seq.call(null, seq__4888_4908);
-    if (temp__4092__auto___4947) {
-      var seq__4888_4948__$1 = temp__4092__auto___4947;
-      if (cljs.core.chunked_seq_QMARK_.call(null, seq__4888_4948__$1)) {
-        var c__4151__auto___4949 = cljs.core.chunk_first.call(null, seq__4888_4948__$1);
-        var G__4950 = cljs.core.chunk_rest.call(null, seq__4888_4948__$1);
-        var G__4951 = c__4151__auto___4949;
-        var G__4952 = cljs.core.count.call(null, c__4151__auto___4949);
-        var G__4953 = 0;
-        seq__4888_4908 = G__4950;
-        chunk__4890_4909 = G__4951;
-        count__4891_4910 = G__4952;
-        i__4892_4911 = G__4953;
-        continue;
-      } else {
-        var case_4954 = cljs.core.first.call(null, seq__4888_4948__$1);
-        var map__4901_4955 = case_4954;
-        var map__4901_4956__$1 = cljs.core.seq_QMARK_.call(null, map__4901_4955) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4901_4955) : map__4901_4955;
-        var amplitudes_4957 = cljs.core.get.call(null, map__4901_4956__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
-        var description_4958 = cljs.core.get.call(null, map__4901_4956__$1, new cljs.core.Keyword(null, "description", "description", 3584325486));
-        var n_4959 = qgame.utils.general.bit_size.call(null, cljs.core.count.call(null, amplitudes_4957));
-        cljs.core.println.call(null, "\nCase : ", description_4958);
-        var seq__4902_4960 = cljs.core.seq.call(null, qgame.utils.amplitudes.get_pairs.call(null, cljs.core.reverse.call(null, cljs.core.range.call(null, n_4959))));
-        var chunk__4904_4961 = null;
-        var count__4905_4962 = 0;
-        var i__4906_4963 = 0;
-        while (true) {
-          if (i__4906_4963 < count__4905_4962) {
-            var pair_4964 = cljs.core._nth.call(null, chunk__4904_4961, i__4906_4963);
-            var letters_4965 = cljs.core.mapv.call(null, function(seq__4902_4960, chunk__4904_4961, count__4905_4962, i__4906_4963, seq__4888_4908, chunk__4890_4909, count__4891_4910, i__4892_4911, pair_4964, map__4901_4955, map__4901_4956__$1, amplitudes_4957, description_4958, n_4959, case_4954, seq__4888_4948__$1, temp__4092__auto___4947) {
-              return function(p1__4887_SHARP_) {
-                return qgame.utils.amplitudes.to_letter.call(null, n_4959 - 1 - p1__4887_SHARP_);
-              };
-            }(seq__4902_4960, chunk__4904_4961, count__4905_4962, i__4906_4963, seq__4888_4908, chunk__4890_4909, count__4891_4910, i__4892_4911, pair_4964, map__4901_4955, map__4901_4956__$1, amplitudes_4957, description_4958, n_4959, case_4954, seq__4888_4948__$1, temp__4092__auto___4947), pair_4964);
-            var tangle_4966 = cljs.core.apply.call(null, qgame.utils.amplitudes.tangle_of, case_4954, pair_4964);
-            cljs.core.println.call(null, "\n", letters_4965, ":", tangle_4966);
-            var G__4967 = seq__4902_4960;
-            var G__4968 = chunk__4904_4961;
-            var G__4969 = count__4905_4962;
-            var G__4970 = i__4906_4963 + 1;
-            seq__4902_4960 = G__4967;
-            chunk__4904_4961 = G__4968;
-            count__4905_4962 = G__4969;
-            i__4906_4963 = G__4970;
-            continue;
-          } else {
-            var temp__4092__auto___4971__$1 = cljs.core.seq.call(null, seq__4902_4960);
-            if (temp__4092__auto___4971__$1) {
-              var seq__4902_4972__$1 = temp__4092__auto___4971__$1;
-              if (cljs.core.chunked_seq_QMARK_.call(null, seq__4902_4972__$1)) {
-                var c__4151__auto___4973 = cljs.core.chunk_first.call(null, seq__4902_4972__$1);
-                var G__4974 = cljs.core.chunk_rest.call(null, seq__4902_4972__$1);
-                var G__4975 = c__4151__auto___4973;
-                var G__4976 = cljs.core.count.call(null, c__4151__auto___4973);
-                var G__4977 = 0;
-                seq__4902_4960 = G__4974;
-                chunk__4904_4961 = G__4975;
-                count__4905_4962 = G__4976;
-                i__4906_4963 = G__4977;
-                continue;
-              } else {
-                var pair_4978 = cljs.core.first.call(null, seq__4902_4972__$1);
-                var letters_4979 = cljs.core.mapv.call(null, function(seq__4902_4960, chunk__4904_4961, count__4905_4962, i__4906_4963, seq__4888_4908, chunk__4890_4909, count__4891_4910, i__4892_4911, pair_4978, seq__4902_4972__$1, temp__4092__auto___4971__$1, map__4901_4955, map__4901_4956__$1, amplitudes_4957, description_4958, n_4959, case_4954, seq__4888_4948__$1, temp__4092__auto___4947) {
-                  return function(p1__4887_SHARP_) {
-                    return qgame.utils.amplitudes.to_letter.call(null, n_4959 - 1 - p1__4887_SHARP_);
-                  };
-                }(seq__4902_4960, chunk__4904_4961, count__4905_4962, i__4906_4963, seq__4888_4908, chunk__4890_4909, count__4891_4910, i__4892_4911, pair_4978, seq__4902_4972__$1, temp__4092__auto___4971__$1, map__4901_4955, map__4901_4956__$1, amplitudes_4957, description_4958, n_4959, case_4954, seq__4888_4948__$1, temp__4092__auto___4947), pair_4978);
-                var tangle_4980 = cljs.core.apply.call(null, qgame.utils.amplitudes.tangle_of, case_4954, pair_4978);
-                cljs.core.println.call(null, "\n", letters_4979, ":", tangle_4980);
-                var G__4981 = cljs.core.next.call(null, seq__4902_4972__$1);
-                var G__4982 = null;
-                var G__4983 = 0;
-                var G__4984 = 0;
-                seq__4902_4960 = G__4981;
-                chunk__4904_4961 = G__4982;
-                count__4905_4962 = G__4983;
-                i__4906_4963 = G__4984;
-                continue;
-              }
-            } else {
-            }
-          }
-          break;
-        }
-        cljs.core.println.call(null, "\n");
-        var G__4985 = cljs.core.next.call(null, seq__4888_4948__$1);
-        var G__4986 = null;
-        var G__4987 = 0;
-        var G__4988 = 0;
-        seq__4888_4908 = G__4985;
-        chunk__4890_4909 = G__4986;
-        count__4891_4910 = G__4987;
-        i__4892_4911 = G__4988;
-        continue;
-      }
-    } else {
-    }
-  }
-  break;
-}
-var x_4991 = 0.88;
-cljs.core.mapv.call(null, cljs.core.partial.call(null, cljs.core._STAR_, x_4991), new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [0.707, 0.707], null));
 goog.provide("qgame.simulator.flow");
 goog.require("cljs.core");
 goog.require("qgame.utils.general");
@@ -30914,12 +30718,12 @@ qgame.simulator.interpreter.interpret = function() {
     var processed = qgame.simulator.compiler.compile.call(null, qgame.simulator.parser.parse.call(null, qgame.simulator.reader.read.call(null, raw)));
     return qgame.simulator.executor.execute.call(null, processed);
   };
-  var interpret__2 = function(p__5066, raw) {
-    var map__5068 = p__5066;
-    var map__5068__$1 = cljs.core.seq_QMARK_.call(null, map__5068) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5068) : map__5068;
-    var on_err = cljs.core.get.call(null, map__5068__$1, new cljs.core.Keyword(null, "on-err", "on-err", 4294768617));
-    var in_exec = cljs.core.get.call(null, map__5068__$1, new cljs.core.Keyword(null, "in-exec", "in-exec", 2906402731));
-    var pre_exec = cljs.core.get.call(null, map__5068__$1, new cljs.core.Keyword(null, "pre-exec", "pre-exec", 3967568109));
+  var interpret__2 = function(p__5049, raw) {
+    var map__5051 = p__5049;
+    var map__5051__$1 = cljs.core.seq_QMARK_.call(null, map__5051) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5051) : map__5051;
+    var on_err = cljs.core.get.call(null, map__5051__$1, new cljs.core.Keyword(null, "on-err", "on-err", 4294768617));
+    var in_exec = cljs.core.get.call(null, map__5051__$1, new cljs.core.Keyword(null, "in-exec", "in-exec", 2906402731));
+    var pre_exec = cljs.core.get.call(null, map__5051__$1, new cljs.core.Keyword(null, "pre-exec", "pre-exec", 3967568109));
     cljs.core.reset_BANG_.call(null, qgame.simulator.shared.on_error, on_err);
     var processed = qgame.simulator.compiler.compile.call(null, qgame.simulator.parser.parse.call(null, qgame.simulator.reader.read.call(null, raw)));
     if (cljs.core.truth_(pre_exec)) {
@@ -30928,12 +30732,12 @@ qgame.simulator.interpreter.interpret = function() {
     }
     return qgame.simulator.executor.execute.call(null, cljs.core.assoc.call(null, processed, new cljs.core.Keyword(null, "renderer", "renderer", 519058485), in_exec));
   };
-  interpret = function(p__5066, raw) {
+  interpret = function(p__5049, raw) {
     switch(arguments.length) {
       case 1:
-        return interpret__1.call(this, p__5066);
+        return interpret__1.call(this, p__5049);
       case 2:
-        return interpret__2.call(this, p__5066, raw);
+        return interpret__2.call(this, p__5049, raw);
     }
     throw new Error("Invalid arity: " + arguments.length);
   };

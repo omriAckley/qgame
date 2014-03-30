@@ -124,7 +124,7 @@
                [(+ c1 c2) (+ d1 d2)]]]
     (* 4 (m/det rho-a))))
 
-(doseq [case [{:description "|UU>+|DD>"
+#_(doseq [case [{:description "|UU>+|DD>"
                :amplitudes [0.70711 0 0 0.70711]}
               {:description "|UU>+|UD>+|DU>+|DD>"
                :amplitudes [0.5 0.5 0.5 0.5]}
@@ -261,9 +261,3 @@
         rho-a [[(+ a1 a2) (+ b1 b2)]
                [(+ c1 c2) (+ d1 d2)]]]
     (* 4 (m/det rho-a))))
-
-"0.707|0.707|UU>+0.707|DD>>+0.707|0.5|UU>+0.5|UD>+0.5|DU>+0.5|DD>>"
-
-(let [x 0.88]
-  (mapv (partial * x ) [0.707 0.707])
-  )
