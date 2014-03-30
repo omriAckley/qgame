@@ -3,7 +3,8 @@
             [qgame.simulator.parser :as p :refer [parse]]
             [qgame.simulator.compiler :as c :refer [compile]]
             [qgame.simulator.executor :as e :refer [execute]])
-  (:use [qgame.simulator.shared :only [on-error]]))
+  (:use [qgame.simulator.shared :only [on-error]]
+        [qgame.simulator.error :only []]))
 
 (defn interpret
   ([raw]
