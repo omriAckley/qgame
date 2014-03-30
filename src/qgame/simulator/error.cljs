@@ -57,6 +57,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Error messages
 
+(defmethod get-message :default
+  [title context]
+  (str "(This error does not have a message.)"))
+
 (defmethod get-message "Qubit parse failure"
   [title bite]
   (str "Token " (:text bite) " does not match the qubit regex pattern: " (str p/qubit-pattern)))
