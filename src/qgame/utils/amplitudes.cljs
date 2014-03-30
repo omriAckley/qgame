@@ -106,7 +106,7 @@
 
 (defn reduced-density-matrix
   [amplitudes qubits]
-  (let [inner-amps (inner-amplitudes amplitudes pair)
+  (let [inner-amps (inner-amplitudes amplitudes qubits)
         inner-amps* (apply mapv vector inner-amps)
         means (reduce mangled-mean-step
                       (repeat (count inner-amps) 1)
@@ -115,7 +115,7 @@
 
 (defn tangle-of
   [{amplitudes :amplitudes} qubit-a qubit-b]
-  (let [rho-ab (reduce-density-matrix amplitudes [qubit-a qubit-b])
+  (let [rho-ab (reduced-density-matrix amplitudes [qubit-a qubit-b])
         [[a1 _ b1 _]
          [_ a2 _ b2]
          [c1 _ d1 _]

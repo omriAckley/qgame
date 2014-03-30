@@ -29379,7 +29379,7 @@ qgame.utils.amplitudes.to_letter = function to_letter(qubit_index) {
   return cljs.core.nth.call(null, "ABCDEFGHIJKLMNOPQRST", qubit_index);
 };
 qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(amplitudes, qubits) {
-  var inner_amps = qgame.utils.amplitudes.inner_amplitudes.call(null, amplitudes, qgame.utils.amplitudes.pair);
+  var inner_amps = qgame.utils.amplitudes.inner_amplitudes.call(null, amplitudes, qubits);
   var inner_amps_STAR_ = cljs.core.apply.call(null, cljs.core.mapv, cljs.core.vector, inner_amps);
   var means = cljs.core.reduce.call(null, qgame.utils.amplitudes.mangled_mean_step, cljs.core.repeat.call(null, cljs.core.count.call(null, inner_amps), 1), inner_amps_STAR_);
   return qgame.utils.amplitudes.self_conj_outer_prod.call(null, means);
@@ -29388,7 +29388,7 @@ qgame.utils.amplitudes.tangle_of = function tangle_of(p__4874, qubit_a, qubit_b)
   var map__4881 = p__4874;
   var map__4881__$1 = cljs.core.seq_QMARK_.call(null, map__4881) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4881) : map__4881;
   var amplitudes = cljs.core.get.call(null, map__4881__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
-  var rho_ab = qgame.utils.amplitudes.reduce_density_matrix.call(null, amplitudes, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [qubit_a, qubit_b], null));
+  var rho_ab = qgame.utils.amplitudes.reduced_density_matrix.call(null, amplitudes, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [qubit_a, qubit_b], null));
   var vec__4882 = rho_ab;
   var vec__4883 = cljs.core.nth.call(null, vec__4882, 0, null);
   var a1 = cljs.core.nth.call(null, vec__4883, 0, null);
