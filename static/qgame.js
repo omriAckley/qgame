@@ -29202,25 +29202,25 @@ qgame.utils.amplitudes.amplitudes_to_probability = function amplitudes_to_probab
 };
 qgame.utils.amplitudes.qubits_to_amplitude_indices = function qubits_to_amplitude_indices(qubits, tot_num_qubits) {
   var excluded_qubits = cljs.core.remove.call(null, cljs.core.reduce.call(null, cljs.core.conj, cljs.core.PersistentHashSet.EMPTY, qubits), cljs.core.range.call(null, tot_num_qubits));
-  var iter__4167__auto__ = function iter__6319(s__6320) {
+  var iter__4120__auto__ = function iter__5921(s__5922) {
     return new cljs.core.LazySeq(null, function() {
-      var s__6320__$1 = s__6320;
+      var s__5922__$1 = s__5922;
       while (true) {
-        var temp__4092__auto__ = cljs.core.seq.call(null, s__6320__$1);
+        var temp__4092__auto__ = cljs.core.seq.call(null, s__5922__$1);
         if (temp__4092__auto__) {
-          var s__6320__$2 = temp__4092__auto__;
-          if (cljs.core.chunked_seq_QMARK_.call(null, s__6320__$2)) {
-            var c__4165__auto__ = cljs.core.chunk_first.call(null, s__6320__$2);
-            var size__4166__auto__ = cljs.core.count.call(null, c__4165__auto__);
-            var b__6322 = cljs.core.chunk_buffer.call(null, size__4166__auto__);
+          var s__5922__$2 = temp__4092__auto__;
+          if (cljs.core.chunked_seq_QMARK_.call(null, s__5922__$2)) {
+            var c__4118__auto__ = cljs.core.chunk_first.call(null, s__5922__$2);
+            var size__4119__auto__ = cljs.core.count.call(null, c__4118__auto__);
+            var b__5924 = cljs.core.chunk_buffer.call(null, size__4119__auto__);
             if (function() {
-              var i__6321 = 0;
+              var i__5923 = 0;
               while (true) {
-                if (i__6321 < size__4166__auto__) {
-                  var seed_index = cljs.core._nth.call(null, c__4165__auto__, i__6321);
-                  cljs.core.chunk_append.call(null, b__6322, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits));
-                  var G__6323 = i__6321 + 1;
-                  i__6321 = G__6323;
+                if (i__5923 < size__4119__auto__) {
+                  var seed_index = cljs.core._nth.call(null, c__4118__auto__, i__5923);
+                  cljs.core.chunk_append.call(null, b__5924, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits));
+                  var G__5925 = i__5923 + 1;
+                  i__5923 = G__5925;
                   continue;
                 } else {
                   return true;
@@ -29228,13 +29228,13 @@ qgame.utils.amplitudes.qubits_to_amplitude_indices = function qubits_to_amplitud
                 break;
               }
             }()) {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__6322), iter__6319.call(null, cljs.core.chunk_rest.call(null, s__6320__$2)));
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__5924), iter__5921.call(null, cljs.core.chunk_rest.call(null, s__5922__$2)));
             } else {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__6322), null);
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__5924), null);
             }
           } else {
-            var seed_index = cljs.core.first.call(null, s__6320__$2);
-            return cljs.core.cons.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits), iter__6319.call(null, cljs.core.rest.call(null, s__6320__$2)));
+            var seed_index = cljs.core.first.call(null, s__5922__$2);
+            return cljs.core.cons.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits), iter__5921.call(null, cljs.core.rest.call(null, s__5922__$2)));
           }
         } else {
           return null;
@@ -29243,7 +29243,7 @@ qgame.utils.amplitudes.qubits_to_amplitude_indices = function qubits_to_amplitud
       }
     }, null, null);
   };
-  return iter__4167__auto__.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [0], null), excluded_qubits));
+  return iter__4120__auto__.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [0], null), excluded_qubits));
 };
 qgame.utils.amplitudes.qubit_state_amplitudes = function qubit_state_amplitudes(amplitudes, qubit, binary_state) {
   var excluded_qubits = cljs.core.remove.call(null, cljs.core.PersistentHashSet.fromArray([qubit], true), cljs.core.range.call(null, qgame.utils.amplitudes.get_num_qubits.call(null, amplitudes)));
@@ -29251,17 +29251,17 @@ qgame.utils.amplitudes.qubit_state_amplitudes = function qubit_state_amplitudes(
   var indices = qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), excluded_qubits);
   return cljs.core.map.call(null, cljs.core.partial.call(null, cljs.core.get, amplitudes), indices);
 };
-qgame.utils.amplitudes.probability_of = function probability_of(p__6324, qubit, binary_state) {
-  var map__6326 = p__6324;
-  var map__6326__$1 = cljs.core.seq_QMARK_.call(null, map__6326) ? cljs.core.apply.call(null, cljs.core.hash_map, map__6326) : map__6326;
-  var amplitudes = cljs.core.get.call(null, map__6326__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
+qgame.utils.amplitudes.probability_of = function probability_of(p__5926, qubit, binary_state) {
+  var map__5928 = p__5926;
+  var map__5928__$1 = cljs.core.seq_QMARK_.call(null, map__5928) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5928) : map__5928;
+  var amplitudes = cljs.core.get.call(null, map__5928__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
   var sub_amplitudes = qgame.utils.amplitudes.qubit_state_amplitudes.call(null, amplitudes, qubit, binary_state);
   return qgame.utils.amplitudes.amplitudes_to_probability.call(null, sub_amplitudes);
 };
-qgame.utils.amplitudes.phase_of = function phase_of(p__6327, qubit, binary_state) {
-  var map__6329 = p__6327;
-  var map__6329__$1 = cljs.core.seq_QMARK_.call(null, map__6329) ? cljs.core.apply.call(null, cljs.core.hash_map, map__6329) : map__6329;
-  var amplitudes = cljs.core.get.call(null, map__6329__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
+qgame.utils.amplitudes.phase_of = function phase_of(p__5929, qubit, binary_state) {
+  var map__5931 = p__5929;
+  var map__5931__$1 = cljs.core.seq_QMARK_.call(null, map__5931) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5931) : map__5931;
+  var amplitudes = cljs.core.get.call(null, map__5931__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
   var sub_amplitudes = qgame.utils.amplitudes.qubit_state_amplitudes.call(null, amplitudes, qubit, binary_state);
   var amplitude = cljs.core.reduce.call(null, qgame.utils.math.add, sub_amplitudes);
   return qgame.utils.math.to_phase.call(null, amplitude);
@@ -29270,10 +29270,10 @@ qgame.utils.amplitudes.substate_amplitudes = function substate_amplitudes(amplit
   var qubits = cljs.core.keys.call(null, substate);
   var excluded_qubits = cljs.core.remove.call(null, cljs.core.set.call(null, qubits), cljs.core.range.call(null, qgame.utils.amplitudes.get_num_qubits.call(null, amplitudes)));
   var flip_digits = cljs.core.keep.call(null, function(qubits, excluded_qubits) {
-    return function(p__6332) {
-      var vec__6333 = p__6332;
-      var qubit = cljs.core.nth.call(null, vec__6333, 0, null);
-      var state = cljs.core.nth.call(null, vec__6333, 1, null);
+    return function(p__5934) {
+      var vec__5935 = p__5934;
+      var qubit = cljs.core.nth.call(null, vec__5935, 0, null);
+      var state = cljs.core.nth.call(null, vec__5935, 1, null);
       if (state === 0) {
         return null;
       } else {
@@ -29301,22 +29301,60 @@ qgame.utils.amplitudes.density_matrix = function density_matrix(amplitudes, qubi
   var sub_amplitudes = cljs.core.mapv.call(null, qgame.utils.amplitudes.amplitudes_to_probability, inner_amps);
   return qgame.utils.amplitudes.self_conj_outer_prod.call(null, sub_amplitudes);
 };
-qgame.utils.amplitudes.tangle_of = function tangle_of(p__6336, qubit_a, qubit_b) {
-  var map__6338 = p__6336;
-  var map__6338__$1 = cljs.core.seq_QMARK_.call(null, map__6338) ? cljs.core.apply.call(null, cljs.core.hash_map, map__6338) : map__6338;
-  var amplitudes = cljs.core.get.call(null, map__6338__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
-  var rho_ab = qgame.utils.amplitudes.density_matrix.call(null, amplitudes, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [qubit_a, qubit_b], null));
-  var top_left_quadrant = cljs.core.mapv.call(null, function(rho_ab) {
-    return function(p1__6334_SHARP_) {
-      return cljs.core.subvec.call(null, p1__6334_SHARP_, 0, 2);
-    };
-  }(rho_ab), cljs.core.subvec.call(null, rho_ab, 0, 2));
-  var bottom_right_quadrant = cljs.core.mapv.call(null, function(rho_ab, top_left_quadrant) {
-    return function(p1__6335_SHARP_) {
-      return cljs.core.subvec.call(null, p1__6335_SHARP_, 2);
-    };
-  }(rho_ab, top_left_quadrant), cljs.core.subvec.call(null, rho_ab, 2));
-  var rho_a = qgame.utils.math.add.call(null, top_left_quadrant, bottom_right_quadrant);
+qgame.utils.amplitudes.weighted_geo_mean_step = function() {
+  var weighted_geo_mean_step = null;
+  var weighted_geo_mean_step__1 = function(to_incorporate) {
+    return weighted_geo_mean_step.call(null, cljs.core.repeat.call(null, cljs.core.count.call(null, to_incorporate), 0), to_incorporate);
+  };
+  var weighted_geo_mean_step__2 = function(accumulated, to_incorporate) {
+    var weight = qgame.utils.amplitudes.amplitudes_to_probability.call(null, to_incorporate);
+    return cljs.core.mapv.call(null, function(amp, new_amp) {
+      return amp + (cljs.core._EQ_.call(null, weight, 0) ? 0 : weight * Math.log(new_amp));
+    }, accumulated, to_incorporate);
+  };
+  weighted_geo_mean_step = function(accumulated, to_incorporate) {
+    switch(arguments.length) {
+      case 1:
+        return weighted_geo_mean_step__1.call(this, accumulated);
+      case 2:
+        return weighted_geo_mean_step__2.call(this, accumulated, to_incorporate);
+    }
+    throw new Error("Invalid arity: " + arguments.length);
+  };
+  weighted_geo_mean_step.cljs$core$IFn$_invoke$arity$1 = weighted_geo_mean_step__1;
+  weighted_geo_mean_step.cljs$core$IFn$_invoke$arity$2 = weighted_geo_mean_step__2;
+  return weighted_geo_mean_step;
+}();
+qgame.utils.amplitudes.tangle_of = function tangle_of(p__5936, qubit_a, qubit_b) {
+  var map__5943 = p__5936;
+  var map__5943__$1 = cljs.core.seq_QMARK_.call(null, map__5943) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5943) : map__5943;
+  var amplitudes = cljs.core.get.call(null, map__5943__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
+  var inner_amps = qgame.utils.amplitudes.inner_amplitudes.call(null, amplitudes, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [qubit_a, qubit_b], null));
+  var inner_amps_STAR_ = cljs.core.apply.call(null, cljs.core.mapv, cljs.core.vector, inner_amps);
+  var geo_means = cljs.core.reduce.call(null, qgame.utils.amplitudes.weighted_geo_mean_step, qgame.utils.amplitudes.weighted_geo_mean_step.call(null, cljs.core.first.call(null, inner_amps_STAR_)), cljs.core.rest.call(null, inner_amps_STAR_));
+  var rho_ab = qgame.utils.amplitudes.self_conj_outer_prod.call(null, geo_means);
+  var vec__5944 = rho_ab;
+  var vec__5945 = cljs.core.nth.call(null, vec__5944, 0, null);
+  var a1 = cljs.core.nth.call(null, vec__5945, 0, null);
+  var _ = cljs.core.nth.call(null, vec__5945, 1, null);
+  var b1 = cljs.core.nth.call(null, vec__5945, 2, null);
+  var ___$1 = cljs.core.nth.call(null, vec__5945, 3, null);
+  var vec__5946 = cljs.core.nth.call(null, vec__5944, 1, null);
+  var ___$2 = cljs.core.nth.call(null, vec__5946, 0, null);
+  var a2 = cljs.core.nth.call(null, vec__5946, 1, null);
+  var ___$3 = cljs.core.nth.call(null, vec__5946, 2, null);
+  var b2 = cljs.core.nth.call(null, vec__5946, 3, null);
+  var vec__5947 = cljs.core.nth.call(null, vec__5944, 2, null);
+  var c1 = cljs.core.nth.call(null, vec__5947, 0, null);
+  var ___$4 = cljs.core.nth.call(null, vec__5947, 1, null);
+  var d1 = cljs.core.nth.call(null, vec__5947, 2, null);
+  var ___$5 = cljs.core.nth.call(null, vec__5947, 3, null);
+  var vec__5948 = cljs.core.nth.call(null, vec__5944, 3, null);
+  var ___$6 = cljs.core.nth.call(null, vec__5948, 0, null);
+  var c2 = cljs.core.nth.call(null, vec__5948, 1, null);
+  var ___$7 = cljs.core.nth.call(null, vec__5948, 2, null);
+  var d2 = cljs.core.nth.call(null, vec__5948, 3, null);
+  var rho_a = new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [a1 + a2, b1 + b2], null), new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [c1 + c2, d1 + d2], null)], null);
   return 4 * qgame.utils.math.det.call(null, rho_a);
 };
 goog.provide("qgame.simulator.flow");
