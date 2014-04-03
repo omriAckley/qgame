@@ -17,7 +17,7 @@
                 (s/split-lines program)))
 
 (def comment-pattern
-  #"\#.*")
+  #"\s*\#.*")
 
 (def whitespace-equivalent-pattern
   #"[^\-\w\.\:\+\*\/\^\(\)]+")
