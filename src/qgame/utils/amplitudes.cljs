@@ -61,7 +61,7 @@
 
 (defn substate-to-index
   [substate]
-  (reduce-kv (fn [idx [qubit state]]
+  (reduce-kv (fn [idx qubit state]
                (if (zero? state)
                  idx
                  (bit-flip idx qubit)))
@@ -69,10 +69,12 @@
              substate))
 
 (defn combine
-  [substate substate*]
+  [amplitudes substate substate*]
   (let [idx (substate-to-index substate)
-        idx* (m/complex-conjugate (substate-to-index substate*))]
-    (m/mult idx idx*)))
+        idx* (substate-to-index substate*)
+        amp (get amplitudes idx)
+        amp* (m/complex-conjugate (get amplitudes idx*))]
+    (m/multiply amp amp*)))
 
 (defn all-combinations
   [qubits]
@@ -81,9 +83,10 @@
     (g/itermap conj [all-zero-state] all-one-state)))
 
 (defn reduced-entry
-  [partial-substate partial-substate* excluded-qubits]
+  [amplitudes partial-substate partial-substate* excluded-qubits]
   (let [sub-amplitudes (for [remaining-substate (all-combinations excluded-qubits)]
-                         (combine (merge partial-substate remaining-substate)
+                         (combine amplitudes
+                                  (merge partial-substate remaining-substate)
                                   (merge partial-substate* remaining-substate)))]
     (reduce m/add sub-amplitudes)))
 
@@ -94,7 +97,7 @@
                                 (range (get-num-qubits amplitudes)))]
     (for [row all-combinations]
       (for [col all-combinations]
-        (reduced-entry row col excluded-qubits)))))
+        (reduced-entry amplitudes row col excluded-qubits)))))
 
 ;m/eigenvalues
 (defn tangle-of

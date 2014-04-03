@@ -208,12 +208,11 @@
   [s]
   (round (math.eval s) 9))
 
-
 (defn eigenvalues
   [coll]
-  (let [m (w/postwalk (fn [x]
-                        (if (sequential? x)
-                          (to-array x)
-                          x))
-                      coll)]
-    (-> m numeric.eigen .-lambda .-x)))
+  (let [mat (w/postwalk (fn [x]
+                          (if (sequential? x)
+                            (to-array x)
+                            x))
+                        coll)]
+    (-> mat numeric.eig .-lambda .-x vec)))

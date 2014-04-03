@@ -23057,2785 +23057,4748 @@ cljs.core.special_symbol_QMARK_ = function special_symbol_QMARK_(x) {
 };
 goog.provide("numeric.js");
 "use strict";
-var numeric = typeof exports == "undefined" ? function() {
+/*
+var numeric = typeof exports === "undefined" ? function numeric() {
 } : exports;
-typeof global != "undefined" && (global.numeric = numeric), numeric.version = "1.2.6", numeric.bench = function(t, n) {
-  var r, i, s, o;
-  typeof n == "undefined" && (n = 15), s = 0.5, r = new Date;
-  for (;;) {
-    s *= 2;
-    for (o = s;o > 3;o -= 4) {
-      t(), t(), t(), t();
+*/
+if (typeof global !== "undefined") {
+  global.numeric = numeric;
+}
+numeric.version = "1.2.6";
+numeric.bench = function bench(f, interval) {
+  var t1, t2, n, i;
+  if (typeof interval === "undefined") {
+    interval = 15;
+  }
+  n = 0.5;
+  t1 = new Date;
+  while (1) {
+    n *= 2;
+    for (i = n;i > 3;i -= 4) {
+      f();
+      f();
+      f();
+      f();
     }
-    while (o > 0) {
-      t(), o--;
+    while (i > 0) {
+      f();
+      i--;
     }
-    i = new Date;
-    if (i - r > n) {
+    t2 = new Date;
+    if (t2 - t1 > interval) {
       break;
     }
   }
-  for (o = s;o > 3;o -= 4) {
-    t(), t(), t(), t();
+  for (i = n;i > 3;i -= 4) {
+    f();
+    f();
+    f();
+    f();
   }
-  while (o > 0) {
-    t(), o--;
+  while (i > 0) {
+    f();
+    i--;
   }
-  return i = new Date, 1E3 * (3 * s - 1) / (i - r);
-}, numeric._myIndexOf = function(t) {
-  var n = this.length, r;
-  for (r = 0;r < n;++r) {
-    if (this[r] === t) {
-      return r;
+  t2 = new Date;
+  return 1E3 * (3 * n - 1) / (t2 - t1);
+};
+numeric._myIndexOf = function _myIndexOf(w) {
+  var n = this.length, k;
+  for (k = 0;k < n;++k) {
+    if (this[k] === w) {
+      return k;
     }
   }
   return-1;
-}, numeric.myIndexOf = Array.prototype.indexOf ? Array.prototype.indexOf : numeric._myIndexOf, numeric.Function = Function, numeric.precision = 4, numeric.largeArray = 50, numeric.prettyPrint = function(t) {
-  function n(e) {
-    if (e === 0) {
+};
+numeric.myIndexOf = Array.prototype.indexOf ? Array.prototype.indexOf : numeric._myIndexOf;
+numeric.Function = Function;
+numeric.precision = 4;
+numeric.largeArray = 50;
+numeric.prettyPrint = function prettyPrint(x) {
+  function fmtnum(x) {
+    if (x === 0) {
       return "0";
     }
-    if (isNaN(e)) {
+    if (isNaN(x)) {
       return "NaN";
     }
-    if (e < 0) {
-      return "-" + n(-e);
+    if (x < 0) {
+      return "-" + fmtnum(-x);
     }
-    if (isFinite(e)) {
-      var t = Math.floor(Math.log(e) / Math.log(10)), r = e / Math.pow(10, t), i = r.toPrecision(numeric.precision);
-      return parseFloat(i) === 10 && (t++, r = 1, i = r.toPrecision(numeric.precision)), parseFloat(i).toString() + "e" + t.toString();
+    if (isFinite(x)) {
+      var scale = Math.floor(Math.log(x) / Math.log(10));
+      var normalized = x / Math.pow(10, scale);
+      var basic = normalized.toPrecision(numeric.precision);
+      if (parseFloat(basic) === 10) {
+        scale++;
+        normalized = 1;
+        basic = normalized.toPrecision(numeric.precision);
+      }
+      return parseFloat(basic).toString() + "e" + scale.toString();
     }
     return "Infinity";
   }
-  function i(e) {
-    var t;
-    if (typeof e == "undefined") {
-      return r.push(Array(numeric.precision + 8).join(" ")), !1;
+  var ret = [];
+  function foo(x) {
+    var k;
+    if (typeof x === "undefined") {
+      ret.push(Array(numeric.precision + 8).join(" "));
+      return false;
     }
-    if (typeof e == "string") {
-      return r.push('"' + e + '"'), !1;
+    if (typeof x === "string") {
+      ret.push('"' + x + '"');
+      return false;
     }
-    if (typeof e == "boolean") {
-      return r.push(e.toString()), !1;
+    if (typeof x === "boolean") {
+      ret.push(x.toString());
+      return false;
     }
-    if (typeof e == "number") {
-      var s = n(e), o = e.toPrecision(numeric.precision), u = parseFloat(e.toString()).toString(), a = [s, o, u, parseFloat(o).toString(), parseFloat(u).toString()];
-      for (t = 1;t < a.length;t++) {
-        a[t].length < s.length && (s = a[t]);
+    if (typeof x === "number") {
+      var a = fmtnum(x);
+      var b = x.toPrecision(numeric.precision);
+      var c = parseFloat(x.toString()).toString();
+      var d = [a, b, c, parseFloat(b).toString(), parseFloat(c).toString()];
+      for (k = 1;k < d.length;k++) {
+        if (d[k].length < a.length) {
+          a = d[k];
+        }
       }
-      return r.push(Array(numeric.precision + 8 - s.length).join(" ") + s), !1;
+      ret.push(Array(numeric.precision + 8 - a.length).join(" ") + a);
+      return false;
     }
-    if (e === null) {
-      return r.push("null"), !1;
+    if (x === null) {
+      ret.push("null");
+      return false;
     }
-    if (typeof e == "function") {
-      r.push(e.toString());
-      var f = !1;
-      for (t in e) {
-        e.hasOwnProperty(t) && (f ? r.push(",\n") : r.push("\n{"), f = !0, r.push(t), r.push(": \n"), i(e[t]));
+    if (typeof x === "function") {
+      ret.push(x.toString());
+      var flag = false;
+      for (k in x) {
+        if (x.hasOwnProperty(k)) {
+          if (flag) {
+            ret.push(",\n");
+          } else {
+            ret.push("\n{");
+          }
+          flag = true;
+          ret.push(k);
+          ret.push(": \n");
+          foo(x[k]);
+        }
       }
-      return f && r.push("}\n"), !0;
-    }
-    if (e instanceof Array) {
-      if (e.length > numeric.largeArray) {
-        return r.push("...Large Array..."), !0;
+      if (flag) {
+        ret.push("}\n");
       }
-      var f = !1;
-      r.push("[");
-      for (t = 0;t < e.length;t++) {
-        t > 0 && (r.push(","), f && r.push("\n ")), f = i(e[t]);
+      return true;
+    }
+    if (x instanceof Array) {
+      if (x.length > numeric.largeArray) {
+        ret.push("...Large Array...");
+        return true;
       }
-      return r.push("]"), !0;
-    }
-    r.push("{");
-    var f = !1;
-    for (t in e) {
-      e.hasOwnProperty(t) && (f && r.push(",\n"), f = !0, r.push(t), r.push(": \n"), i(e[t]));
-    }
-    return r.push("}"), !0;
-  }
-  var r = [];
-  return i(t), r.join("");
-}, numeric.parseDate = function(t) {
-  function n(e) {
-    if (typeof e == "string") {
-      return Date.parse(e.replace(/-/g, "/"));
-    }
-    if (e instanceof Array) {
-      var t = [], r;
-      for (r = 0;r < e.length;r++) {
-        t[r] = n(e[r]);
+      var flag = false;
+      ret.push("[");
+      for (k = 0;k < x.length;k++) {
+        if (k > 0) {
+          ret.push(",");
+          if (flag) {
+            ret.push("\n ");
+          }
+        }
+        flag = foo(x[k]);
       }
-      return t;
+      ret.push("]");
+      return true;
     }
-    throw new Error("parseDate: parameter must be arrays of strings");
-  }
-  return n(t);
-}, numeric.parseFloat = function(t) {
-  function n(e) {
-    if (typeof e == "string") {
-      return parseFloat(e);
-    }
-    if (e instanceof Array) {
-      var t = [], r;
-      for (r = 0;r < e.length;r++) {
-        t[r] = n(e[r]);
-      }
-      return t;
-    }
-    throw new Error("parseFloat: parameter must be arrays of strings");
-  }
-  return n(t);
-}, numeric.parseCSV = function(t) {
-  var n = t.split("\n"), r, i, s = [], o = /(([^'",]*)|('[^']*')|("[^"]*")),/g, u = /^\s*(([+-]?[0-9]+(\.[0-9]*)?(e[+-]?[0-9]+)?)|([+-]?[0-9]*(\.[0-9]+)?(e[+-]?[0-9]+)?))\s*$/, a = function(e) {
-    return e.substr(0, e.length - 1);
-  }, f = 0;
-  for (i = 0;i < n.length;i++) {
-    var l = (n[i] + ",").match(o), c;
-    if (l.length > 0) {
-      s[f] = [];
-      for (r = 0;r < l.length;r++) {
-        c = a(l[r]), u.test(c) ? s[f][r] = parseFloat(c) : s[f][r] = c;
-      }
-      f++;
-    }
-  }
-  return s;
-}, numeric.toCSV = function(t) {
-  var n = numeric.dim(t), r, i, s, o, u, a;
-  s = n[0], o = n[1], a = [];
-  for (r = 0;r < s;r++) {
-    u = [];
-    for (i = 0;i < s;i++) {
-      u[i] = t[r][i].toString();
-    }
-    a[r] = u.join(", ");
-  }
-  return a.join("\n") + "\n";
-}, numeric.getURL = function(t) {
-  var n = new XMLHttpRequest;
-  return n.open("GET", t, !1), n.send(), n;
-}, numeric.imageURL = function(t) {
-  function n(e) {
-    var t = e.length, n, r, i, s, o, u, a, f, l = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\x3d", c = "";
-    for (n = 0;n < t;n += 3) {
-      r = e[n], i = e[n + 1], s = e[n + 2], o = r >> 2, u = ((r & 3) << 4) + (i >> 4), a = ((i & 15) << 2) + (s >> 6), f = s & 63, n + 1 >= t ? a = f = 64 : n + 2 >= t && (f = 64), c += l.charAt(o) + l.charAt(u) + l.charAt(a) + l.charAt(f);
-    }
-    return c;
-  }
-  function r(e, t, n) {
-    typeof t == "undefined" && (t = 0), typeof n == "undefined" && (n = e.length);
-    var r = [0, 1996959894, 3993919788, 2567524794, 124634137, 1886057615, 3915621685, 2657392035, 249268274, 2044508324, 3772115230, 2547177864, 162941995, 2125561021, 3887607047, 2428444049, 498536548, 1789927666, 4089016648, 2227061214, 450548861, 1843258603, 4107580753, 2211677639, 325883990, 1684777152, 4251122042, 2321926636, 335633487, 1661365465, 4195302755, 2366115317, 997073096, 1281953886, 3579855332, 2724688242, 1006888145, 1258607687, 3524101629, 2768942443, 901097722, 1119000684, 3686517206, 
-    2898065728, 853044451, 1172266101, 3705015759, 2882616665, 651767980, 1373503546, 3369554304, 3218104598, 565507253, 1454621731, 3485111705, 3099436303, 671266974, 1594198024, 3322730930, 2970347812, 795835527, 1483230225, 3244367275, 3060149565, 1994146192, 31158534, 2563907772, 4023717930, 1907459465, 112637215, 2680153253, 3904427059, 2013776290, 251722036, 2517215374, 3775830040, 2137656763, 141376813, 2439277719, 3865271297, 1802195444, 476864866, 2238001368, 4066508878, 1812370925, 453092731, 
-    2181625025, 4111451223, 1706088902, 314042704, 2344532202, 4240017532, 1658658271, 366619977, 2362670323, 4224994405, 1303535960, 984961486, 2747007092, 3569037538, 1256170817, 1037604311, 2765210733, 3554079995, 1131014506, 879679996, 2909243462, 3663771856, 1141124467, 855842277, 2852801631, 3708648649, 1342533948, 654459306, 3188396048, 3373015174, 1466479909, 544179635, 3110523913, 3462522015, 1591671054, 702138776, 2966460450, 3352799412, 1504918807, 783551873, 3082640443, 3233442989, 3988292384, 
-    2596254646, 62317068, 1957810842, 3939845945, 2647816111, 81470997, 1943803523, 3814918930, 2489596804, 225274430, 2053790376, 3826175755, 2466906013, 167816743, 2097651377, 4027552580, 2265490386, 503444072, 1762050814, 4150417245, 2154129355, 426522225, 1852507879, 4275313526, 2312317920, 282753626, 1742555852, 4189708143, 2394877945, 397917763, 1622183637, 3604390888, 2714866558, 953729732, 1340076626, 3518719985, 2797360999, 1068828381, 1219638859, 3624741850, 2936675148, 906185462, 1090812512, 
-    3747672003, 2825379669, 829329135, 1181335161, 3412177804, 3160834842, 628085408, 1382605366, 3423369109, 3138078467, 570562233, 1426400815, 3317316542, 2998733608, 733239954, 1555261956, 3268935591, 3050360625, 752459403, 1541320221, 2607071920, 3965973030, 1969922972, 40735498, 2617837225, 3943577151, 1913087877, 83908371, 2512341634, 3803740692, 2075208622, 213261112, 2463272603, 3855990285, 2094854071, 198958881, 2262029012, 4057260610, 1759359992, 534414190, 2176718541, 4139329115, 1873836001, 
-    414664567, 2282248934, 4279200368, 1711684554, 285281116, 2405801727, 4167216745, 1634467795, 376229701, 2685067896, 3608007406, 1308918612, 956543938, 2808555105, 3495958263, 1231636301, 1047427035, 2932959818, 3654703836, 1088359270, 936918E3, 2847714899, 3736837829, 1202900863, 817233897, 3183342108, 3401237130, 1404277552, 615818150, 3134207493, 3453421203, 1423857449, 601450431, 3009837614, 3294710456, 1567103746, 711928724, 3020668471, 3272380065, 1510334235, 755167117], i = -1, s = 0, 
-    o = e.length, u;
-    for (u = t;u < n;u++) {
-      s = (i ^ e[u]) & 255, i = i >>> 8 ^ r[s];
-    }
-    return i ^ -1;
-  }
-  var i = t[0].length, s = t[0][0].length, o, u, a, f, l, c, h, p, d, v, m, g = [137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, s >> 24 & 255, s >> 16 & 255, s >> 8 & 255, s & 255, i >> 24 & 255, i >> 16 & 255, i >> 8 & 255, i & 255, 8, 2, 0, 0, 0, -1, -2, -3, -4, -5, -6, -7, -8, 73, 68, 65, 84, 8, 29];
-  m = r(g, 12, 29), g[29] = m >> 24 & 255, g[30] = m >> 16 & 255, g[31] = m >> 8 & 255, g[32] = m & 255, o = 1, u = 0;
-  for (p = 0;p < i;p++) {
-    p < i - 1 ? g.push(0) : g.push(1), c = 3 * s + 1 + (p === 0) & 255, h = 3 * s + 1 + (p === 0) >> 8 & 255, g.push(c), g.push(h), g.push(~c & 255), g.push(~h & 255), p === 0 && g.push(0);
-    for (d = 0;d < s;d++) {
-      for (f = 0;f < 3;f++) {
-        c = t[f][p][d], c > 255 ? c = 255 : c < 0 ? c = 0 : c = Math.round(c), o = (o + c) % 65521, u = (u + o) % 65521, g.push(c);
+    ret.push("{");
+    var flag = false;
+    for (k in x) {
+      if (x.hasOwnProperty(k)) {
+        if (flag) {
+          ret.push(",\n");
+        }
+        flag = true;
+        ret.push(k);
+        ret.push(": \n");
+        foo(x[k]);
       }
     }
-    g.push(0);
+    ret.push("}");
+    return true;
   }
-  return v = (u << 16) + o, g.push(v >> 24 & 255), g.push(v >> 16 & 255), g.push(v >> 8 & 255), g.push(v & 255), l = g.length - 41, g[33] = l >> 24 & 255, g[34] = l >> 16 & 255, g[35] = l >> 8 & 255, g[36] = l & 255, m = r(g, 37), g.push(m >> 24 & 255), g.push(m >> 16 & 255), g.push(m >> 8 & 255), g.push(m & 255), g.push(0), g.push(0), g.push(0), g.push(0), g.push(73), g.push(69), g.push(78), g.push(68), g.push(174), g.push(66), g.push(96), g.push(130), "data:image/png;base64," + n(g);
-}, numeric._dim = function(t) {
-  var n = [];
-  while (typeof t == "object") {
-    n.push(t.length), t = t[0];
+  foo(x);
+  return ret.join("");
+};
+numeric.parseDate = function parseDate(d) {
+  function foo(d) {
+    if (typeof d === "string") {
+      return Date.parse(d.replace(/-/g, "/"));
+    }
+    if (!(d instanceof Array)) {
+      throw new Error("parseDate: parameter must be arrays of strings");
+    }
+    var ret = [], k;
+    for (k = 0;k < d.length;k++) {
+      ret[k] = foo(d[k]);
+    }
+    return ret;
   }
-  return n;
-}, numeric.dim = function(t) {
-  var n, r;
-  if (typeof t == "object") {
-    return n = t[0], typeof n == "object" ? (r = n[0], typeof r == "object" ? numeric._dim(t) : [t.length, n.length]) : [t.length];
+  return foo(d);
+};
+numeric.parseFloat = function parseFloat_(d) {
+  function foo(d) {
+    if (typeof d === "string") {
+      return parseFloat(d);
+    }
+    if (!(d instanceof Array)) {
+      throw new Error("parseFloat: parameter must be arrays of strings");
+    }
+    var ret = [], k;
+    for (k = 0;k < d.length;k++) {
+      ret[k] = foo(d[k]);
+    }
+    return ret;
+  }
+  return foo(d);
+};
+numeric.parseCSV = function parseCSV(t) {
+  var foo = t.split("\n");
+  var j, k;
+  var ret = [];
+  var pat = /(([^'",]*)|('[^']*')|("[^"]*")),/g;
+  var patnum = /^\s*(([+-]?[0-9]+(\.[0-9]*)?(e[+-]?[0-9]+)?)|([+-]?[0-9]*(\.[0-9]+)?(e[+-]?[0-9]+)?))\s*$/;
+  var stripper = function(n) {
+    return n.substr(0, n.length - 1);
+  };
+  var count = 0;
+  for (k = 0;k < foo.length;k++) {
+    var bar = (foo[k] + ",").match(pat), baz;
+    if (bar.length > 0) {
+      ret[count] = [];
+      for (j = 0;j < bar.length;j++) {
+        baz = stripper(bar[j]);
+        if (patnum.test(baz)) {
+          ret[count][j] = parseFloat(baz);
+        } else {
+          ret[count][j] = baz;
+        }
+      }
+      count++;
+    }
+  }
+  return ret;
+};
+numeric.toCSV = function toCSV(A) {
+  var s = numeric.dim(A);
+  var i, j, m, n, row, ret;
+  m = s[0];
+  n = s[1];
+  ret = [];
+  for (i = 0;i < m;i++) {
+    row = [];
+    for (j = 0;j < m;j++) {
+      row[j] = A[i][j].toString();
+    }
+    ret[i] = row.join(", ");
+  }
+  return ret.join("\n") + "\n";
+};
+numeric.getURL = function getURL(url) {
+  var client = new XMLHttpRequest;
+  client.open("GET", url, false);
+  client.send();
+  return client;
+};
+numeric.imageURL = function imageURL(img) {
+  function base64(A) {
+    var n = A.length, i, x, y, z, p, q, r, s;
+    var key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\x3d";
+    var ret = "";
+    for (i = 0;i < n;i += 3) {
+      x = A[i];
+      y = A[i + 1];
+      z = A[i + 2];
+      p = x >> 2;
+      q = ((x & 3) << 4) + (y >> 4);
+      r = ((y & 15) << 2) + (z >> 6);
+      s = z & 63;
+      if (i + 1 >= n) {
+        r = s = 64;
+      } else {
+        if (i + 2 >= n) {
+          s = 64;
+        }
+      }
+      ret += key.charAt(p) + key.charAt(q) + key.charAt(r) + key.charAt(s);
+    }
+    return ret;
+  }
+  function crc32Array(a, from, to) {
+    if (typeof from === "undefined") {
+      from = 0;
+    }
+    if (typeof to === "undefined") {
+      to = a.length;
+    }
+    var table = [0, 1996959894, 3993919788, 2567524794, 124634137, 1886057615, 3915621685, 2657392035, 249268274, 2044508324, 3772115230, 2547177864, 162941995, 2125561021, 3887607047, 2428444049, 498536548, 1789927666, 4089016648, 2227061214, 450548861, 1843258603, 4107580753, 2211677639, 325883990, 1684777152, 4251122042, 2321926636, 335633487, 1661365465, 4195302755, 2366115317, 997073096, 1281953886, 3579855332, 2724688242, 1006888145, 1258607687, 3524101629, 2768942443, 901097722, 1119000684, 
+    3686517206, 2898065728, 853044451, 1172266101, 3705015759, 2882616665, 651767980, 1373503546, 3369554304, 3218104598, 565507253, 1454621731, 3485111705, 3099436303, 671266974, 1594198024, 3322730930, 2970347812, 795835527, 1483230225, 3244367275, 3060149565, 1994146192, 31158534, 2563907772, 4023717930, 1907459465, 112637215, 2680153253, 3904427059, 2013776290, 251722036, 2517215374, 3775830040, 2137656763, 141376813, 2439277719, 3865271297, 1802195444, 476864866, 2238001368, 4066508878, 1812370925, 
+    453092731, 2181625025, 4111451223, 1706088902, 314042704, 2344532202, 4240017532, 1658658271, 366619977, 2362670323, 4224994405, 1303535960, 984961486, 2747007092, 3569037538, 1256170817, 1037604311, 2765210733, 3554079995, 1131014506, 879679996, 2909243462, 3663771856, 1141124467, 855842277, 2852801631, 3708648649, 1342533948, 654459306, 3188396048, 3373015174, 1466479909, 544179635, 3110523913, 3462522015, 1591671054, 702138776, 2966460450, 3352799412, 1504918807, 783551873, 3082640443, 3233442989, 
+    3988292384, 2596254646, 62317068, 1957810842, 3939845945, 2647816111, 81470997, 1943803523, 3814918930, 2489596804, 225274430, 2053790376, 3826175755, 2466906013, 167816743, 2097651377, 4027552580, 2265490386, 503444072, 1762050814, 4150417245, 2154129355, 426522225, 1852507879, 4275313526, 2312317920, 282753626, 1742555852, 4189708143, 2394877945, 397917763, 1622183637, 3604390888, 2714866558, 953729732, 1340076626, 3518719985, 2797360999, 1068828381, 1219638859, 3624741850, 2936675148, 906185462, 
+    1090812512, 3747672003, 2825379669, 829329135, 1181335161, 3412177804, 3160834842, 628085408, 1382605366, 3423369109, 3138078467, 570562233, 1426400815, 3317316542, 2998733608, 733239954, 1555261956, 3268935591, 3050360625, 752459403, 1541320221, 2607071920, 3965973030, 1969922972, 40735498, 2617837225, 3943577151, 1913087877, 83908371, 2512341634, 3803740692, 2075208622, 213261112, 2463272603, 3855990285, 2094854071, 198958881, 2262029012, 4057260610, 1759359992, 534414190, 2176718541, 4139329115, 
+    1873836001, 414664567, 2282248934, 4279200368, 1711684554, 285281116, 2405801727, 4167216745, 1634467795, 376229701, 2685067896, 3608007406, 1308918612, 956543938, 2808555105, 3495958263, 1231636301, 1047427035, 2932959818, 3654703836, 1088359270, 936918E3, 2847714899, 3736837829, 1202900863, 817233897, 3183342108, 3401237130, 1404277552, 615818150, 3134207493, 3453421203, 1423857449, 601450431, 3009837614, 3294710456, 1567103746, 711928724, 3020668471, 3272380065, 1510334235, 755167117];
+    var crc = -1, y = 0, n = a.length, i;
+    for (i = from;i < to;i++) {
+      y = (crc ^ a[i]) & 255;
+      crc = crc >>> 8 ^ table[y];
+    }
+    return crc ^ -1;
+  }
+  var h = img[0].length, w = img[0][0].length, s1, s2, next, k, length, a, b, i, j, adler32, crc32;
+  var stream = [137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, w >> 24 & 255, w >> 16 & 255, w >> 8 & 255, w & 255, h >> 24 & 255, h >> 16 & 255, h >> 8 & 255, h & 255, 8, 2, 0, 0, 0, -1, -2, -3, -4, -5, -6, -7, -8, 73, 68, 65, 84, 8, 29];
+  crc32 = crc32Array(stream, 12, 29);
+  stream[29] = crc32 >> 24 & 255;
+  stream[30] = crc32 >> 16 & 255;
+  stream[31] = crc32 >> 8 & 255;
+  stream[32] = crc32 & 255;
+  s1 = 1;
+  s2 = 0;
+  for (i = 0;i < h;i++) {
+    if (i < h - 1) {
+      stream.push(0);
+    } else {
+      stream.push(1);
+    }
+    a = 3 * w + 1 + (i === 0) & 255;
+    b = 3 * w + 1 + (i === 0) >> 8 & 255;
+    stream.push(a);
+    stream.push(b);
+    stream.push(~a & 255);
+    stream.push(~b & 255);
+    if (i === 0) {
+      stream.push(0);
+    }
+    for (j = 0;j < w;j++) {
+      for (k = 0;k < 3;k++) {
+        a = img[k][i][j];
+        if (a > 255) {
+          a = 255;
+        } else {
+          if (a < 0) {
+            a = 0;
+          } else {
+            a = Math.round(a);
+          }
+        }
+        s1 = (s1 + a) % 65521;
+        s2 = (s2 + s1) % 65521;
+        stream.push(a);
+      }
+    }
+    stream.push(0);
+  }
+  adler32 = (s2 << 16) + s1;
+  stream.push(adler32 >> 24 & 255);
+  stream.push(adler32 >> 16 & 255);
+  stream.push(adler32 >> 8 & 255);
+  stream.push(adler32 & 255);
+  length = stream.length - 41;
+  stream[33] = length >> 24 & 255;
+  stream[34] = length >> 16 & 255;
+  stream[35] = length >> 8 & 255;
+  stream[36] = length & 255;
+  crc32 = crc32Array(stream, 37);
+  stream.push(crc32 >> 24 & 255);
+  stream.push(crc32 >> 16 & 255);
+  stream.push(crc32 >> 8 & 255);
+  stream.push(crc32 & 255);
+  stream.push(0);
+  stream.push(0);
+  stream.push(0);
+  stream.push(0);
+  stream.push(73);
+  stream.push(69);
+  stream.push(78);
+  stream.push(68);
+  stream.push(174);
+  stream.push(66);
+  stream.push(96);
+  stream.push(130);
+  return "data:image/png;base64," + base64(stream);
+};
+numeric._dim = function _dim(x) {
+  var ret = [];
+  while (typeof x === "object") {
+    ret.push(x.length);
+    x = x[0];
+  }
+  return ret;
+};
+numeric.dim = function dim(x) {
+  var y, z;
+  if (typeof x === "object") {
+    y = x[0];
+    if (typeof y === "object") {
+      z = y[0];
+      if (typeof z === "object") {
+        return numeric._dim(x);
+      }
+      return[x.length, y.length];
+    }
+    return[x.length];
   }
   return[];
-}, numeric.mapreduce = function(t, n) {
-  return Function("x", "accum", "_s", "_k", 'if(typeof accum \x3d\x3d\x3d "undefined") accum \x3d ' + n + ";\n" + 'if(typeof x \x3d\x3d\x3d "number") { var xi \x3d x; ' + t + "; return accum; }\n" + 'if(typeof _s \x3d\x3d\x3d "undefined") _s \x3d numeric.dim(x);\n' + 'if(typeof _k \x3d\x3d\x3d "undefined") _k \x3d 0;\n' + "var _n \x3d _s[_k];\n" + "var i,xi;\n" + "if(_k \x3c _s.length-1) {\n" + "    for(i\x3d_n-1;i\x3e\x3d0;i--) {\n" + "        accum \x3d arguments.callee(x[i],accum,_s,_k+1);\n" + 
-  "    }" + "    return accum;\n" + "}\n" + "for(i\x3d_n-1;i\x3e\x3d1;i-\x3d2) { \n" + "    xi \x3d x[i];\n" + "    " + t + ";\n" + "    xi \x3d x[i-1];\n" + "    " + t + ";\n" + "}\n" + "if(i \x3d\x3d\x3d 0) {\n" + "    xi \x3d x[i];\n" + "    " + t + "\n" + "}\n" + "return accum;");
-}, numeric.mapreduce2 = function(t, n) {
-  return Function("x", "var n \x3d x.length;\nvar i,xi;\n" + n + ";\n" + "for(i\x3dn-1;i!\x3d\x3d-1;--i) { \n" + "    xi \x3d x[i];\n" + "    " + t + ";\n" + "}\n" + "return accum;");
-}, numeric.same = function same(e, t) {
-  var n, r;
-  if (e instanceof Array && t instanceof Array) {
-    r = e.length;
-    if (r !== t.length) {
-      return!1;
+};
+numeric.mapreduce = function mapreduce(body, init) {
+  return Function("x", "accum", "_s", "_k", 'if(typeof accum \x3d\x3d\x3d "undefined") accum \x3d ' + init + ";\n" + 'if(typeof x \x3d\x3d\x3d "number") { var xi \x3d x; ' + body + "; return accum; }\n" + 'if(typeof _s \x3d\x3d\x3d "undefined") _s \x3d numeric.dim(x);\n' + 'if(typeof _k \x3d\x3d\x3d "undefined") _k \x3d 0;\n' + "var _n \x3d _s[_k];\n" + "var i,xi;\n" + "if(_k \x3c _s.length-1) {\n" + "    for(i\x3d_n-1;i\x3e\x3d0;i--) {\n" + "        accum \x3d arguments.callee(x[i],accum,_s,_k+1);\n" + 
+  "    }" + "    return accum;\n" + "}\n" + "for(i\x3d_n-1;i\x3e\x3d1;i-\x3d2) { \n" + "    xi \x3d x[i];\n" + "    " + body + ";\n" + "    xi \x3d x[i-1];\n" + "    " + body + ";\n" + "}\n" + "if(i \x3d\x3d\x3d 0) {\n" + "    xi \x3d x[i];\n" + "    " + body + "\n" + "}\n" + "return accum;");
+};
+numeric.mapreduce2 = function mapreduce2(body, setup) {
+  return Function("x", "var n \x3d x.length;\n" + "var i,xi;\n" + setup + ";\n" + "for(i\x3dn-1;i!\x3d\x3d-1;--i) { \n" + "    xi \x3d x[i];\n" + "    " + body + ";\n" + "}\n" + "return accum;");
+};
+numeric.same = function same(x, y) {
+  var i, n;
+  if (!(x instanceof Array) || !(y instanceof Array)) {
+    return false;
+  }
+  n = x.length;
+  if (n !== y.length) {
+    return false;
+  }
+  for (i = 0;i < n;i++) {
+    if (x[i] === y[i]) {
+      continue;
     }
-    for (n = 0;n < r;n++) {
-      if (e[n] === t[n]) {
-        continue;
+    if (typeof x[i] === "object") {
+      if (!same(x[i], y[i])) {
+        return false;
       }
-      if (typeof e[n] != "object") {
-        return!1;
+    } else {
+      return false;
+    }
+  }
+  return true;
+};
+numeric.rep = function rep(s, v, k) {
+  if (typeof k === "undefined") {
+    k = 0;
+  }
+  var n = s[k], ret = Array(n), i;
+  if (k === s.length - 1) {
+    for (i = n - 2;i >= 0;i -= 2) {
+      ret[i + 1] = v;
+      ret[i] = v;
+    }
+    if (i === -1) {
+      ret[0] = v;
+    }
+    return ret;
+  }
+  for (i = n - 1;i >= 0;i--) {
+    ret[i] = numeric.rep(s, v, k + 1);
+  }
+  return ret;
+};
+numeric.dotMMsmall = function dotMMsmall(x, y) {
+  var i, j, k, p, q, r, ret, foo, bar, woo, i0, k0, p0, r0;
+  p = x.length;
+  q = y.length;
+  r = y[0].length;
+  ret = Array(p);
+  for (i = p - 1;i >= 0;i--) {
+    foo = Array(r);
+    bar = x[i];
+    for (k = r - 1;k >= 0;k--) {
+      woo = bar[q - 1] * y[q - 1][k];
+      for (j = q - 2;j >= 1;j -= 2) {
+        i0 = j - 1;
+        woo += bar[j] * y[j][k] + bar[i0] * y[i0][k];
       }
-      if (!same(e[n], t[n])) {
-        return!1;
+      if (j === 0) {
+        woo += bar[0] * y[0][k];
       }
+      foo[k] = woo;
     }
-    return!0;
+    ret[i] = foo;
   }
-  return!1;
-}, numeric.rep = function(t, n, r) {
-  typeof r == "undefined" && (r = 0);
-  var i = t[r], s = Array(i), o;
-  if (r === t.length - 1) {
-    for (o = i - 2;o >= 0;o -= 2) {
-      s[o + 1] = n, s[o] = n;
-    }
-    return o === -1 && (s[0] = n), s;
+  return ret;
+};
+numeric._getCol = function _getCol(A, j, x) {
+  var n = A.length, i;
+  for (i = n - 1;i > 0;--i) {
+    x[i] = A[i][j];
+    --i;
+    x[i] = A[i][j];
   }
-  for (o = i - 1;o >= 0;o--) {
-    s[o] = numeric.rep(t, n, r + 1);
+  if (i === 0) {
+    x[0] = A[0][j];
   }
-  return s;
-}, numeric.dotMMsmall = function(t, n) {
-  var r, i, s, o, u, a, f, l, c, h, p, d, v, m;
-  o = t.length, u = n.length, a = n[0].length, f = Array(o);
-  for (r = o - 1;r >= 0;r--) {
-    l = Array(a), c = t[r];
-    for (s = a - 1;s >= 0;s--) {
-      h = c[u - 1] * n[u - 1][s];
-      for (i = u - 2;i >= 1;i -= 2) {
-        p = i - 1, h += c[i] * n[i][s] + c[p] * n[p][s];
-      }
-      i === 0 && (h += c[0] * n[0][s]), l[s] = h;
-    }
-    f[r] = l;
+};
+numeric.dotMMbig = function dotMMbig(x, y) {
+  var gc = numeric._getCol, p = y.length, v = Array(p);
+  var m = x.length, n = y[0].length, A = new Array(m), xj;
+  var VV = numeric.dotVV;
+  var i, j, k, z;
+  --p;
+  --m;
+  for (i = m;i !== -1;--i) {
+    A[i] = Array(n);
   }
-  return f;
-}, numeric._getCol = function(t, n, r) {
-  var i = t.length, s;
-  for (s = i - 1;s > 0;--s) {
-    r[s] = t[s][n], --s, r[s] = t[s][n];
-  }
-  s === 0 && (r[0] = t[0][n]);
-}, numeric.dotMMbig = function(t, n) {
-  var r = numeric._getCol, i = n.length, s = Array(i), o = t.length, u = n[0].length, a = new Array(o), f, l = numeric.dotVV, c, h, p, d;
-  --i, --o;
-  for (c = o;c !== -1;--c) {
-    a[c] = Array(u);
-  }
-  --u;
-  for (c = u;c !== -1;--c) {
-    r(n, c, s);
-    for (h = o;h !== -1;--h) {
-      d = 0, f = t[h], a[h][c] = l(f, s);
+  --n;
+  for (i = n;i !== -1;--i) {
+    gc(y, i, v);
+    for (j = m;j !== -1;--j) {
+      z = 0;
+      xj = x[j];
+      A[j][i] = VV(xj, v);
     }
   }
-  return a;
-}, numeric.dotMV = function(t, n) {
-  var r = t.length, i = n.length, s, o = Array(r), u = numeric.dotVV;
-  for (s = r - 1;s >= 0;s--) {
-    o[s] = u(t[s], n);
+  return A;
+};
+numeric.dotMV = function dotMV(x, y) {
+  var p = x.length, q = y.length, i;
+  var ret = Array(p), dotVV = numeric.dotVV;
+  for (i = p - 1;i >= 0;i--) {
+    ret[i] = dotVV(x[i], y);
   }
-  return o;
-}, numeric.dotVM = function(t, n) {
-  var r, i, s, o, u, a, f, l, c, h, p, d, v, m, g, y, b, w, E;
-  o = t.length, u = n[0].length, f = Array(u);
-  for (s = u - 1;s >= 0;s--) {
-    h = t[o - 1] * n[o - 1][s];
-    for (i = o - 2;i >= 1;i -= 2) {
-      p = i - 1, h += t[i] * n[i][s] + t[p] * n[p][s];
+  return ret;
+};
+numeric.dotVM = function dotVM(x, y) {
+  var i, j, k, p, q, r, ret, foo, bar, woo, i0, k0, p0, r0, s1, s2, s3, baz, accum;
+  p = x.length;
+  q = y[0].length;
+  ret = Array(q);
+  for (k = q - 1;k >= 0;k--) {
+    woo = x[p - 1] * y[p - 1][k];
+    for (j = p - 2;j >= 1;j -= 2) {
+      i0 = j - 1;
+      woo += x[j] * y[j][k] + x[i0] * y[i0][k];
     }
-    i === 0 && (h += t[0] * n[0][s]), f[s] = h;
+    if (j === 0) {
+      woo += x[0] * y[0][k];
+    }
+    ret[k] = woo;
   }
-  return f;
-}, numeric.dotVV = function(t, n) {
-  var r, i = t.length, s, o = t[i - 1] * n[i - 1];
-  for (r = i - 2;r >= 1;r -= 2) {
-    s = r - 1, o += t[r] * n[r] + t[s] * n[s];
+  return ret;
+};
+numeric.dotVV = function dotVV(x, y) {
+  var i, n = x.length, i1, ret = x[n - 1] * y[n - 1];
+  for (i = n - 2;i >= 1;i -= 2) {
+    i1 = i - 1;
+    ret += x[i] * y[i] + x[i1] * y[i1];
   }
-  return r === 0 && (o += t[0] * n[0]), o;
-}, numeric.dot = function(t, n) {
-  var r = numeric.dim;
-  switch(r(t).length * 1E3 + r(n).length) {
+  if (i === 0) {
+    ret += x[0] * y[0];
+  }
+  return ret;
+};
+numeric.dot = function dot(x, y) {
+  var d = numeric.dim;
+  switch(d(x).length * 1E3 + d(y).length) {
     case 2002:
-      return n.length < 10 ? numeric.dotMMsmall(t, n) : numeric.dotMMbig(t, n);
+      if (y.length < 10) {
+        return numeric.dotMMsmall(x, y);
+      } else {
+        return numeric.dotMMbig(x, y);
+      }
+    ;
     case 2001:
-      return numeric.dotMV(t, n);
+      return numeric.dotMV(x, y);
     case 1002:
-      return numeric.dotVM(t, n);
+      return numeric.dotVM(x, y);
     case 1001:
-      return numeric.dotVV(t, n);
+      return numeric.dotVV(x, y);
     case 1E3:
-      return numeric.mulVS(t, n);
+      return numeric.mulVS(x, y);
     case 1:
-      return numeric.mulSV(t, n);
+      return numeric.mulSV(x, y);
     case 0:
-      return t * n;
+      return x * y;
     default:
       throw new Error("numeric.dot only works on vectors and matrices");;
   }
-}, numeric.diag = function(t) {
-  var n, r, i, s = t.length, o = Array(s), u;
-  for (n = s - 1;n >= 0;n--) {
-    u = Array(s), r = n + 2;
-    for (i = s - 1;i >= r;i -= 2) {
-      u[i] = 0, u[i - 1] = 0;
+};
+numeric.diag = function diag(d) {
+  var i, i1, j, n = d.length, A = Array(n), Ai;
+  for (i = n - 1;i >= 0;i--) {
+    Ai = Array(n);
+    i1 = i + 2;
+    for (j = n - 1;j >= i1;j -= 2) {
+      Ai[j] = 0;
+      Ai[j - 1] = 0;
     }
-    i > n && (u[i] = 0), u[n] = t[n];
-    for (i = n - 1;i >= 1;i -= 2) {
-      u[i] = 0, u[i - 1] = 0;
+    if (j > i) {
+      Ai[j] = 0;
     }
-    i === 0 && (u[0] = 0), o[n] = u;
+    Ai[i] = d[i];
+    for (j = i - 1;j >= 1;j -= 2) {
+      Ai[j] = 0;
+      Ai[j - 1] = 0;
+    }
+    if (j === 0) {
+      Ai[0] = 0;
+    }
+    A[i] = Ai;
   }
-  return o;
-}, numeric.getDiag = function(e) {
-  var t = Math.min(e.length, e[0].length), n, r = Array(t);
-  for (n = t - 1;n >= 1;--n) {
-    r[n] = e[n][n], --n, r[n] = e[n][n];
+  return A;
+};
+numeric.getDiag = function(A) {
+  var n = Math.min(A.length, A[0].length), i, ret = Array(n);
+  for (i = n - 1;i >= 1;--i) {
+    ret[i] = A[i][i];
+    --i;
+    ret[i] = A[i][i];
   }
-  return n === 0 && (r[0] = e[0][0]), r;
-}, numeric.identity = function(t) {
-  return numeric.diag(numeric.rep([t], 1));
-}, numeric.pointwise = function(t, n, r) {
-  typeof r == "undefined" && (r = "");
-  var i = [], s, o = /\[i\]$/, u, a = "", f = !1;
-  for (s = 0;s < t.length;s++) {
-    o.test(t[s]) ? (u = t[s].substring(0, t[s].length - 3), a = u) : u = t[s], u === "ret" && (f = !0), i.push(u);
+  if (i === 0) {
+    ret[0] = A[0][0];
   }
-  return i[t.length] = "_s", i[t.length + 1] = "_k", i[t.length + 2] = 'if(typeof _s \x3d\x3d\x3d "undefined") _s \x3d numeric.dim(' + a + ");\n" + 'if(typeof _k \x3d\x3d\x3d "undefined") _k \x3d 0;\n' + "var _n \x3d _s[_k];\n" + "var i" + (f ? "" : ", ret \x3d Array(_n)") + ";\n" + "if(_k \x3c _s.length-1) {\n" + "    for(i\x3d_n-1;i\x3e\x3d0;i--) ret[i] \x3d arguments.callee(" + t.join(",") + ",_s,_k+1);\n" + "    return ret;\n" + "}\n" + r + "\n" + "for(i\x3d_n-1;i!\x3d\x3d-1;--i) {\n" + "    " + 
-  n + "\n" + "}\n" + "return ret;", Function.apply(null, i);
-}, numeric.pointwise2 = function(t, n, r) {
-  typeof r == "undefined" && (r = "");
-  var i = [], s, o = /\[i\]$/, u, a = "", f = !1;
-  for (s = 0;s < t.length;s++) {
-    o.test(t[s]) ? (u = t[s].substring(0, t[s].length - 3), a = u) : u = t[s], u === "ret" && (f = !0), i.push(u);
+  return ret;
+};
+numeric.identity = function identity(n) {
+  return numeric.diag(numeric.rep([n], 1));
+};
+numeric.pointwise = function pointwise(params, body, setup) {
+  if (typeof setup === "undefined") {
+    setup = "";
   }
-  return i[t.length] = "var _n \x3d " + a + ".length;\n" + "var i" + (f ? "" : ", ret \x3d Array(_n)") + ";\n" + r + "\n" + "for(i\x3d_n-1;i!\x3d\x3d-1;--i) {\n" + n + "\n" + "}\n" + "return ret;", Function.apply(null, i);
-}, numeric._biforeach = function _biforeach(e, t, n, r, i) {
-  if (r === n.length - 1) {
-    i(e, t);
+  var fun = [];
+  var k;
+  var avec = /\[i\]$/, p, thevec = "";
+  var haveret = false;
+  for (k = 0;k < params.length;k++) {
+    if (avec.test(params[k])) {
+      p = params[k].substring(0, params[k].length - 3);
+      thevec = p;
+    } else {
+      p = params[k];
+    }
+    if (p === "ret") {
+      haveret = true;
+    }
+    fun.push(p);
+  }
+  fun[params.length] = "_s";
+  fun[params.length + 1] = "_k";
+  fun[params.length + 2] = 'if(typeof _s \x3d\x3d\x3d "undefined") _s \x3d numeric.dim(' + thevec + ");\n" + 'if(typeof _k \x3d\x3d\x3d "undefined") _k \x3d 0;\n' + "var _n \x3d _s[_k];\n" + "var i" + (haveret ? "" : ", ret \x3d Array(_n)") + ";\n" + "if(_k \x3c _s.length-1) {\n" + "    for(i\x3d_n-1;i\x3e\x3d0;i--) ret[i] \x3d arguments.callee(" + params.join(",") + ",_s,_k+1);\n" + "    return ret;\n" + "}\n" + setup + "\n" + "for(i\x3d_n-1;i!\x3d\x3d-1;--i) {\n" + "    " + body + "\n" + "}\n" + 
+  "return ret;";
+  return Function.apply(null, fun);
+};
+numeric.pointwise2 = function pointwise2(params, body, setup) {
+  if (typeof setup === "undefined") {
+    setup = "";
+  }
+  var fun = [];
+  var k;
+  var avec = /\[i\]$/, p, thevec = "";
+  var haveret = false;
+  for (k = 0;k < params.length;k++) {
+    if (avec.test(params[k])) {
+      p = params[k].substring(0, params[k].length - 3);
+      thevec = p;
+    } else {
+      p = params[k];
+    }
+    if (p === "ret") {
+      haveret = true;
+    }
+    fun.push(p);
+  }
+  fun[params.length] = "var _n \x3d " + thevec + ".length;\n" + "var i" + (haveret ? "" : ", ret \x3d Array(_n)") + ";\n" + setup + "\n" + "for(i\x3d_n-1;i!\x3d\x3d-1;--i) {\n" + body + "\n" + "}\n" + "return ret;";
+  return Function.apply(null, fun);
+};
+numeric._biforeach = function _biforeach(x, y, s, k, f) {
+  if (k === s.length - 1) {
+    f(x, y);
     return;
   }
-  var s, o = n[r];
-  for (s = o - 1;s >= 0;s--) {
-    _biforeach(typeof e == "object" ? e[s] : e, typeof t == "object" ? t[s] : t, n, r + 1, i);
+  var i, n = s[k];
+  for (i = n - 1;i >= 0;i--) {
+    _biforeach(typeof x === "object" ? x[i] : x, typeof y === "object" ? y[i] : y, s, k + 1, f);
   }
-}, numeric._biforeach2 = function _biforeach2(e, t, n, r, i) {
-  if (r === n.length - 1) {
-    return i(e, t);
+};
+numeric._biforeach2 = function _biforeach2(x, y, s, k, f) {
+  if (k === s.length - 1) {
+    return f(x, y);
   }
-  var s, o = n[r], u = Array(o);
-  for (s = o - 1;s >= 0;--s) {
-    u[s] = _biforeach2(typeof e == "object" ? e[s] : e, typeof t == "object" ? t[s] : t, n, r + 1, i);
+  var i, n = s[k], ret = Array(n);
+  for (i = n - 1;i >= 0;--i) {
+    ret[i] = _biforeach2(typeof x === "object" ? x[i] : x, typeof y === "object" ? y[i] : y, s, k + 1, f);
   }
-  return u;
-}, numeric._foreach = function _foreach(e, t, n, r) {
-  if (n === t.length - 1) {
-    r(e);
+  return ret;
+};
+numeric._foreach = function _foreach(x, s, k, f) {
+  if (k === s.length - 1) {
+    f(x);
     return;
   }
-  var i, s = t[n];
-  for (i = s - 1;i >= 0;i--) {
-    _foreach(e[i], t, n + 1, r);
+  var i, n = s[k];
+  for (i = n - 1;i >= 0;i--) {
+    _foreach(x[i], s, k + 1, f);
   }
-}, numeric._foreach2 = function _foreach2(e, t, n, r) {
-  if (n === t.length - 1) {
-    return r(e);
+};
+numeric._foreach2 = function _foreach2(x, s, k, f) {
+  if (k === s.length - 1) {
+    return f(x);
   }
-  var i, s = t[n], o = Array(s);
-  for (i = s - 1;i >= 0;i--) {
-    o[i] = _foreach2(e[i], t, n + 1, r);
+  var i, n = s[k], ret = Array(n);
+  for (i = n - 1;i >= 0;i--) {
+    ret[i] = _foreach2(x[i], s, k + 1, f);
   }
-  return o;
-}, numeric.ops2 = {add:"+", sub:"-", mul:"*", div:"/", mod:"%", and:"\x26\x26", or:"||", eq:"\x3d\x3d\x3d", neq:"!\x3d\x3d", lt:"\x3c", gt:"\x3e", leq:"\x3c\x3d", geq:"\x3e\x3d", band:"\x26", bor:"|", bxor:"^", lshift:"\x3c\x3c", rshift:"\x3e\x3e", rrshift:"\x3e\x3e\x3e"}, numeric.opseq = {addeq:"+\x3d", subeq:"-\x3d", muleq:"*\x3d", diveq:"/\x3d", modeq:"%\x3d", lshifteq:"\x3c\x3c\x3d", rshifteq:"\x3e\x3e\x3d", rrshifteq:"\x3e\x3e\x3e\x3d", bandeq:"\x26\x3d", boreq:"|\x3d", bxoreq:"^\x3d"}, numeric.mathfuns = 
-["abs", "acos", "asin", "atan", "ceil", "cos", "exp", "floor", "log", "round", "sin", "sqrt", "tan", "isNaN", "isFinite"], numeric.mathfuns2 = ["atan2", "pow", "max", "min"], numeric.ops1 = {neg:"-", not:"!", bnot:"~", clone:""}, numeric.mapreducers = {any:["if(xi) return true;", "var accum \x3d false;"], all:["if(!xi) return false;", "var accum \x3d true;"], sum:["accum +\x3d xi;", "var accum \x3d 0;"], prod:["accum *\x3d xi;", "var accum \x3d 1;"], norm2Squared:["accum +\x3d xi*xi;", "var accum \x3d 0;"], 
-norminf:["accum \x3d max(accum,abs(xi));", "var accum \x3d 0, max \x3d Math.max, abs \x3d Math.abs;"], norm1:["accum +\x3d abs(xi)", "var accum \x3d 0, abs \x3d Math.abs;"], sup:["accum \x3d max(accum,xi);", "var accum \x3d -Infinity, max \x3d Math.max;"], inf:["accum \x3d min(accum,xi);", "var accum \x3d Infinity, min \x3d Math.min;"]}, function() {
-  var e, t;
-  for (e = 0;e < numeric.mathfuns2.length;++e) {
-    t = numeric.mathfuns2[e], numeric.ops2[t] = t;
+  return ret;
+};
+numeric.ops2 = {add:"+", sub:"-", mul:"*", div:"/", mod:"%", and:"\x26\x26", or:"||", eq:"\x3d\x3d\x3d", neq:"!\x3d\x3d", lt:"\x3c", gt:"\x3e", leq:"\x3c\x3d", geq:"\x3e\x3d", band:"\x26", bor:"|", bxor:"^", lshift:"\x3c\x3c", rshift:"\x3e\x3e", rrshift:"\x3e\x3e\x3e"};
+numeric.opseq = {addeq:"+\x3d", subeq:"-\x3d", muleq:"*\x3d", diveq:"/\x3d", modeq:"%\x3d", lshifteq:"\x3c\x3c\x3d", rshifteq:"\x3e\x3e\x3d", rrshifteq:"\x3e\x3e\x3e\x3d", bandeq:"\x26\x3d", boreq:"|\x3d", bxoreq:"^\x3d"};
+numeric.mathfuns = ["abs", "acos", "asin", "atan", "ceil", "cos", "exp", "floor", "log", "round", "sin", "sqrt", "tan", "isNaN", "isFinite"];
+numeric.mathfuns2 = ["atan2", "pow", "max", "min"];
+numeric.ops1 = {neg:"-", not:"!", bnot:"~", clone:""};
+numeric.mapreducers = {any:["if(xi) return true;", "var accum \x3d false;"], all:["if(!xi) return false;", "var accum \x3d true;"], sum:["accum +\x3d xi;", "var accum \x3d 0;"], prod:["accum *\x3d xi;", "var accum \x3d 1;"], norm2Squared:["accum +\x3d xi*xi;", "var accum \x3d 0;"], norminf:["accum \x3d max(accum,abs(xi));", "var accum \x3d 0, max \x3d Math.max, abs \x3d Math.abs;"], norm1:["accum +\x3d abs(xi)", "var accum \x3d 0, abs \x3d Math.abs;"], sup:["accum \x3d max(accum,xi);", "var accum \x3d -Infinity, max \x3d Math.max;"], 
+inf:["accum \x3d min(accum,xi);", "var accum \x3d Infinity, min \x3d Math.min;"]};
+(function() {
+  var i, o;
+  for (i = 0;i < numeric.mathfuns2.length;++i) {
+    o = numeric.mathfuns2[i];
+    numeric.ops2[o] = o;
   }
-  for (e in numeric.ops2) {
-    if (numeric.ops2.hasOwnProperty(e)) {
-      t = numeric.ops2[e];
-      var n, r, i = "";
-      numeric.myIndexOf.call(numeric.mathfuns2, e) !== -1 ? (i = "var " + t + " \x3d Math." + t + ";\n", n = function(e, n, r) {
-        return e + " \x3d " + t + "(" + n + "," + r + ")";
-      }, r = function(e, n) {
-        return e + " \x3d " + t + "(" + e + "," + n + ")";
-      }) : (n = function(e, n, r) {
-        return e + " \x3d " + n + " " + t + " " + r;
-      }, numeric.opseq.hasOwnProperty(e + "eq") ? r = function(e, n) {
-        return e + " " + t + "\x3d " + n;
-      } : r = function(e, n) {
-        return e + " \x3d " + e + " " + t + " " + n;
-      }), numeric[e + "VV"] = numeric.pointwise2(["x[i]", "y[i]"], n("ret[i]", "x[i]", "y[i]"), i), numeric[e + "SV"] = numeric.pointwise2(["x", "y[i]"], n("ret[i]", "x", "y[i]"), i), numeric[e + "VS"] = numeric.pointwise2(["x[i]", "y"], n("ret[i]", "x[i]", "y"), i), numeric[e] = Function("var n \x3d arguments.length, i, x \x3d arguments[0], y;\nvar VV \x3d numeric." + e + "VV, VS \x3d numeric." + e + "VS, SV \x3d numeric." + e + "SV;\n" + "var dim \x3d numeric.dim;\n" + "for(i\x3d1;i!\x3d\x3dn;++i) { \n" + 
-      "  y \x3d arguments[i];\n" + '  if(typeof x \x3d\x3d\x3d "object") {\n' + '      if(typeof y \x3d\x3d\x3d "object") x \x3d numeric._biforeach2(x,y,dim(x),0,VV);\n' + "      else x \x3d numeric._biforeach2(x,y,dim(x),0,VS);\n" + '  } else if(typeof y \x3d\x3d\x3d "object") x \x3d numeric._biforeach2(x,y,dim(y),0,SV);\n' + "  else " + r("x", "y") + "\n" + "}\nreturn x;\n"), numeric[t] = numeric[e], numeric[e + "eqV"] = numeric.pointwise2(["ret[i]", "x[i]"], r("ret[i]", "x[i]"), i), numeric[e + 
-      "eqS"] = numeric.pointwise2(["ret[i]", "x"], r("ret[i]", "x"), i), numeric[e + "eq"] = Function("var n \x3d arguments.length, i, x \x3d arguments[0], y;\nvar V \x3d numeric." + e + "eqV, S \x3d numeric." + e + "eqS\n" + "var s \x3d numeric.dim(x);\n" + "for(i\x3d1;i!\x3d\x3dn;++i) { \n" + "  y \x3d arguments[i];\n" + '  if(typeof y \x3d\x3d\x3d "object") numeric._biforeach(x,y,s,0,V);\n' + "  else numeric._biforeach(x,y,s,0,S);\n" + "}\nreturn x;\n");
-    }
-  }
-  for (e = 0;e < numeric.mathfuns2.length;++e) {
-    t = numeric.mathfuns2[e], delete numeric.ops2[t];
-  }
-  for (e = 0;e < numeric.mathfuns.length;++e) {
-    t = numeric.mathfuns[e], numeric.ops1[t] = t;
-  }
-  for (e in numeric.ops1) {
-    numeric.ops1.hasOwnProperty(e) && (i = "", t = numeric.ops1[e], numeric.myIndexOf.call(numeric.mathfuns, e) !== -1 && (Math.hasOwnProperty(t) && (i = "var " + t + " \x3d Math." + t + ";\n")), numeric[e + "eqV"] = numeric.pointwise2(["ret[i]"], "ret[i] \x3d " + t + "(ret[i]);", i), numeric[e + "eq"] = Function("x", 'if(typeof x !\x3d\x3d "object") return ' + t + "x\n" + "var i;\n" + "var V \x3d numeric." + e + "eqV;\n" + "var s \x3d numeric.dim(x);\n" + "numeric._foreach(x,s,0,V);\n" + "return x;\n"), 
-    numeric[e + "V"] = numeric.pointwise2(["x[i]"], "ret[i] \x3d " + t + "(x[i]);", i), numeric[e] = Function("x", 'if(typeof x !\x3d\x3d "object") return ' + t + "(x)\n" + "var i;\n" + "var V \x3d numeric." + e + "V;\n" + "var s \x3d numeric.dim(x);\n" + "return numeric._foreach2(x,s,0,V);\n"));
-  }
-  for (e = 0;e < numeric.mathfuns.length;++e) {
-    t = numeric.mathfuns[e], delete numeric.ops1[t];
-  }
-  for (e in numeric.mapreducers) {
-    numeric.mapreducers.hasOwnProperty(e) && (t = numeric.mapreducers[e], numeric[e + "V"] = numeric.mapreduce2(t[0], t[1]), numeric[e] = Function("x", "s", "k", t[1] + 'if(typeof x !\x3d\x3d "object") {' + "    xi \x3d x;\n" + t[0] + ";\n" + "    return accum;\n" + "}" + 'if(typeof s \x3d\x3d\x3d "undefined") s \x3d numeric.dim(x);\n' + 'if(typeof k \x3d\x3d\x3d "undefined") k \x3d 0;\n' + "if(k \x3d\x3d\x3d s.length-1) return numeric." + e + "V(x);\n" + "var xi;\n" + "var n \x3d x.length, i;\n" + 
-    "for(i\x3dn-1;i!\x3d\x3d-1;--i) {\n" + "   xi \x3d arguments.callee(x[i]);\n" + t[0] + ";\n" + "}\n" + "return accum;\n"));
-  }
-}(), numeric.truncVV = numeric.pointwise(["x[i]", "y[i]"], "ret[i] \x3d round(x[i]/y[i])*y[i];", "var round \x3d Math.round;"), numeric.truncVS = numeric.pointwise(["x[i]", "y"], "ret[i] \x3d round(x[i]/y)*y;", "var round \x3d Math.round;"), numeric.truncSV = numeric.pointwise(["x", "y[i]"], "ret[i] \x3d round(x/y[i])*y[i];", "var round \x3d Math.round;"), numeric.trunc = function(t, n) {
-  return typeof t == "object" ? typeof n == "object" ? numeric.truncVV(t, n) : numeric.truncVS(t, n) : typeof n == "object" ? numeric.truncSV(t, n) : Math.round(t / n) * n;
-}, numeric.inv = function(t) {
-  var n = numeric.dim(t), r = Math.abs, i = n[0], s = n[1], o = numeric.clone(t), u, a, f = numeric.identity(i), l, c, h, p, d, t;
-  for (p = 0;p < s;++p) {
-    var v = -1, m = -1;
-    for (h = p;h !== i;++h) {
-      d = r(o[h][p]), d > m && (v = h, m = d);
-    }
-    a = o[v], o[v] = o[p], o[p] = a, c = f[v], f[v] = f[p], f[p] = c, t = a[p];
-    for (d = p;d !== s;++d) {
-      a[d] /= t;
-    }
-    for (d = s - 1;d !== -1;--d) {
-      c[d] /= t;
-    }
-    for (h = i - 1;h !== -1;--h) {
-      if (h !== p) {
-        u = o[h], l = f[h], t = u[p];
-        for (d = p + 1;d !== s;++d) {
-          u[d] -= a[d] * t;
+  for (i in numeric.ops2) {
+    if (numeric.ops2.hasOwnProperty(i)) {
+      o = numeric.ops2[i];
+      var code, codeeq, setup = "";
+      if (numeric.myIndexOf.call(numeric.mathfuns2, i) !== -1) {
+        setup = "var " + o + " \x3d Math." + o + ";\n";
+        code = function(r, x, y) {
+          return r + " \x3d " + o + "(" + x + "," + y + ")";
+        };
+        codeeq = function(x, y) {
+          return x + " \x3d " + o + "(" + x + "," + y + ")";
+        };
+      } else {
+        code = function(r, x, y) {
+          return r + " \x3d " + x + " " + o + " " + y;
+        };
+        if (numeric.opseq.hasOwnProperty(i + "eq")) {
+          codeeq = function(x, y) {
+            return x + " " + o + "\x3d " + y;
+          };
+        } else {
+          codeeq = function(x, y) {
+            return x + " \x3d " + x + " " + o + " " + y;
+          };
         }
-        for (d = s - 1;d > 0;--d) {
-          l[d] -= c[d] * t, --d, l[d] -= c[d] * t;
+      }
+      numeric[i + "VV"] = numeric.pointwise2(["x[i]", "y[i]"], code("ret[i]", "x[i]", "y[i]"), setup);
+      numeric[i + "SV"] = numeric.pointwise2(["x", "y[i]"], code("ret[i]", "x", "y[i]"), setup);
+      numeric[i + "VS"] = numeric.pointwise2(["x[i]", "y"], code("ret[i]", "x[i]", "y"), setup);
+      numeric[i] = Function("var n \x3d arguments.length, i, x \x3d arguments[0], y;\n" + "var VV \x3d numeric." + i + "VV, VS \x3d numeric." + i + "VS, SV \x3d numeric." + i + "SV;\n" + "var dim \x3d numeric.dim;\n" + "for(i\x3d1;i!\x3d\x3dn;++i) { \n" + "  y \x3d arguments[i];\n" + '  if(typeof x \x3d\x3d\x3d "object") {\n' + '      if(typeof y \x3d\x3d\x3d "object") x \x3d numeric._biforeach2(x,y,dim(x),0,VV);\n' + "      else x \x3d numeric._biforeach2(x,y,dim(x),0,VS);\n" + '  } else if(typeof y \x3d\x3d\x3d "object") x \x3d numeric._biforeach2(x,y,dim(y),0,SV);\n' + 
+      "  else " + codeeq("x", "y") + "\n" + "}\nreturn x;\n");
+      numeric[o] = numeric[i];
+      numeric[i + "eqV"] = numeric.pointwise2(["ret[i]", "x[i]"], codeeq("ret[i]", "x[i]"), setup);
+      numeric[i + "eqS"] = numeric.pointwise2(["ret[i]", "x"], codeeq("ret[i]", "x"), setup);
+      numeric[i + "eq"] = Function("var n \x3d arguments.length, i, x \x3d arguments[0], y;\n" + "var V \x3d numeric." + i + "eqV, S \x3d numeric." + i + "eqS\n" + "var s \x3d numeric.dim(x);\n" + "for(i\x3d1;i!\x3d\x3dn;++i) { \n" + "  y \x3d arguments[i];\n" + '  if(typeof y \x3d\x3d\x3d "object") numeric._biforeach(x,y,s,0,V);\n' + "  else numeric._biforeach(x,y,s,0,S);\n" + "}\nreturn x;\n");
+    }
+  }
+  for (i = 0;i < numeric.mathfuns2.length;++i) {
+    o = numeric.mathfuns2[i];
+    delete numeric.ops2[o];
+  }
+  for (i = 0;i < numeric.mathfuns.length;++i) {
+    o = numeric.mathfuns[i];
+    numeric.ops1[o] = o;
+  }
+  for (i in numeric.ops1) {
+    if (numeric.ops1.hasOwnProperty(i)) {
+      setup = "";
+      o = numeric.ops1[i];
+      if (numeric.myIndexOf.call(numeric.mathfuns, i) !== -1) {
+        if (Math.hasOwnProperty(o)) {
+          setup = "var " + o + " \x3d Math." + o + ";\n";
         }
-        d === 0 && (l[0] -= c[0] * t);
+      }
+      numeric[i + "eqV"] = numeric.pointwise2(["ret[i]"], "ret[i] \x3d " + o + "(ret[i]);", setup);
+      numeric[i + "eq"] = Function("x", 'if(typeof x !\x3d\x3d "object") return ' + o + "x\n" + "var i;\n" + "var V \x3d numeric." + i + "eqV;\n" + "var s \x3d numeric.dim(x);\n" + "numeric._foreach(x,s,0,V);\n" + "return x;\n");
+      numeric[i + "V"] = numeric.pointwise2(["x[i]"], "ret[i] \x3d " + o + "(x[i]);", setup);
+      numeric[i] = Function("x", 'if(typeof x !\x3d\x3d "object") return ' + o + "(x)\n" + "var i;\n" + "var V \x3d numeric." + i + "V;\n" + "var s \x3d numeric.dim(x);\n" + "return numeric._foreach2(x,s,0,V);\n");
+    }
+  }
+  for (i = 0;i < numeric.mathfuns.length;++i) {
+    o = numeric.mathfuns[i];
+    delete numeric.ops1[o];
+  }
+  for (i in numeric.mapreducers) {
+    if (numeric.mapreducers.hasOwnProperty(i)) {
+      o = numeric.mapreducers[i];
+      numeric[i + "V"] = numeric.mapreduce2(o[0], o[1]);
+      numeric[i] = Function("x", "s", "k", o[1] + 'if(typeof x !\x3d\x3d "object") {' + "    xi \x3d x;\n" + o[0] + ";\n" + "    return accum;\n" + "}" + 'if(typeof s \x3d\x3d\x3d "undefined") s \x3d numeric.dim(x);\n' + 'if(typeof k \x3d\x3d\x3d "undefined") k \x3d 0;\n' + "if(k \x3d\x3d\x3d s.length-1) return numeric." + i + "V(x);\n" + "var xi;\n" + "var n \x3d x.length, i;\n" + "for(i\x3dn-1;i!\x3d\x3d-1;--i) {\n" + "   xi \x3d arguments.callee(x[i]);\n" + o[0] + ";\n" + "}\n" + "return accum;\n");
+    }
+  }
+})();
+numeric.truncVV = numeric.pointwise(["x[i]", "y[i]"], "ret[i] \x3d round(x[i]/y[i])*y[i];", "var round \x3d Math.round;");
+numeric.truncVS = numeric.pointwise(["x[i]", "y"], "ret[i] \x3d round(x[i]/y)*y;", "var round \x3d Math.round;");
+numeric.truncSV = numeric.pointwise(["x", "y[i]"], "ret[i] \x3d round(x/y[i])*y[i];", "var round \x3d Math.round;");
+numeric.trunc = function trunc(x, y) {
+  if (typeof x === "object") {
+    if (typeof y === "object") {
+      return numeric.truncVV(x, y);
+    }
+    return numeric.truncVS(x, y);
+  }
+  if (typeof y === "object") {
+    return numeric.truncSV(x, y);
+  }
+  return Math.round(x / y) * y;
+};
+numeric.inv = function inv(x) {
+  var s = numeric.dim(x), abs = Math.abs, m = s[0], n = s[1];
+  var A = numeric.clone(x), Ai, Aj;
+  var I = numeric.identity(m), Ii, Ij;
+  var i, j, k, x;
+  for (j = 0;j < n;++j) {
+    var i0 = -1;
+    var v0 = -1;
+    for (i = j;i !== m;++i) {
+      k = abs(A[i][j]);
+      if (k > v0) {
+        i0 = i;
+        v0 = k;
+      }
+    }
+    Aj = A[i0];
+    A[i0] = A[j];
+    A[j] = Aj;
+    Ij = I[i0];
+    I[i0] = I[j];
+    I[j] = Ij;
+    x = Aj[j];
+    for (k = j;k !== n;++k) {
+      Aj[k] /= x;
+    }
+    for (k = n - 1;k !== -1;--k) {
+      Ij[k] /= x;
+    }
+    for (i = m - 1;i !== -1;--i) {
+      if (i !== j) {
+        Ai = A[i];
+        Ii = I[i];
+        x = Ai[j];
+        for (k = j + 1;k !== n;++k) {
+          Ai[k] -= Aj[k] * x;
+        }
+        for (k = n - 1;k > 0;--k) {
+          Ii[k] -= Ij[k] * x;
+          --k;
+          Ii[k] -= Ij[k] * x;
+        }
+        if (k === 0) {
+          Ii[0] -= Ij[0] * x;
+        }
       }
     }
   }
-  return f;
-}, numeric.det = function(t) {
-  var n = numeric.dim(t);
-  if (n.length !== 2 || n[0] !== n[1]) {
+  return I;
+};
+numeric.det = function det(x) {
+  var s = numeric.dim(x);
+  if (s.length !== 2 || s[0] !== s[1]) {
     throw new Error("numeric: det() only works on square matrices");
   }
-  var r = n[0], i = 1, s, o, u, a = numeric.clone(t), f, l, c, h, p, d, v;
-  for (o = 0;o < r - 1;o++) {
-    u = o;
-    for (s = o + 1;s < r;s++) {
-      Math.abs(a[s][o]) > Math.abs(a[u][o]) && (u = s);
-    }
-    u !== o && (h = a[u], a[u] = a[o], a[o] = h, i *= -1), f = a[o];
-    for (s = o + 1;s < r;s++) {
-      l = a[s], c = l[o] / f[o];
-      for (u = o + 1;u < r - 1;u += 2) {
-        p = u + 1, l[u] -= f[u] * c, l[p] -= f[p] * c;
+  var n = s[0], ret = 1, i, j, k, A = numeric.clone(x), Aj, Ai, alpha, temp, k1, k2, k3;
+  for (j = 0;j < n - 1;j++) {
+    k = j;
+    for (i = j + 1;i < n;i++) {
+      if (Math.abs(A[i][j]) > Math.abs(A[k][j])) {
+        k = i;
       }
-      u !== r && (l[u] -= f[u] * c);
     }
-    if (f[o] === 0) {
+    if (k !== j) {
+      temp = A[k];
+      A[k] = A[j];
+      A[j] = temp;
+      ret *= -1;
+    }
+    Aj = A[j];
+    for (i = j + 1;i < n;i++) {
+      Ai = A[i];
+      alpha = Ai[j] / Aj[j];
+      for (k = j + 1;k < n - 1;k += 2) {
+        k1 = k + 1;
+        Ai[k] -= Aj[k] * alpha;
+        Ai[k1] -= Aj[k1] * alpha;
+      }
+      if (k !== n) {
+        Ai[k] -= Aj[k] * alpha;
+      }
+    }
+    if (Aj[j] === 0) {
       return 0;
     }
-    i *= f[o];
+    ret *= Aj[j];
   }
-  return i * a[o][o];
-}, numeric.transpose = function(t) {
-  var n, r, i = t.length, s = t[0].length, o = Array(s), u, a, f;
-  for (r = 0;r < s;r++) {
-    o[r] = Array(i);
+  return ret * A[j][j];
+};
+numeric.transpose = function transpose(x) {
+  var i, j, m = x.length, n = x[0].length, ret = Array(n), A0, A1, Bj;
+  for (j = 0;j < n;j++) {
+    ret[j] = Array(m);
   }
-  for (n = i - 1;n >= 1;n -= 2) {
-    a = t[n], u = t[n - 1];
-    for (r = s - 1;r >= 1;--r) {
-      f = o[r], f[n] = a[r], f[n - 1] = u[r], --r, f = o[r], f[n] = a[r], f[n - 1] = u[r];
+  for (i = m - 1;i >= 1;i -= 2) {
+    A1 = x[i];
+    A0 = x[i - 1];
+    for (j = n - 1;j >= 1;--j) {
+      Bj = ret[j];
+      Bj[i] = A1[j];
+      Bj[i - 1] = A0[j];
+      --j;
+      Bj = ret[j];
+      Bj[i] = A1[j];
+      Bj[i - 1] = A0[j];
     }
-    r === 0 && (f = o[0], f[n] = a[0], f[n - 1] = u[0]);
-  }
-  if (n === 0) {
-    u = t[0];
-    for (r = s - 1;r >= 1;--r) {
-      o[r][0] = u[r], --r, o[r][0] = u[r];
+    if (j === 0) {
+      Bj = ret[0];
+      Bj[i] = A1[0];
+      Bj[i - 1] = A0[0];
     }
-    r === 0 && (o[0][0] = u[0]);
   }
-  return o;
-}, numeric.negtranspose = function(t) {
-  var n, r, i = t.length, s = t[0].length, o = Array(s), u, a, f;
-  for (r = 0;r < s;r++) {
-    o[r] = Array(i);
-  }
-  for (n = i - 1;n >= 1;n -= 2) {
-    a = t[n], u = t[n - 1];
-    for (r = s - 1;r >= 1;--r) {
-      f = o[r], f[n] = -a[r], f[n - 1] = -u[r], --r, f = o[r], f[n] = -a[r], f[n - 1] = -u[r];
+  if (i === 0) {
+    A0 = x[0];
+    for (j = n - 1;j >= 1;--j) {
+      ret[j][0] = A0[j];
+      --j;
+      ret[j][0] = A0[j];
     }
-    r === 0 && (f = o[0], f[n] = -a[0], f[n - 1] = -u[0]);
-  }
-  if (n === 0) {
-    u = t[0];
-    for (r = s - 1;r >= 1;--r) {
-      o[r][0] = -u[r], --r, o[r][0] = -u[r];
+    if (j === 0) {
+      ret[0][0] = A0[0];
     }
-    r === 0 && (o[0][0] = -u[0]);
   }
-  return o;
-}, numeric._random = function _random(e, t) {
-  var n, r = e[t], i = Array(r), s;
-  if (t === e.length - 1) {
-    s = Math.random;
-    for (n = r - 1;n >= 1;n -= 2) {
-      i[n] = s(), i[n - 1] = s();
+  return ret;
+};
+numeric.negtranspose = function negtranspose(x) {
+  var i, j, m = x.length, n = x[0].length, ret = Array(n), A0, A1, Bj;
+  for (j = 0;j < n;j++) {
+    ret[j] = Array(m);
+  }
+  for (i = m - 1;i >= 1;i -= 2) {
+    A1 = x[i];
+    A0 = x[i - 1];
+    for (j = n - 1;j >= 1;--j) {
+      Bj = ret[j];
+      Bj[i] = -A1[j];
+      Bj[i - 1] = -A0[j];
+      --j;
+      Bj = ret[j];
+      Bj[i] = -A1[j];
+      Bj[i - 1] = -A0[j];
     }
-    return n === 0 && (i[0] = s()), i;
+    if (j === 0) {
+      Bj = ret[0];
+      Bj[i] = -A1[0];
+      Bj[i - 1] = -A0[0];
+    }
   }
-  for (n = r - 1;n >= 0;n--) {
-    i[n] = _random(e, t + 1);
+  if (i === 0) {
+    A0 = x[0];
+    for (j = n - 1;j >= 1;--j) {
+      ret[j][0] = -A0[j];
+      --j;
+      ret[j][0] = -A0[j];
+    }
+    if (j === 0) {
+      ret[0][0] = -A0[0];
+    }
   }
-  return i;
-}, numeric.random = function(t) {
-  return numeric._random(t, 0);
-}, numeric.norm2 = function(t) {
-  return Math.sqrt(numeric.norm2Squared(t));
-}, numeric.linspace = function(t, n, r) {
-  typeof r == "undefined" && (r = Math.max(Math.round(n - t) + 1, 1));
-  if (r < 2) {
-    return r === 1 ? [t] : [];
+  return ret;
+};
+numeric._random = function _random(s, k) {
+  var i, n = s[k], ret = Array(n), rnd;
+  if (k === s.length - 1) {
+    rnd = Math.random;
+    for (i = n - 1;i >= 1;i -= 2) {
+      ret[i] = rnd();
+      ret[i - 1] = rnd();
+    }
+    if (i === 0) {
+      ret[0] = rnd();
+    }
+    return ret;
   }
-  var i, s = Array(r);
-  r--;
-  for (i = r;i >= 0;i--) {
-    s[i] = (i * n + (r - i) * t) / r;
+  for (i = n - 1;i >= 0;i--) {
+    ret[i] = _random(s, k + 1);
   }
-  return s;
-}, numeric.getBlock = function(t, n, r) {
-  function s(e, t) {
-    var o, u = n[t], a = r[t] - u, f = Array(a);
-    if (t === i.length - 1) {
-      for (o = a;o >= 0;o--) {
-        f[o] = e[o + u];
+  return ret;
+};
+numeric.random = function random(s) {
+  return numeric._random(s, 0);
+};
+numeric.norm2 = function norm2(x) {
+  return Math.sqrt(numeric.norm2Squared(x));
+};
+numeric.linspace = function linspace(a, b, n) {
+  if (typeof n === "undefined") {
+    n = Math.max(Math.round(b - a) + 1, 1);
+  }
+  if (n < 2) {
+    return n === 1 ? [a] : [];
+  }
+  var i, ret = Array(n);
+  n--;
+  for (i = n;i >= 0;i--) {
+    ret[i] = (i * b + (n - i) * a) / n;
+  }
+  return ret;
+};
+numeric.getBlock = function getBlock(x, from, to) {
+  var s = numeric.dim(x);
+  function foo(x, k) {
+    var i, a = from[k], n = to[k] - a, ret = Array(n);
+    if (k === s.length - 1) {
+      for (i = n;i >= 0;i--) {
+        ret[i] = x[i + a];
       }
-      return f;
+      return ret;
     }
-    for (o = a;o >= 0;o--) {
-      f[o] = s(e[o + u], t + 1);
+    for (i = n;i >= 0;i--) {
+      ret[i] = foo(x[i + a], k + 1);
     }
-    return f;
+    return ret;
   }
-  var i = numeric.dim(t);
-  return s(t, 0);
-}, numeric.setBlock = function(t, n, r, i) {
-  function o(e, t, i) {
-    var u, a = n[i], f = r[i] - a;
-    if (i === s.length - 1) {
-      for (u = f;u >= 0;u--) {
-        e[u + a] = t[u];
+  return foo(x, 0);
+};
+numeric.setBlock = function setBlock(x, from, to, B) {
+  var s = numeric.dim(x);
+  function foo(x, y, k) {
+    var i, a = from[k], n = to[k] - a;
+    if (k === s.length - 1) {
+      for (i = n;i >= 0;i--) {
+        x[i + a] = y[i];
       }
     }
-    for (u = f;u >= 0;u--) {
-      o(e[u + a], t[u], i + 1);
+    for (i = n;i >= 0;i--) {
+      foo(x[i + a], y[i], k + 1);
     }
   }
-  var s = numeric.dim(t);
-  return o(t, i, 0), t;
-}, numeric.getRange = function(t, n, r) {
-  var i = n.length, s = r.length, o, u, a = Array(i), f, l;
-  for (o = i - 1;o !== -1;--o) {
-    a[o] = Array(s), f = a[o], l = t[n[o]];
-    for (u = s - 1;u !== -1;--u) {
-      f[u] = l[r[u]];
+  foo(x, B, 0);
+  return x;
+};
+numeric.getRange = function getRange(A, I, J) {
+  var m = I.length, n = J.length;
+  var i, j;
+  var B = Array(m), Bi, AI;
+  for (i = m - 1;i !== -1;--i) {
+    B[i] = Array(n);
+    Bi = B[i];
+    AI = A[I[i]];
+    for (j = n - 1;j !== -1;--j) {
+      Bi[j] = AI[J[j]];
     }
   }
-  return a;
-}, numeric.blockMatrix = function(t) {
-  var n = numeric.dim(t);
-  if (n.length < 4) {
-    return numeric.blockMatrix([t]);
+  return B;
+};
+numeric.blockMatrix = function blockMatrix(X) {
+  var s = numeric.dim(X);
+  if (s.length < 4) {
+    return numeric.blockMatrix([X]);
   }
-  var r = n[0], i = n[1], s, o, u, a, f;
-  s = 0, o = 0;
-  for (u = 0;u < r;++u) {
-    s += t[u][0].length;
+  var m = s[0], n = s[1], M, N, i, j, Xij;
+  M = 0;
+  N = 0;
+  for (i = 0;i < m;++i) {
+    M += X[i][0].length;
   }
-  for (a = 0;a < i;++a) {
-    o += t[0][a][0].length;
+  for (j = 0;j < n;++j) {
+    N += X[0][j][0].length;
   }
-  var l = Array(s);
-  for (u = 0;u < s;++u) {
-    l[u] = Array(o);
+  var Z = Array(M);
+  for (i = 0;i < M;++i) {
+    Z[i] = Array(N);
   }
-  var c = 0, h, p, d, v, m;
-  for (u = 0;u < r;++u) {
-    h = o;
-    for (a = i - 1;a !== -1;--a) {
-      f = t[u][a], h -= f[0].length;
-      for (d = f.length - 1;d !== -1;--d) {
-        m = f[d], p = l[c + d];
-        for (v = m.length - 1;v !== -1;--v) {
-          p[h + v] = m[v];
+  var I = 0, J, ZI, k, l, Xijk;
+  for (i = 0;i < m;++i) {
+    J = N;
+    for (j = n - 1;j !== -1;--j) {
+      Xij = X[i][j];
+      J -= Xij[0].length;
+      for (k = Xij.length - 1;k !== -1;--k) {
+        Xijk = Xij[k];
+        ZI = Z[I + k];
+        for (l = Xijk.length - 1;l !== -1;--l) {
+          ZI[J + l] = Xijk[l];
         }
       }
     }
-    c += t[u][0].length;
+    I += X[i][0].length;
   }
-  return l;
-}, numeric.tensor = function(t, n) {
-  if (typeof t == "number" || typeof n == "number") {
-    return numeric.mul(t, n);
+  return Z;
+};
+numeric.tensor = function tensor(x, y) {
+  if (typeof x === "number" || typeof y === "number") {
+    return numeric.mul(x, y);
   }
-  var r = numeric.dim(t), i = numeric.dim(n);
-  if (r.length !== 1 || i.length !== 1) {
+  var s1 = numeric.dim(x), s2 = numeric.dim(y);
+  if (s1.length !== 1 || s2.length !== 1) {
     throw new Error("numeric: tensor product is only defined for vectors");
   }
-  var s = r[0], o = i[0], u = Array(s), a, f, l, c;
-  for (f = s - 1;f >= 0;f--) {
-    a = Array(o), c = t[f];
-    for (l = o - 1;l >= 3;--l) {
-      a[l] = c * n[l], --l, a[l] = c * n[l], --l, a[l] = c * n[l], --l, a[l] = c * n[l];
+  var m = s1[0], n = s2[0], A = Array(m), Ai, i, j, xi;
+  for (i = m - 1;i >= 0;i--) {
+    Ai = Array(n);
+    xi = x[i];
+    for (j = n - 1;j >= 3;--j) {
+      Ai[j] = xi * y[j];
+      --j;
+      Ai[j] = xi * y[j];
+      --j;
+      Ai[j] = xi * y[j];
+      --j;
+      Ai[j] = xi * y[j];
     }
-    while (l >= 0) {
-      a[l] = c * n[l], --l;
+    while (j >= 0) {
+      Ai[j] = xi * y[j];
+      --j;
     }
-    u[f] = a;
+    A[i] = Ai;
   }
-  return u;
-}, numeric.T = function(t, n) {
-  this.x = t, this.y = n;
-}, numeric.t = function(t, n) {
-  return new numeric.T(t, n);
-}, numeric.Tbinop = function(t, n, r, i, s) {
-  var o = numeric.indexOf;
-  if (typeof s != "string") {
-    var u;
-    s = "";
-    for (u in numeric) {
-      numeric.hasOwnProperty(u) && ((t.indexOf(u) >= 0 || (n.indexOf(u) >= 0 || (r.indexOf(u) >= 0 || i.indexOf(u) >= 0))) && (u.length > 1 && (s += "var " + u + " \x3d numeric." + u + ";\n")));
+  return A;
+};
+numeric.T = function T(x, y) {
+  this.x = x;
+  this.y = y;
+};
+numeric.t = function t(x, y) {
+  return new numeric.T(x, y);
+};
+numeric.Tbinop = function Tbinop(rr, rc, cr, cc, setup) {
+  var io = numeric.indexOf;
+  if (typeof setup !== "string") {
+    var k;
+    setup = "";
+    for (k in numeric) {
+      if (numeric.hasOwnProperty(k) && ((rr.indexOf(k) >= 0 || (rc.indexOf(k) >= 0 || (cr.indexOf(k) >= 0 || cc.indexOf(k) >= 0))) && k.length > 1)) {
+        setup += "var " + k + " \x3d numeric." + k + ";\n";
+      }
     }
   }
-  return Function(["y"], "var x \x3d this;\nif(!(y instanceof numeric.T)) { y \x3d new numeric.T(y); }\n" + s + "\n" + "if(x.y) {" + "  if(y.y) {" + "    return new numeric.T(" + i + ");\n" + "  }\n" + "  return new numeric.T(" + r + ");\n" + "}\n" + "if(y.y) {\n" + "  return new numeric.T(" + n + ");\n" + "}\n" + "return new numeric.T(" + t + ");\n");
-}, numeric.T.prototype.add = numeric.Tbinop("add(x.x,y.x)", "add(x.x,y.x),y.y", "add(x.x,y.x),x.y", "add(x.x,y.x),add(x.y,y.y)"), numeric.T.prototype.sub = numeric.Tbinop("sub(x.x,y.x)", "sub(x.x,y.x),neg(y.y)", "sub(x.x,y.x),x.y", "sub(x.x,y.x),sub(x.y,y.y)"), numeric.T.prototype.mul = numeric.Tbinop("mul(x.x,y.x)", "mul(x.x,y.x),mul(x.x,y.y)", "mul(x.x,y.x),mul(x.y,y.x)", "sub(mul(x.x,y.x),mul(x.y,y.y)),add(mul(x.x,y.y),mul(x.y,y.x))"), numeric.T.prototype.reciprocal = function() {
-  var t = numeric.mul, n = numeric.div;
+  return Function(["y"], "var x \x3d this;\n" + "if(!(y instanceof numeric.T)) { y \x3d new numeric.T(y); }\n" + setup + "\n" + "if(x.y) {" + "  if(y.y) {" + "    return new numeric.T(" + cc + ");\n" + "  }\n" + "  return new numeric.T(" + cr + ");\n" + "}\n" + "if(y.y) {\n" + "  return new numeric.T(" + rc + ");\n" + "}\n" + "return new numeric.T(" + rr + ");\n");
+};
+numeric.T.prototype.add = numeric.Tbinop("add(x.x,y.x)", "add(x.x,y.x),y.y", "add(x.x,y.x),x.y", "add(x.x,y.x),add(x.y,y.y)");
+numeric.T.prototype.sub = numeric.Tbinop("sub(x.x,y.x)", "sub(x.x,y.x),neg(y.y)", "sub(x.x,y.x),x.y", "sub(x.x,y.x),sub(x.y,y.y)");
+numeric.T.prototype.mul = numeric.Tbinop("mul(x.x,y.x)", "mul(x.x,y.x),mul(x.x,y.y)", "mul(x.x,y.x),mul(x.y,y.x)", "sub(mul(x.x,y.x),mul(x.y,y.y)),add(mul(x.x,y.y),mul(x.y,y.x))");
+numeric.T.prototype.reciprocal = function reciprocal() {
+  var mul = numeric.mul, div = numeric.div;
   if (this.y) {
-    var r = numeric.add(t(this.x, this.x), t(this.y, this.y));
-    return new numeric.T(n(this.x, r), n(numeric.neg(this.y), r));
+    var d = numeric.add(mul(this.x, this.x), mul(this.y, this.y));
+    return new numeric.T(div(this.x, d), div(numeric.neg(this.y), d));
   }
-  return new T(n(1, this.x));
-}, numeric.T.prototype.div = function div(e) {
-  e instanceof numeric.T || (e = new numeric.T(e));
-  if (e.y) {
-    return this.mul(e.reciprocal());
+  return new T(div(1, this.x));
+};
+numeric.T.prototype.div = function div(y) {
+  if (!(y instanceof numeric.T)) {
+    y = new numeric.T(y);
+  }
+  if (y.y) {
+    return this.mul(y.reciprocal());
   }
   var div = numeric.div;
-  return this.y ? new numeric.T(div(this.x, e.x), div(this.y, e.x)) : new numeric.T(div(this.x, e.x));
-}, numeric.T.prototype.dot = numeric.Tbinop("dot(x.x,y.x)", "dot(x.x,y.x),dot(x.x,y.y)", "dot(x.x,y.x),dot(x.y,y.x)", "sub(dot(x.x,y.x),dot(x.y,y.y)),add(dot(x.x,y.y),dot(x.y,y.x))"), numeric.T.prototype.transpose = function() {
-  var t = numeric.transpose, n = this.x, r = this.y;
-  return r ? new numeric.T(t(n), t(r)) : new numeric.T(t(n));
-}, numeric.T.prototype.transjugate = function() {
-  var t = numeric.transpose, n = this.x, r = this.y;
-  return r ? new numeric.T(t(n), numeric.negtranspose(r)) : new numeric.T(t(n));
-}, numeric.Tunop = function(t, n, r) {
-  return typeof r != "string" && (r = ""), Function("var x \x3d this;\n" + r + "\n" + "if(x.y) {" + "  " + n + ";\n" + "}\n" + t + ";\n");
-}, numeric.T.prototype.exp = numeric.Tunop("return new numeric.T(ex)", "return new numeric.T(mul(cos(x.y),ex),mul(sin(x.y),ex))", "var ex \x3d numeric.exp(x.x), cos \x3d numeric.cos, sin \x3d numeric.sin, mul \x3d numeric.mul;"), numeric.T.prototype.conj = numeric.Tunop("return new numeric.T(x.x);", "return new numeric.T(x.x,numeric.neg(x.y));"), numeric.T.prototype.neg = numeric.Tunop("return new numeric.T(neg(x.x));", "return new numeric.T(neg(x.x),neg(x.y));", "var neg \x3d numeric.neg;"), numeric.T.prototype.sin = 
-numeric.Tunop("return new numeric.T(numeric.sin(x.x))", "return x.exp().sub(x.neg().exp()).div(new numeric.T(0,2));"), numeric.T.prototype.cos = numeric.Tunop("return new numeric.T(numeric.cos(x.x))", "return x.exp().add(x.neg().exp()).div(2);"), numeric.T.prototype.abs = numeric.Tunop("return new numeric.T(numeric.abs(x.x));", "return new numeric.T(numeric.sqrt(numeric.add(mul(x.x,x.x),mul(x.y,x.y))));", "var mul \x3d numeric.mul;"), numeric.T.prototype.log = numeric.Tunop("return new numeric.T(numeric.log(x.x));", 
-"var theta \x3d new numeric.T(numeric.atan2(x.y,x.x)), r \x3d x.abs();\nreturn new numeric.T(numeric.log(r.x),theta.x);"), numeric.T.prototype.norm2 = numeric.Tunop("return numeric.norm2(x.x);", "var f \x3d numeric.norm2Squared;\nreturn Math.sqrt(f(x.x)+f(x.y));"), numeric.T.prototype.inv = function() {
-  var t = this;
-  if (typeof t.y == "undefined") {
-    return new numeric.T(numeric.inv(t.x));
+  if (this.y) {
+    return new numeric.T(div(this.x, y.x), div(this.y, y.x));
   }
-  var n = t.x.length, r, i, s, o = numeric.identity(n), u = numeric.rep([n, n], 0), a = numeric.clone(t.x), f = numeric.clone(t.y), l, c, h, p, d, v, m, g, r, i, s, y, b, w, E, S, x, T;
-  for (r = 0;r < n;r++) {
-    w = a[r][r], E = f[r][r], y = w * w + E * E, s = r;
-    for (i = r + 1;i < n;i++) {
-      w = a[i][r], E = f[i][r], b = w * w + E * E, b > y && (s = i, y = b);
-    }
-    s !== r && (T = a[r], a[r] = a[s], a[s] = T, T = f[r], f[r] = f[s], f[s] = T, T = o[r], o[r] = o[s], o[s] = T, T = u[r], u[r] = u[s], u[s] = T), l = a[r], c = f[r], d = o[r], v = u[r], w = l[r], E = c[r];
-    for (i = r + 1;i < n;i++) {
-      S = l[i], x = c[i], l[i] = (S * w + x * E) / y, c[i] = (x * w - S * E) / y;
-    }
-    for (i = 0;i < n;i++) {
-      S = d[i], x = v[i], d[i] = (S * w + x * E) / y, v[i] = (x * w - S * E) / y;
-    }
-    for (i = r + 1;i < n;i++) {
-      h = a[i], p = f[i], m = o[i], g = u[i], w = h[r], E = p[r];
-      for (s = r + 1;s < n;s++) {
-        S = l[s], x = c[s], h[s] -= S * w - x * E, p[s] -= x * w + S * E;
+  return new numeric.T(div(this.x, y.x));
+};
+numeric.T.prototype.dot = numeric.Tbinop("dot(x.x,y.x)", "dot(x.x,y.x),dot(x.x,y.y)", "dot(x.x,y.x),dot(x.y,y.x)", "sub(dot(x.x,y.x),dot(x.y,y.y)),add(dot(x.x,y.y),dot(x.y,y.x))");
+numeric.T.prototype.transpose = function transpose() {
+  var t = numeric.transpose, x = this.x, y = this.y;
+  if (y) {
+    return new numeric.T(t(x), t(y));
+  }
+  return new numeric.T(t(x));
+};
+numeric.T.prototype.transjugate = function transjugate() {
+  var t = numeric.transpose, x = this.x, y = this.y;
+  if (y) {
+    return new numeric.T(t(x), numeric.negtranspose(y));
+  }
+  return new numeric.T(t(x));
+};
+numeric.Tunop = function Tunop(r, c, s) {
+  if (typeof s !== "string") {
+    s = "";
+  }
+  return Function("var x \x3d this;\n" + s + "\n" + "if(x.y) {" + "  " + c + ";\n" + "}\n" + r + ";\n");
+};
+numeric.T.prototype.exp = numeric.Tunop("return new numeric.T(ex)", "return new numeric.T(mul(cos(x.y),ex),mul(sin(x.y),ex))", "var ex \x3d numeric.exp(x.x), cos \x3d numeric.cos, sin \x3d numeric.sin, mul \x3d numeric.mul;");
+numeric.T.prototype.conj = numeric.Tunop("return new numeric.T(x.x);", "return new numeric.T(x.x,numeric.neg(x.y));");
+numeric.T.prototype.neg = numeric.Tunop("return new numeric.T(neg(x.x));", "return new numeric.T(neg(x.x),neg(x.y));", "var neg \x3d numeric.neg;");
+numeric.T.prototype.sin = numeric.Tunop("return new numeric.T(numeric.sin(x.x))", "return x.exp().sub(x.neg().exp()).div(new numeric.T(0,2));");
+numeric.T.prototype.cos = numeric.Tunop("return new numeric.T(numeric.cos(x.x))", "return x.exp().add(x.neg().exp()).div(2);");
+numeric.T.prototype.abs = numeric.Tunop("return new numeric.T(numeric.abs(x.x));", "return new numeric.T(numeric.sqrt(numeric.add(mul(x.x,x.x),mul(x.y,x.y))));", "var mul \x3d numeric.mul;");
+numeric.T.prototype.log = numeric.Tunop("return new numeric.T(numeric.log(x.x));", "var theta \x3d new numeric.T(numeric.atan2(x.y,x.x)), r \x3d x.abs();\n" + "return new numeric.T(numeric.log(r.x),theta.x);");
+numeric.T.prototype.norm2 = numeric.Tunop("return numeric.norm2(x.x);", "var f \x3d numeric.norm2Squared;\n" + "return Math.sqrt(f(x.x)+f(x.y));");
+numeric.T.prototype.inv = function inv() {
+  var A = this;
+  if (typeof A.y === "undefined") {
+    return new numeric.T(numeric.inv(A.x));
+  }
+  var n = A.x.length, i, j, k;
+  var Rx = numeric.identity(n), Ry = numeric.rep([n, n], 0);
+  var Ax = numeric.clone(A.x), Ay = numeric.clone(A.y);
+  var Aix, Aiy, Ajx, Ajy, Rix, Riy, Rjx, Rjy;
+  var i, j, k, d, d1, ax, ay, bx, by, temp;
+  for (i = 0;i < n;i++) {
+    ax = Ax[i][i];
+    ay = Ay[i][i];
+    d = ax * ax + ay * ay;
+    k = i;
+    for (j = i + 1;j < n;j++) {
+      ax = Ax[j][i];
+      ay = Ay[j][i];
+      d1 = ax * ax + ay * ay;
+      if (d1 > d) {
+        k = j;
+        d = d1;
       }
-      for (s = 0;s < n;s++) {
-        S = d[s], x = v[s], m[s] -= S * w - x * E, g[s] -= x * w + S * E;
+    }
+    if (k !== i) {
+      temp = Ax[i];
+      Ax[i] = Ax[k];
+      Ax[k] = temp;
+      temp = Ay[i];
+      Ay[i] = Ay[k];
+      Ay[k] = temp;
+      temp = Rx[i];
+      Rx[i] = Rx[k];
+      Rx[k] = temp;
+      temp = Ry[i];
+      Ry[i] = Ry[k];
+      Ry[k] = temp;
+    }
+    Aix = Ax[i];
+    Aiy = Ay[i];
+    Rix = Rx[i];
+    Riy = Ry[i];
+    ax = Aix[i];
+    ay = Aiy[i];
+    for (j = i + 1;j < n;j++) {
+      bx = Aix[j];
+      by = Aiy[j];
+      Aix[j] = (bx * ax + by * ay) / d;
+      Aiy[j] = (by * ax - bx * ay) / d;
+    }
+    for (j = 0;j < n;j++) {
+      bx = Rix[j];
+      by = Riy[j];
+      Rix[j] = (bx * ax + by * ay) / d;
+      Riy[j] = (by * ax - bx * ay) / d;
+    }
+    for (j = i + 1;j < n;j++) {
+      Ajx = Ax[j];
+      Ajy = Ay[j];
+      Rjx = Rx[j];
+      Rjy = Ry[j];
+      ax = Ajx[i];
+      ay = Ajy[i];
+      for (k = i + 1;k < n;k++) {
+        bx = Aix[k];
+        by = Aiy[k];
+        Ajx[k] -= bx * ax - by * ay;
+        Ajy[k] -= by * ax + bx * ay;
+      }
+      for (k = 0;k < n;k++) {
+        bx = Rix[k];
+        by = Riy[k];
+        Rjx[k] -= bx * ax - by * ay;
+        Rjy[k] -= by * ax + bx * ay;
       }
     }
   }
-  for (r = n - 1;r > 0;r--) {
-    d = o[r], v = u[r];
-    for (i = r - 1;i >= 0;i--) {
-      m = o[i], g = u[i], w = a[i][r], E = f[i][r];
-      for (s = n - 1;s >= 0;s--) {
-        S = d[s], x = v[s], m[s] -= w * S - E * x, g[s] -= w * x + E * S;
+  for (i = n - 1;i > 0;i--) {
+    Rix = Rx[i];
+    Riy = Ry[i];
+    for (j = i - 1;j >= 0;j--) {
+      Rjx = Rx[j];
+      Rjy = Ry[j];
+      ax = Ax[j][i];
+      ay = Ay[j][i];
+      for (k = n - 1;k >= 0;k--) {
+        bx = Rix[k];
+        by = Riy[k];
+        Rjx[k] -= ax * bx - ay * by;
+        Rjy[k] -= ax * by + ay * bx;
       }
     }
   }
-  return new numeric.T(o, u);
-}, numeric.T.prototype.get = function(t) {
-  var n = this.x, r = this.y, i = 0, s, o = t.length;
-  if (r) {
-    while (i < o) {
-      s = t[i], n = n[s], r = r[s], i++;
+  return new numeric.T(Rx, Ry);
+};
+numeric.T.prototype.get = function get(i) {
+  var x = this.x, y = this.y, k = 0, ik, n = i.length;
+  if (y) {
+    while (k < n) {
+      ik = i[k];
+      x = x[ik];
+      y = y[ik];
+      k++;
     }
-    return new numeric.T(n, r);
+    return new numeric.T(x, y);
   }
-  while (i < o) {
-    s = t[i], n = n[s], i++;
+  while (k < n) {
+    ik = i[k];
+    x = x[ik];
+    k++;
   }
-  return new numeric.T(n);
-}, numeric.T.prototype.set = function(t, n) {
-  var r = this.x, i = this.y, s = 0, o, u = t.length, a = n.x, f = n.y;
-  if (u === 0) {
-    return f ? this.y = f : i && (this.y = undefined), this.x = r, this;
-  }
-  if (f) {
-    i || (i = numeric.rep(numeric.dim(r), 0), this.y = i);
-    while (s < u - 1) {
-      o = t[s], r = r[o], i = i[o], s++;
+  return new numeric.T(x);
+};
+numeric.T.prototype.set = function set(i, v) {
+  var x = this.x, y = this.y, k = 0, ik, n = i.length, vx = v.x, vy = v.y;
+  if (n === 0) {
+    if (vy) {
+      this.y = vy;
+    } else {
+      if (y) {
+        this.y = undefined;
+      }
     }
-    return o = t[s], r[o] = a, i[o] = f, this;
+    this.x = x;
+    return this;
   }
-  if (i) {
-    while (s < u - 1) {
-      o = t[s], r = r[o], i = i[o], s++;
+  if (vy) {
+    if (y) {
+    } else {
+      y = numeric.rep(numeric.dim(x), 0);
+      this.y = y;
     }
-    return o = t[s], r[o] = a, a instanceof Array ? i[o] = numeric.rep(numeric.dim(a), 0) : i[o] = 0, this;
-  }
-  while (s < u - 1) {
-    o = t[s], r = r[o], s++;
-  }
-  return o = t[s], r[o] = a, this;
-}, numeric.T.prototype.getRows = function(t, n) {
-  var r = n - t + 1, i, s = Array(r), o, u = this.x, a = this.y;
-  for (i = t;i <= n;i++) {
-    s[i - t] = u[i];
-  }
-  if (a) {
-    o = Array(r);
-    for (i = t;i <= n;i++) {
-      o[i - t] = a[i];
+    while (k < n - 1) {
+      ik = i[k];
+      x = x[ik];
+      y = y[ik];
+      k++;
     }
-    return new numeric.T(s, o);
+    ik = i[k];
+    x[ik] = vx;
+    y[ik] = vy;
+    return this;
   }
-  return new numeric.T(s);
-}, numeric.T.prototype.setRows = function(t, n, r) {
-  var i, s = this.x, o = this.y, u = r.x, a = r.y;
-  for (i = t;i <= n;i++) {
-    s[i] = u[i - t];
+  if (y) {
+    while (k < n - 1) {
+      ik = i[k];
+      x = x[ik];
+      y = y[ik];
+      k++;
+    }
+    ik = i[k];
+    x[ik] = vx;
+    if (vx instanceof Array) {
+      y[ik] = numeric.rep(numeric.dim(vx), 0);
+    } else {
+      y[ik] = 0;
+    }
+    return this;
   }
-  if (a) {
-    o || (o = numeric.rep(numeric.dim(s), 0), this.y = o);
-    for (i = t;i <= n;i++) {
-      o[i] = a[i - t];
+  while (k < n - 1) {
+    ik = i[k];
+    x = x[ik];
+    k++;
+  }
+  ik = i[k];
+  x[ik] = vx;
+  return this;
+};
+numeric.T.prototype.getRows = function getRows(i0, i1) {
+  var n = i1 - i0 + 1, j;
+  var rx = Array(n), ry, x = this.x, y = this.y;
+  for (j = i0;j <= i1;j++) {
+    rx[j - i0] = x[j];
+  }
+  if (y) {
+    ry = Array(n);
+    for (j = i0;j <= i1;j++) {
+      ry[j - i0] = y[j];
+    }
+    return new numeric.T(rx, ry);
+  }
+  return new numeric.T(rx);
+};
+numeric.T.prototype.setRows = function setRows(i0, i1, A) {
+  var j;
+  var rx = this.x, ry = this.y, x = A.x, y = A.y;
+  for (j = i0;j <= i1;j++) {
+    rx[j] = x[j - i0];
+  }
+  if (y) {
+    if (!ry) {
+      ry = numeric.rep(numeric.dim(rx), 0);
+      this.y = ry;
+    }
+    for (j = i0;j <= i1;j++) {
+      ry[j] = y[j - i0];
     }
   } else {
-    if (o) {
-      for (i = t;i <= n;i++) {
-        o[i] = numeric.rep([u[i - t].length], 0);
+    if (ry) {
+      for (j = i0;j <= i1;j++) {
+        ry[j] = numeric.rep([x[j - i0].length], 0);
       }
     }
   }
   return this;
-}, numeric.T.prototype.getRow = function(t) {
-  var n = this.x, r = this.y;
-  return r ? new numeric.T(n[t], r[t]) : new numeric.T(n[t]);
-}, numeric.T.prototype.setRow = function(t, n) {
-  var r = this.x, i = this.y, s = n.x, o = n.y;
-  return r[t] = s, o ? (i || (i = numeric.rep(numeric.dim(r), 0), this.y = i), i[t] = o) : i && (i = numeric.rep([s.length], 0)), this;
-}, numeric.T.prototype.getBlock = function(t, n) {
-  var r = this.x, i = this.y, s = numeric.getBlock;
-  return i ? new numeric.T(s(r, t, n), s(i, t, n)) : new numeric.T(s(r, t, n));
-}, numeric.T.prototype.setBlock = function(t, n, r) {
-  r instanceof numeric.T || (r = new numeric.T(r));
-  var i = this.x, s = this.y, o = numeric.setBlock, u = r.x, a = r.y;
-  if (a) {
-    return s || (this.y = numeric.rep(numeric.dim(this), 0), s = this.y), o(i, t, n, u), o(s, t, n, a), this;
+};
+numeric.T.prototype.getRow = function getRow(k) {
+  var x = this.x, y = this.y;
+  if (y) {
+    return new numeric.T(x[k], y[k]);
   }
-  o(i, t, n, u), s && o(s, t, n, numeric.rep(numeric.dim(u), 0));
-}, numeric.T.rep = function(t, n) {
-  var r = numeric.T;
-  n instanceof r || (n = new r(n));
-  var i = n.x, s = n.y, o = numeric.rep;
-  return s ? new r(o(t, i), o(t, s)) : new r(o(t, i));
-}, numeric.T.diag = function diag(e) {
-  e instanceof numeric.T || (e = new numeric.T(e));
-  var t = e.x, n = e.y, diag = numeric.diag;
-  return n ? new numeric.T(diag(t), diag(n)) : new numeric.T(diag(t));
-}, numeric.T.eig = function() {
+  return new numeric.T(x[k]);
+};
+numeric.T.prototype.setRow = function setRow(i, v) {
+  var rx = this.x, ry = this.y, x = v.x, y = v.y;
+  rx[i] = x;
+  if (y) {
+    if (!ry) {
+      ry = numeric.rep(numeric.dim(rx), 0);
+      this.y = ry;
+    }
+    ry[i] = y;
+  } else {
+    if (ry) {
+      ry = numeric.rep([x.length], 0);
+    }
+  }
+  return this;
+};
+numeric.T.prototype.getBlock = function getBlock(from, to) {
+  var x = this.x, y = this.y, b = numeric.getBlock;
+  if (y) {
+    return new numeric.T(b(x, from, to), b(y, from, to));
+  }
+  return new numeric.T(b(x, from, to));
+};
+numeric.T.prototype.setBlock = function setBlock(from, to, A) {
+  if (!(A instanceof numeric.T)) {
+    A = new numeric.T(A);
+  }
+  var x = this.x, y = this.y, b = numeric.setBlock, Ax = A.x, Ay = A.y;
+  if (Ay) {
+    if (!y) {
+      this.y = numeric.rep(numeric.dim(this), 0);
+      y = this.y;
+    }
+    b(x, from, to, Ax);
+    b(y, from, to, Ay);
+    return this;
+  }
+  b(x, from, to, Ax);
+  if (y) {
+    b(y, from, to, numeric.rep(numeric.dim(Ax), 0));
+  }
+};
+numeric.T.rep = function rep(s, v) {
+  var T = numeric.T;
+  if (!(v instanceof T)) {
+    v = new T(v);
+  }
+  var x = v.x, y = v.y, r = numeric.rep;
+  if (y) {
+    return new T(r(s, x), r(s, y));
+  }
+  return new T(r(s, x));
+};
+numeric.T.diag = function diag(d) {
+  if (!(d instanceof numeric.T)) {
+    d = new numeric.T(d);
+  }
+  var x = d.x, y = d.y, diag = numeric.diag;
+  if (y) {
+    return new numeric.T(diag(x), diag(y));
+  }
+  return new numeric.T(diag(x));
+};
+numeric.T.eig = function eig() {
   if (this.y) {
     throw new Error("eig: not implemented for complex matrices.");
   }
   return numeric.eig(this.x);
-}, numeric.T.identity = function(t) {
-  return new numeric.T(numeric.identity(t));
-}, numeric.T.prototype.getDiag = function() {
-  var t = numeric, n = this.x, r = this.y;
-  return r ? new t.T(t.getDiag(n), t.getDiag(r)) : new t.T(t.getDiag(n));
-}, numeric.house = function(t) {
-  var n = numeric.clone(t), r = t[0] >= 0 ? 1 : -1, i = r * numeric.norm2(t);
-  n[0] += i;
-  var s = numeric.norm2(n);
-  if (s === 0) {
+};
+numeric.T.identity = function identity(n) {
+  return new numeric.T(numeric.identity(n));
+};
+numeric.T.prototype.getDiag = function getDiag() {
+  var n = numeric;
+  var x = this.x, y = this.y;
+  if (y) {
+    return new n.T(n.getDiag(x), n.getDiag(y));
+  }
+  return new n.T(n.getDiag(x));
+};
+numeric.house = function house(x) {
+  var v = numeric.clone(x);
+  var s = x[0] >= 0 ? 1 : -1;
+  var alpha = s * numeric.norm2(x);
+  v[0] += alpha;
+  var foo = numeric.norm2(v);
+  if (foo === 0) {
     throw new Error("eig: internal error");
   }
-  return numeric.div(n, s);
-}, numeric.toUpperHessenberg = function(t) {
-  var n = numeric.dim(t);
-  if (n.length !== 2 || n[0] !== n[1]) {
+  return numeric.div(v, foo);
+};
+numeric.toUpperHessenberg = function toUpperHessenberg(me) {
+  var s = numeric.dim(me);
+  if (s.length !== 2 || s[0] !== s[1]) {
     throw new Error("numeric: toUpperHessenberg() only works on square matrices");
   }
-  var r = n[0], i, s, o, u, a, f = numeric.clone(t), l, c, h, p, d = numeric.identity(r), v;
-  for (s = 0;s < r - 2;s++) {
-    u = Array(r - s - 1);
-    for (i = s + 1;i < r;i++) {
-      u[i - s - 1] = f[i][s];
+  var m = s[0], i, j, k, x, v, A = numeric.clone(me), B, C, Ai, Ci, Q = numeric.identity(m), Qi;
+  for (j = 0;j < m - 2;j++) {
+    x = Array(m - j - 1);
+    for (i = j + 1;i < m;i++) {
+      x[i - j - 1] = A[i][j];
     }
-    if (numeric.norm2(u) > 0) {
-      a = numeric.house(u), l = numeric.getBlock(f, [s + 1, s], [r - 1, r - 1]), c = numeric.tensor(a, numeric.dot(a, l));
-      for (i = s + 1;i < r;i++) {
-        h = f[i], p = c[i - s - 1];
-        for (o = s;o < r;o++) {
-          h[o] -= 2 * p[o - s];
+    if (numeric.norm2(x) > 0) {
+      v = numeric.house(x);
+      B = numeric.getBlock(A, [j + 1, j], [m - 1, m - 1]);
+      C = numeric.tensor(v, numeric.dot(v, B));
+      for (i = j + 1;i < m;i++) {
+        Ai = A[i];
+        Ci = C[i - j - 1];
+        for (k = j;k < m;k++) {
+          Ai[k] -= 2 * Ci[k - j];
         }
       }
-      l = numeric.getBlock(f, [0, s + 1], [r - 1, r - 1]), c = numeric.tensor(numeric.dot(l, a), a);
-      for (i = 0;i < r;i++) {
-        h = f[i], p = c[i];
-        for (o = s + 1;o < r;o++) {
-          h[o] -= 2 * p[o - s - 1];
+      B = numeric.getBlock(A, [0, j + 1], [m - 1, m - 1]);
+      C = numeric.tensor(numeric.dot(B, v), v);
+      for (i = 0;i < m;i++) {
+        Ai = A[i];
+        Ci = C[i];
+        for (k = j + 1;k < m;k++) {
+          Ai[k] -= 2 * Ci[k - j - 1];
         }
       }
-      l = Array(r - s - 1);
-      for (i = s + 1;i < r;i++) {
-        l[i - s - 1] = d[i];
+      B = Array(m - j - 1);
+      for (i = j + 1;i < m;i++) {
+        B[i - j - 1] = Q[i];
       }
-      c = numeric.tensor(a, numeric.dot(a, l));
-      for (i = s + 1;i < r;i++) {
-        v = d[i], p = c[i - s - 1];
-        for (o = 0;o < r;o++) {
-          v[o] -= 2 * p[o];
+      C = numeric.tensor(v, numeric.dot(v, B));
+      for (i = j + 1;i < m;i++) {
+        Qi = Q[i];
+        Ci = C[i - j - 1];
+        for (k = 0;k < m;k++) {
+          Qi[k] -= 2 * Ci[k];
         }
       }
     }
   }
-  return{H:f, Q:d};
-}, numeric.epsilon = 2.220446049250313E-16, numeric.QRFrancis = function(e, t) {
-  typeof t == "undefined" && (t = 1E4), e = numeric.clone(e);
-  var n = numeric.clone(e), r = numeric.dim(e), i = r[0], s, o, u, a, f, l, c, h, p, d = numeric.identity(i), v, m, g, y, b, w, E, S, x;
-  if (i < 3) {
-    return{Q:d, B:[[0, i - 1]]};
+  return{H:A, Q:Q};
+};
+numeric.epsilon = 2.220446049250313E-16;
+numeric.QRFrancis = function(H, maxiter) {
+  if (typeof maxiter === "undefined") {
+    maxiter = 1E4;
   }
-  var T = numeric.epsilon;
-  for (x = 0;x < t;x++) {
-    for (E = 0;E < i - 1;E++) {
-      if (Math.abs(e[E + 1][E]) < T * (Math.abs(e[E][E]) + Math.abs(e[E + 1][E + 1]))) {
-        var N = numeric.QRFrancis(numeric.getBlock(e, [0, 0], [E, E]), t), C = numeric.QRFrancis(numeric.getBlock(e, [E + 1, E + 1], [i - 1, i - 1]), t);
-        g = Array(E + 1);
-        for (w = 0;w <= E;w++) {
-          g[w] = d[w];
+  H = numeric.clone(H);
+  var H0 = numeric.clone(H);
+  var s = numeric.dim(H), m = s[0], x, v, a, b, c, d, det, tr, Hloc, Q = numeric.identity(m), Qi, Hi, B, C, Ci, i, j, k, iter;
+  if (m < 3) {
+    return{Q:Q, B:[[0, m - 1]]};
+  }
+  var epsilon = numeric.epsilon;
+  for (iter = 0;iter < maxiter;iter++) {
+    for (j = 0;j < m - 1;j++) {
+      if (Math.abs(H[j + 1][j]) < epsilon * (Math.abs(H[j][j]) + Math.abs(H[j + 1][j + 1]))) {
+        var QH1 = numeric.QRFrancis(numeric.getBlock(H, [0, 0], [j, j]), maxiter);
+        var QH2 = numeric.QRFrancis(numeric.getBlock(H, [j + 1, j + 1], [m - 1, m - 1]), maxiter);
+        B = Array(j + 1);
+        for (i = 0;i <= j;i++) {
+          B[i] = Q[i];
         }
-        y = numeric.dot(N.Q, g);
-        for (w = 0;w <= E;w++) {
-          d[w] = y[w];
+        C = numeric.dot(QH1.Q, B);
+        for (i = 0;i <= j;i++) {
+          Q[i] = C[i];
         }
-        g = Array(i - E - 1);
-        for (w = E + 1;w < i;w++) {
-          g[w - E - 1] = d[w];
+        B = Array(m - j - 1);
+        for (i = j + 1;i < m;i++) {
+          B[i - j - 1] = Q[i];
         }
-        y = numeric.dot(C.Q, g);
-        for (w = E + 1;w < i;w++) {
-          d[w] = y[w - E - 1];
+        C = numeric.dot(QH2.Q, B);
+        for (i = j + 1;i < m;i++) {
+          Q[i] = C[i - j - 1];
         }
-        return{Q:d, B:N.B.concat(numeric.add(C.B, E + 1))};
+        return{Q:Q, B:QH1.B.concat(numeric.add(QH2.B, j + 1))};
       }
     }
-    u = e[i - 2][i - 2], a = e[i - 2][i - 1], f = e[i - 1][i - 2], l = e[i - 1][i - 1], h = u + l, c = u * l - a * f, p = numeric.getBlock(e, [0, 0], [2, 2]);
-    if (h * h >= 4 * c) {
-      var k, L;
-      k = 0.5 * (h + Math.sqrt(h * h - 4 * c)), L = 0.5 * (h - Math.sqrt(h * h - 4 * c)), p = numeric.add(numeric.sub(numeric.dot(p, p), numeric.mul(p, k + L)), numeric.diag(numeric.rep([3], k * L)));
+    a = H[m - 2][m - 2];
+    b = H[m - 2][m - 1];
+    c = H[m - 1][m - 2];
+    d = H[m - 1][m - 1];
+    tr = a + d;
+    det = a * d - b * c;
+    Hloc = numeric.getBlock(H, [0, 0], [2, 2]);
+    if (tr * tr >= 4 * det) {
+      var s1, s2;
+      s1 = 0.5 * (tr + Math.sqrt(tr * tr - 4 * det));
+      s2 = 0.5 * (tr - Math.sqrt(tr * tr - 4 * det));
+      Hloc = numeric.add(numeric.sub(numeric.dot(Hloc, Hloc), numeric.mul(Hloc, s1 + s2)), numeric.diag(numeric.rep([3], s1 * s2)));
     } else {
-      p = numeric.add(numeric.sub(numeric.dot(p, p), numeric.mul(p, h)), numeric.diag(numeric.rep([3], c)));
+      Hloc = numeric.add(numeric.sub(numeric.dot(Hloc, Hloc), numeric.mul(Hloc, tr)), numeric.diag(numeric.rep([3], det)));
     }
-    s = [p[0][0], p[1][0], p[2][0]], o = numeric.house(s), g = [e[0], e[1], e[2]], y = numeric.tensor(o, numeric.dot(o, g));
-    for (w = 0;w < 3;w++) {
-      m = e[w], b = y[w];
-      for (S = 0;S < i;S++) {
-        m[S] -= 2 * b[S];
+    x = [Hloc[0][0], Hloc[1][0], Hloc[2][0]];
+    v = numeric.house(x);
+    B = [H[0], H[1], H[2]];
+    C = numeric.tensor(v, numeric.dot(v, B));
+    for (i = 0;i < 3;i++) {
+      Hi = H[i];
+      Ci = C[i];
+      for (k = 0;k < m;k++) {
+        Hi[k] -= 2 * Ci[k];
       }
     }
-    g = numeric.getBlock(e, [0, 0], [i - 1, 2]), y = numeric.tensor(numeric.dot(g, o), o);
-    for (w = 0;w < i;w++) {
-      m = e[w], b = y[w];
-      for (S = 0;S < 3;S++) {
-        m[S] -= 2 * b[S];
+    B = numeric.getBlock(H, [0, 0], [m - 1, 2]);
+    C = numeric.tensor(numeric.dot(B, v), v);
+    for (i = 0;i < m;i++) {
+      Hi = H[i];
+      Ci = C[i];
+      for (k = 0;k < 3;k++) {
+        Hi[k] -= 2 * Ci[k];
       }
     }
-    g = [d[0], d[1], d[2]], y = numeric.tensor(o, numeric.dot(o, g));
-    for (w = 0;w < 3;w++) {
-      v = d[w], b = y[w];
-      for (S = 0;S < i;S++) {
-        v[S] -= 2 * b[S];
+    B = [Q[0], Q[1], Q[2]];
+    C = numeric.tensor(v, numeric.dot(v, B));
+    for (i = 0;i < 3;i++) {
+      Qi = Q[i];
+      Ci = C[i];
+      for (k = 0;k < m;k++) {
+        Qi[k] -= 2 * Ci[k];
       }
     }
-    var A;
-    for (E = 0;E < i - 2;E++) {
-      for (S = E;S <= E + 1;S++) {
-        if (Math.abs(e[S + 1][S]) < T * (Math.abs(e[S][S]) + Math.abs(e[S + 1][S + 1]))) {
-          var N = numeric.QRFrancis(numeric.getBlock(e, [0, 0], [S, S]), t), C = numeric.QRFrancis(numeric.getBlock(e, [S + 1, S + 1], [i - 1, i - 1]), t);
-          g = Array(S + 1);
-          for (w = 0;w <= S;w++) {
-            g[w] = d[w];
+    var J;
+    for (j = 0;j < m - 2;j++) {
+      for (k = j;k <= j + 1;k++) {
+        if (Math.abs(H[k + 1][k]) < epsilon * (Math.abs(H[k][k]) + Math.abs(H[k + 1][k + 1]))) {
+          var QH1 = numeric.QRFrancis(numeric.getBlock(H, [0, 0], [k, k]), maxiter);
+          var QH2 = numeric.QRFrancis(numeric.getBlock(H, [k + 1, k + 1], [m - 1, m - 1]), maxiter);
+          B = Array(k + 1);
+          for (i = 0;i <= k;i++) {
+            B[i] = Q[i];
           }
-          y = numeric.dot(N.Q, g);
-          for (w = 0;w <= S;w++) {
-            d[w] = y[w];
+          C = numeric.dot(QH1.Q, B);
+          for (i = 0;i <= k;i++) {
+            Q[i] = C[i];
           }
-          g = Array(i - S - 1);
-          for (w = S + 1;w < i;w++) {
-            g[w - S - 1] = d[w];
+          B = Array(m - k - 1);
+          for (i = k + 1;i < m;i++) {
+            B[i - k - 1] = Q[i];
           }
-          y = numeric.dot(C.Q, g);
-          for (w = S + 1;w < i;w++) {
-            d[w] = y[w - S - 1];
+          C = numeric.dot(QH2.Q, B);
+          for (i = k + 1;i < m;i++) {
+            Q[i] = C[i - k - 1];
           }
-          return{Q:d, B:N.B.concat(numeric.add(C.B, S + 1))};
+          return{Q:Q, B:QH1.B.concat(numeric.add(QH2.B, k + 1))};
         }
       }
-      A = Math.min(i - 1, E + 3), s = Array(A - E);
-      for (w = E + 1;w <= A;w++) {
-        s[w - E - 1] = e[w][E];
+      J = Math.min(m - 1, j + 3);
+      x = Array(J - j);
+      for (i = j + 1;i <= J;i++) {
+        x[i - j - 1] = H[i][j];
       }
-      o = numeric.house(s), g = numeric.getBlock(e, [E + 1, E], [A, i - 1]), y = numeric.tensor(o, numeric.dot(o, g));
-      for (w = E + 1;w <= A;w++) {
-        m = e[w], b = y[w - E - 1];
-        for (S = E;S < i;S++) {
-          m[S] -= 2 * b[S - E];
+      v = numeric.house(x);
+      B = numeric.getBlock(H, [j + 1, j], [J, m - 1]);
+      C = numeric.tensor(v, numeric.dot(v, B));
+      for (i = j + 1;i <= J;i++) {
+        Hi = H[i];
+        Ci = C[i - j - 1];
+        for (k = j;k < m;k++) {
+          Hi[k] -= 2 * Ci[k - j];
         }
       }
-      g = numeric.getBlock(e, [0, E + 1], [i - 1, A]), y = numeric.tensor(numeric.dot(g, o), o);
-      for (w = 0;w < i;w++) {
-        m = e[w], b = y[w];
-        for (S = E + 1;S <= A;S++) {
-          m[S] -= 2 * b[S - E - 1];
+      B = numeric.getBlock(H, [0, j + 1], [m - 1, J]);
+      C = numeric.tensor(numeric.dot(B, v), v);
+      for (i = 0;i < m;i++) {
+        Hi = H[i];
+        Ci = C[i];
+        for (k = j + 1;k <= J;k++) {
+          Hi[k] -= 2 * Ci[k - j - 1];
         }
       }
-      g = Array(A - E);
-      for (w = E + 1;w <= A;w++) {
-        g[w - E - 1] = d[w];
+      B = Array(J - j);
+      for (i = j + 1;i <= J;i++) {
+        B[i - j - 1] = Q[i];
       }
-      y = numeric.tensor(o, numeric.dot(o, g));
-      for (w = E + 1;w <= A;w++) {
-        v = d[w], b = y[w - E - 1];
-        for (S = 0;S < i;S++) {
-          v[S] -= 2 * b[S];
+      C = numeric.tensor(v, numeric.dot(v, B));
+      for (i = j + 1;i <= J;i++) {
+        Qi = Q[i];
+        Ci = C[i - j - 1];
+        for (k = 0;k < m;k++) {
+          Qi[k] -= 2 * Ci[k];
         }
       }
     }
   }
   throw new Error("numeric: eigenvalue iteration does not converge -- increase maxiter?");
-}, numeric.eig = function(t, n) {
-  var r = numeric.toUpperHessenberg(t), i = numeric.QRFrancis(r.H, n), s = numeric.T, o = t.length, u, a, f = !1, l = i.B, c = numeric.dot(i.Q, numeric.dot(r.H, numeric.transpose(i.Q))), h = new s(numeric.dot(i.Q, r.Q)), p, d = l.length, v, m, g, y, b, w, E, S, x, T, N, C, k, L, A = Math.sqrt;
-  for (a = 0;a < d;a++) {
-    u = l[a][0];
-    if (u !== l[a][1]) {
-      v = u + 1, m = c[u][u], g = c[u][v], y = c[v][u], b = c[v][v];
-      if (g === 0 && y === 0) {
+};
+numeric.eig = function eig(A, maxiter) {
+  var QH = numeric.toUpperHessenberg(A);
+  var QB = numeric.QRFrancis(QH.H, maxiter);
+  var T = numeric.T;
+  var n = A.length, i, k, flag = false, B = QB.B, H = numeric.dot(QB.Q, numeric.dot(QH.H, numeric.transpose(QB.Q)));
+  var Q = new T(numeric.dot(QB.Q, QH.Q)), Q0;
+  var m = B.length, j;
+  var a, b, c, d, p1, p2, disc, x, y, p, q, n1, n2;
+  var sqrt = Math.sqrt;
+  for (k = 0;k < m;k++) {
+    i = B[k][0];
+    if (i === B[k][1]) {
+    } else {
+      j = i + 1;
+      a = H[i][i];
+      b = H[i][j];
+      c = H[j][i];
+      d = H[j][j];
+      if (b === 0 && c === 0) {
         continue;
       }
-      w = -m - b, E = m * b - g * y, S = w * w - 4 * E, S >= 0 ? (w < 0 ? x = -0.5 * (w - A(S)) : x = -0.5 * (w + A(S)), k = (m - x) * (m - x) + g * g, L = y * y + (b - x) * (b - x), k > L ? (k = A(k), N = (m - x) / k, C = g / k) : (L = A(L), N = y / L, C = (b - x) / L), p = new s([[C, -N], [N, C]]), h.setRows(u, v, p.dot(h.getRows(u, v)))) : (x = -0.5 * w, T = 0.5 * A(-S), k = (m - x) * (m - x) + g * g, L = y * y + (b - x) * (b - x), k > L ? (k = A(k + T * T), N = (m - x) / k, C = g / k, x = 0, 
-      T /= k) : (L = A(L + T * T), N = y / L, C = (b - x) / L, x = T / L, T = 0), p = new s([[C, -N], [N, C]], [[x, T], [T, -x]]), h.setRows(u, v, p.dot(h.getRows(u, v))));
+      p1 = -a - d;
+      p2 = a * d - b * c;
+      disc = p1 * p1 - 4 * p2;
+      if (disc >= 0) {
+        if (p1 < 0) {
+          x = -0.5 * (p1 - sqrt(disc));
+        } else {
+          x = -0.5 * (p1 + sqrt(disc));
+        }
+        n1 = (a - x) * (a - x) + b * b;
+        n2 = c * c + (d - x) * (d - x);
+        if (n1 > n2) {
+          n1 = sqrt(n1);
+          p = (a - x) / n1;
+          q = b / n1;
+        } else {
+          n2 = sqrt(n2);
+          p = c / n2;
+          q = (d - x) / n2;
+        }
+        Q0 = new T([[q, -p], [p, q]]);
+        Q.setRows(i, j, Q0.dot(Q.getRows(i, j)));
+      } else {
+        x = -0.5 * p1;
+        y = 0.5 * sqrt(-disc);
+        n1 = (a - x) * (a - x) + b * b;
+        n2 = c * c + (d - x) * (d - x);
+        if (n1 > n2) {
+          n1 = sqrt(n1 + y * y);
+          p = (a - x) / n1;
+          q = b / n1;
+          x = 0;
+          y /= n1;
+        } else {
+          n2 = sqrt(n2 + y * y);
+          p = c / n2;
+          q = (d - x) / n2;
+          x = y / n2;
+          y = 0;
+        }
+        Q0 = new T([[q, -p], [p, q]], [[x, y], [y, -x]]);
+        Q.setRows(i, j, Q0.dot(Q.getRows(i, j)));
+      }
     }
   }
-  var O = h.dot(t).dot(h.transjugate()), o = t.length, M = numeric.T.identity(o);
-  for (v = 0;v < o;v++) {
-    if (v > 0) {
-      for (a = v - 1;a >= 0;a--) {
-        var _ = O.get([a, a]), D = O.get([v, v]);
-        if (!numeric.neq(_.x, D.x) && !numeric.neq(_.y, D.y)) {
-          M.setRow(v, M.getRow(a));
+  var R = Q.dot(A).dot(Q.transjugate()), n = A.length, E = numeric.T.identity(n);
+  for (j = 0;j < n;j++) {
+    if (j > 0) {
+      for (k = j - 1;k >= 0;k--) {
+        var Rk = R.get([k, k]), Rj = R.get([j, j]);
+        if (numeric.neq(Rk.x, Rj.x) || numeric.neq(Rk.y, Rj.y)) {
+          x = R.getRow(k).getBlock([k], [j - 1]);
+          y = E.getRow(j).getBlock([k], [j - 1]);
+          E.set([j, k], R.get([k, j]).neg().sub(x.dot(y)).div(Rk.sub(Rj)));
+        } else {
+          E.setRow(j, E.getRow(k));
           continue;
         }
-        x = O.getRow(a).getBlock([a], [v - 1]), T = M.getRow(v).getBlock([a], [v - 1]), M.set([v, a], O.get([a, v]).neg().sub(x.dot(T)).div(_.sub(D)));
       }
     }
   }
-  for (v = 0;v < o;v++) {
-    x = M.getRow(v), M.setRow(v, x.div(x.norm2()));
+  for (j = 0;j < n;j++) {
+    x = E.getRow(j);
+    E.setRow(j, x.div(x.norm2()));
   }
-  return M = M.transpose(), M = h.transjugate().dot(M), {lambda:O.getDiag(), E:M};
-}, numeric.ccsSparse = function(t) {
-  var n = t.length, r, i, s, o, u = [];
-  for (s = n - 1;s !== -1;--s) {
-    i = t[s];
-    for (o in i) {
-      o = parseInt(o);
-      while (o >= u.length) {
-        u[u.length] = 0;
+  E = E.transpose();
+  E = Q.transjugate().dot(E);
+  return{lambda:R.getDiag(), E:E};
+};
+numeric.ccsSparse = function ccsSparse(A) {
+  var m = A.length, n, foo, i, j, counts = [];
+  for (i = m - 1;i !== -1;--i) {
+    foo = A[i];
+    for (j in foo) {
+      j = parseInt(j);
+      while (j >= counts.length) {
+        counts[counts.length] = 0;
       }
-      i[o] !== 0 && u[o]++;
+      if (foo[j] !== 0) {
+        counts[j]++;
+      }
     }
   }
-  var r = u.length, a = Array(r + 1);
-  a[0] = 0;
-  for (s = 0;s < r;++s) {
-    a[s + 1] = a[s] + u[s];
+  var n = counts.length;
+  var Ai = Array(n + 1);
+  Ai[0] = 0;
+  for (i = 0;i < n;++i) {
+    Ai[i + 1] = Ai[i] + counts[i];
   }
-  var f = Array(a[r]), l = Array(a[r]);
-  for (s = n - 1;s !== -1;--s) {
-    i = t[s];
-    for (o in i) {
-      i[o] !== 0 && (u[o]--, f[a[o] + u[o]] = s, l[a[o] + u[o]] = i[o]);
+  var Aj = Array(Ai[n]), Av = Array(Ai[n]);
+  for (i = m - 1;i !== -1;--i) {
+    foo = A[i];
+    for (j in foo) {
+      if (foo[j] !== 0) {
+        counts[j]--;
+        Aj[Ai[j] + counts[j]] = i;
+        Av[Ai[j] + counts[j]] = foo[j];
+      }
     }
   }
-  return[a, f, l];
-}, numeric.ccsFull = function(t) {
-  var n = t[0], r = t[1], i = t[2], s = numeric.ccsDim(t), o = s[0], u = s[1], a, f, l, c, h, p = numeric.rep([o, u], 0);
-  for (a = 0;a < u;a++) {
-    l = n[a], c = n[a + 1];
-    for (f = l;f < c;++f) {
-      p[r[f]][a] = i[f];
+  return[Ai, Aj, Av];
+};
+numeric.ccsFull = function ccsFull(A) {
+  var Ai = A[0], Aj = A[1], Av = A[2], s = numeric.ccsDim(A), m = s[0], n = s[1], i, j, j0, j1, k;
+  var B = numeric.rep([m, n], 0);
+  for (i = 0;i < n;i++) {
+    j0 = Ai[i];
+    j1 = Ai[i + 1];
+    for (j = j0;j < j1;++j) {
+      B[Aj[j]][i] = Av[j];
     }
   }
-  return p;
-}, numeric.ccsTSolve = function(t, n, r, i, s) {
-  function h(e) {
-    var t;
-    if (r[e] !== 0) {
+  return B;
+};
+numeric.ccsTSolve = function ccsTSolve(A, b, x, bj, xj) {
+  var Ai = A[0], Aj = A[1], Av = A[2], m = Ai.length - 1, max = Math.max, n = 0;
+  if (typeof bj === "undefined") {
+    x = numeric.rep([m], 0);
+  }
+  if (typeof bj === "undefined") {
+    bj = numeric.linspace(0, x.length - 1);
+  }
+  if (typeof xj === "undefined") {
+    xj = [];
+  }
+  function dfs(j) {
+    var k;
+    if (x[j] !== 0) {
       return;
     }
-    r[e] = 1;
-    for (t = o[e];t < o[e + 1];++t) {
-      h(u[t]);
+    x[j] = 1;
+    for (k = Ai[j];k < Ai[j + 1];++k) {
+      dfs(Aj[k]);
     }
-    s[c] = e, ++c;
+    xj[n] = j;
+    ++n;
   }
-  var o = t[0], u = t[1], a = t[2], f = o.length - 1, l = Math.max, c = 0;
-  typeof i == "undefined" && (r = numeric.rep([f], 0)), typeof i == "undefined" && (i = numeric.linspace(0, r.length - 1)), typeof s == "undefined" && (s = []);
-  var p, d, v, m, g, y, b, w, E;
-  for (p = i.length - 1;p !== -1;--p) {
-    h(i[p]);
+  var i, j, j0, j1, k, l, l0, l1, a;
+  for (i = bj.length - 1;i !== -1;--i) {
+    dfs(bj[i]);
   }
-  s.length = c;
-  for (p = s.length - 1;p !== -1;--p) {
-    r[s[p]] = 0;
+  xj.length = n;
+  for (i = xj.length - 1;i !== -1;--i) {
+    x[xj[i]] = 0;
   }
-  for (p = i.length - 1;p !== -1;--p) {
-    d = i[p], r[d] = n[d];
+  for (i = bj.length - 1;i !== -1;--i) {
+    j = bj[i];
+    x[j] = b[j];
   }
-  for (p = s.length - 1;p !== -1;--p) {
-    d = s[p], v = o[d], m = l(o[d + 1], v);
-    for (g = v;g !== m;++g) {
-      if (u[g] === d) {
-        r[d] /= a[g];
+  for (i = xj.length - 1;i !== -1;--i) {
+    j = xj[i];
+    j0 = Ai[j];
+    j1 = max(Ai[j + 1], j0);
+    for (k = j0;k !== j1;++k) {
+      if (Aj[k] === j) {
+        x[j] /= Av[k];
         break;
       }
     }
-    E = r[d];
-    for (g = v;g !== m;++g) {
-      y = u[g], y !== d && (r[y] -= E * a[g]);
+    a = x[j];
+    for (k = j0;k !== j1;++k) {
+      l = Aj[k];
+      if (l !== j) {
+        x[l] -= a * Av[k];
+      }
     }
   }
-  return r;
-}, numeric.ccsDFS = function(t) {
-  this.k = Array(t), this.k1 = Array(t), this.j = Array(t);
-}, numeric.ccsDFS.prototype.dfs = function(t, n, r, i, s, o) {
-  var u = 0, a, f = s.length, l = this.k, c = this.k1, h = this.j, p, d;
-  if (i[t] !== 0) {
+  return x;
+};
+numeric.ccsDFS = function ccsDFS(n) {
+  this.k = Array(n);
+  this.k1 = Array(n);
+  this.j = Array(n);
+};
+numeric.ccsDFS.prototype.dfs = function dfs(J, Ai, Aj, x, xj, Pinv) {
+  var m = 0, foo, n = xj.length;
+  var k = this.k, k1 = this.k1, j = this.j, km, k11;
+  if (x[J] !== 0) {
     return;
   }
-  i[t] = 1, h[0] = t, l[0] = p = n[t], c[0] = d = n[t + 1];
-  for (;;) {
-    if (p >= d) {
-      s[f] = h[u];
-      if (u === 0) {
+  x[J] = 1;
+  j[0] = J;
+  k[0] = km = Ai[J];
+  k1[0] = k11 = Ai[J + 1];
+  while (1) {
+    if (km >= k11) {
+      xj[n] = j[m];
+      if (m === 0) {
         return;
       }
-      ++f, --u, p = l[u], d = c[u];
+      ++n;
+      --m;
+      km = k[m];
+      k11 = k1[m];
     } else {
-      a = o[r[p]], i[a] === 0 ? (i[a] = 1, l[u] = p, ++u, h[u] = a, p = n[a], c[u] = d = n[a + 1]) : ++p;
+      foo = Pinv[Aj[km]];
+      if (x[foo] === 0) {
+        x[foo] = 1;
+        k[m] = km;
+        ++m;
+        j[m] = foo;
+        km = Ai[foo];
+        k1[m] = k11 = Ai[foo + 1];
+      } else {
+        ++km;
+      }
     }
   }
-}, numeric.ccsLPSolve = function(t, n, r, i, s, o, u) {
-  var a = t[0], f = t[1], l = t[2], c = a.length - 1, h = 0, p = n[0], d = n[1], v = n[2], m, g, y, b, w, E, S, x, T, N, C, k;
-  g = p[s], y = p[s + 1], i.length = 0;
-  for (m = g;m < y;++m) {
-    u.dfs(o[d[m]], a, f, r, i, o);
+};
+numeric.ccsLPSolve = function ccsLPSolve(A, B, x, xj, I, Pinv, dfs) {
+  var Ai = A[0], Aj = A[1], Av = A[2], m = Ai.length - 1, n = 0;
+  var Bi = B[0], Bj = B[1], Bv = B[2];
+  var i, i0, i1, j, J, j0, j1, k, l, l0, l1, a;
+  i0 = Bi[I];
+  i1 = Bi[I + 1];
+  xj.length = 0;
+  for (i = i0;i < i1;++i) {
+    dfs.dfs(Pinv[Bj[i]], Ai, Aj, x, xj, Pinv);
   }
-  for (m = i.length - 1;m !== -1;--m) {
-    r[i[m]] = 0;
+  for (i = xj.length - 1;i !== -1;--i) {
+    x[xj[i]] = 0;
   }
-  for (m = g;m !== y;++m) {
-    b = o[d[m]], r[b] = v[m];
+  for (i = i0;i !== i1;++i) {
+    j = Pinv[Bj[i]];
+    x[j] = Bv[i];
   }
-  for (m = i.length - 1;m !== -1;--m) {
-    b = i[m], E = a[b], S = a[b + 1];
-    for (x = E;x < S;++x) {
-      if (o[f[x]] === b) {
-        r[b] /= l[x];
+  for (i = xj.length - 1;i !== -1;--i) {
+    j = xj[i];
+    j0 = Ai[j];
+    j1 = Ai[j + 1];
+    for (k = j0;k < j1;++k) {
+      if (Pinv[Aj[k]] === j) {
+        x[j] /= Av[k];
         break;
       }
     }
-    k = r[b];
-    for (x = E;x < S;++x) {
-      T = o[f[x]], T !== b && (r[T] -= k * l[x]);
+    a = x[j];
+    for (k = j0;k < j1;++k) {
+      l = Pinv[Aj[k]];
+      if (l !== j) {
+        x[l] -= a * Av[k];
+      }
     }
   }
-  return r;
-}, numeric.ccsLUP1 = function(t, n) {
-  var r = t[0].length - 1, i = [numeric.rep([r + 1], 0), [], []], s = [numeric.rep([r + 1], 0), [], []], o = i[0], u = i[1], a = i[2], f = s[0], l = s[1], c = s[2], h = numeric.rep([r], 0), p = numeric.rep([r], 0), d, v, m, g, y, b, w, E, S, x, T = numeric.ccsLPSolve, N = Math.max, C = Math.abs, k = numeric.linspace(0, r - 1), L = numeric.linspace(0, r - 1), A = new numeric.ccsDFS(r);
-  typeof n == "undefined" && (n = 1);
-  for (d = 0;d < r;++d) {
-    T(i, t, h, p, d, L, A), b = -1, w = -1;
-    for (v = p.length - 1;v !== -1;--v) {
-      m = p[v];
-      if (m <= d) {
+  return x;
+};
+numeric.ccsLUP1 = function ccsLUP1(A, threshold) {
+  var m = A[0].length - 1;
+  var L = [numeric.rep([m + 1], 0), [], []], U = [numeric.rep([m + 1], 0), [], []];
+  var Li = L[0], Lj = L[1], Lv = L[2], Ui = U[0], Uj = U[1], Uv = U[2];
+  var x = numeric.rep([m], 0), xj = numeric.rep([m], 0);
+  var i, j, k, j0, j1, a, e, c, d, K;
+  var sol = numeric.ccsLPSolve, max = Math.max, abs = Math.abs;
+  var P = numeric.linspace(0, m - 1), Pinv = numeric.linspace(0, m - 1);
+  var dfs = new numeric.ccsDFS(m);
+  if (typeof threshold === "undefined") {
+    threshold = 1;
+  }
+  for (i = 0;i < m;++i) {
+    sol(L, A, x, xj, i, Pinv, dfs);
+    a = -1;
+    e = -1;
+    for (j = xj.length - 1;j !== -1;--j) {
+      k = xj[j];
+      if (k <= i) {
         continue;
       }
-      E = C(h[m]), E > b && (w = m, b = E);
+      c = abs(x[k]);
+      if (c > a) {
+        e = k;
+        a = c;
+      }
     }
-    C(h[d]) < n * b && (v = k[d], b = k[w], k[d] = b, L[b] = d, k[w] = v, L[v] = w, b = h[d], h[d] = h[w], h[w] = b), b = o[d], w = f[d], S = h[d], u[b] = k[d], a[b] = 1, ++b;
-    for (v = p.length - 1;v !== -1;--v) {
-      m = p[v], E = h[m], p[v] = 0, h[m] = 0, m <= d ? (l[w] = m, c[w] = E, ++w) : (u[b] = k[m], a[b] = E / S, ++b);
+    if (abs(x[i]) < threshold * a) {
+      j = P[i];
+      a = P[e];
+      P[i] = a;
+      Pinv[a] = i;
+      P[e] = j;
+      Pinv[j] = e;
+      a = x[i];
+      x[i] = x[e];
+      x[e] = a;
     }
-    o[d + 1] = b, f[d + 1] = w;
+    a = Li[i];
+    e = Ui[i];
+    d = x[i];
+    Lj[a] = P[i];
+    Lv[a] = 1;
+    ++a;
+    for (j = xj.length - 1;j !== -1;--j) {
+      k = xj[j];
+      c = x[k];
+      xj[j] = 0;
+      x[k] = 0;
+      if (k <= i) {
+        Uj[e] = k;
+        Uv[e] = c;
+        ++e;
+      } else {
+        Lj[a] = P[k];
+        Lv[a] = c / d;
+        ++a;
+      }
+    }
+    Li[i + 1] = a;
+    Ui[i + 1] = e;
   }
-  for (v = u.length - 1;v !== -1;--v) {
-    u[v] = L[u[v]];
+  for (j = Lj.length - 1;j !== -1;--j) {
+    Lj[j] = Pinv[Lj[j]];
   }
-  return{L:i, U:s, P:k, Pinv:L};
-}, numeric.ccsDFS0 = function(t) {
-  this.k = Array(t), this.k1 = Array(t), this.j = Array(t);
-}, numeric.ccsDFS0.prototype.dfs = function(t, n, r, i, s, o, u) {
-  var a = 0, f, l = s.length, c = this.k, h = this.k1, p = this.j, d, v;
-  if (i[t] !== 0) {
+  return{L:L, U:U, P:P, Pinv:Pinv};
+};
+numeric.ccsDFS0 = function ccsDFS0(n) {
+  this.k = Array(n);
+  this.k1 = Array(n);
+  this.j = Array(n);
+};
+numeric.ccsDFS0.prototype.dfs = function dfs(J, Ai, Aj, x, xj, Pinv, P) {
+  var m = 0, foo, n = xj.length;
+  var k = this.k, k1 = this.k1, j = this.j, km, k11;
+  if (x[J] !== 0) {
     return;
   }
-  i[t] = 1, p[0] = t, c[0] = d = n[o[t]], h[0] = v = n[o[t] + 1];
-  for (;;) {
-    if (isNaN(d)) {
+  x[J] = 1;
+  j[0] = J;
+  k[0] = km = Ai[Pinv[J]];
+  k1[0] = k11 = Ai[Pinv[J] + 1];
+  while (1) {
+    if (isNaN(km)) {
       throw new Error("Ow!");
     }
-    if (d >= v) {
-      s[l] = o[p[a]];
-      if (a === 0) {
+    if (km >= k11) {
+      xj[n] = Pinv[j[m]];
+      if (m === 0) {
         return;
       }
-      ++l, --a, d = c[a], v = h[a];
+      ++n;
+      --m;
+      km = k[m];
+      k11 = k1[m];
     } else {
-      f = r[d], i[f] === 0 ? (i[f] = 1, c[a] = d, ++a, p[a] = f, f = o[f], d = n[f], h[a] = v = n[f + 1]) : ++d;
+      foo = Aj[km];
+      if (x[foo] === 0) {
+        x[foo] = 1;
+        k[m] = km;
+        ++m;
+        j[m] = foo;
+        foo = Pinv[foo];
+        km = Ai[foo];
+        k1[m] = k11 = Ai[foo + 1];
+      } else {
+        ++km;
+      }
     }
   }
-}, numeric.ccsLPSolve0 = function(t, n, r, i, s, o, u, a) {
-  var f = t[0], l = t[1], c = t[2], h = f.length - 1, p = 0, d = n[0], v = n[1], m = n[2], g, y, b, w, E, S, x, T, N, C, k, L;
-  y = d[s], b = d[s + 1], i.length = 0;
-  for (g = y;g < b;++g) {
-    a.dfs(v[g], f, l, r, i, o, u);
+};
+numeric.ccsLPSolve0 = function ccsLPSolve0(A, B, y, xj, I, Pinv, P, dfs) {
+  var Ai = A[0], Aj = A[1], Av = A[2], m = Ai.length - 1, n = 0;
+  var Bi = B[0], Bj = B[1], Bv = B[2];
+  var i, i0, i1, j, J, j0, j1, k, l, l0, l1, a;
+  i0 = Bi[I];
+  i1 = Bi[I + 1];
+  xj.length = 0;
+  for (i = i0;i < i1;++i) {
+    dfs.dfs(Bj[i], Ai, Aj, y, xj, Pinv, P);
   }
-  for (g = i.length - 1;g !== -1;--g) {
-    w = i[g], r[u[w]] = 0;
+  for (i = xj.length - 1;i !== -1;--i) {
+    j = xj[i];
+    y[P[j]] = 0;
   }
-  for (g = y;g !== b;++g) {
-    w = v[g], r[w] = m[g];
+  for (i = i0;i !== i1;++i) {
+    j = Bj[i];
+    y[j] = Bv[i];
   }
-  for (g = i.length - 1;g !== -1;--g) {
-    w = i[g], N = u[w], S = f[w], x = f[w + 1];
-    for (T = S;T < x;++T) {
-      if (l[T] === N) {
-        r[N] /= c[T];
+  for (i = xj.length - 1;i !== -1;--i) {
+    j = xj[i];
+    l = P[j];
+    j0 = Ai[j];
+    j1 = Ai[j + 1];
+    for (k = j0;k < j1;++k) {
+      if (Aj[k] === l) {
+        y[l] /= Av[k];
         break;
       }
     }
-    L = r[N];
-    for (T = S;T < x;++T) {
-      r[l[T]] -= L * c[T];
+    a = y[l];
+    for (k = j0;k < j1;++k) {
+      y[Aj[k]] -= a * Av[k];
     }
-    r[N] = L;
+    y[l] = a;
   }
-}, numeric.ccsLUP0 = function(t, n) {
-  var r = t[0].length - 1, i = [numeric.rep([r + 1], 0), [], []], s = [numeric.rep([r + 1], 0), [], []], o = i[0], u = i[1], a = i[2], f = s[0], l = s[1], c = s[2], h = numeric.rep([r], 0), p = numeric.rep([r], 0), d, v, m, g, y, b, w, E, S, x, T = numeric.ccsLPSolve0, N = Math.max, C = Math.abs, k = numeric.linspace(0, r - 1), L = numeric.linspace(0, r - 1), A = new numeric.ccsDFS0(r);
-  typeof n == "undefined" && (n = 1);
-  for (d = 0;d < r;++d) {
-    T(i, t, h, p, d, L, k, A), b = -1, w = -1;
-    for (v = p.length - 1;v !== -1;--v) {
-      m = p[v];
-      if (m <= d) {
+};
+numeric.ccsLUP0 = function ccsLUP0(A, threshold) {
+  var m = A[0].length - 1;
+  var L = [numeric.rep([m + 1], 0), [], []], U = [numeric.rep([m + 1], 0), [], []];
+  var Li = L[0], Lj = L[1], Lv = L[2], Ui = U[0], Uj = U[1], Uv = U[2];
+  var y = numeric.rep([m], 0), xj = numeric.rep([m], 0);
+  var i, j, k, j0, j1, a, e, c, d, K;
+  var sol = numeric.ccsLPSolve0, max = Math.max, abs = Math.abs;
+  var P = numeric.linspace(0, m - 1), Pinv = numeric.linspace(0, m - 1);
+  var dfs = new numeric.ccsDFS0(m);
+  if (typeof threshold === "undefined") {
+    threshold = 1;
+  }
+  for (i = 0;i < m;++i) {
+    sol(L, A, y, xj, i, Pinv, P, dfs);
+    a = -1;
+    e = -1;
+    for (j = xj.length - 1;j !== -1;--j) {
+      k = xj[j];
+      if (k <= i) {
         continue;
       }
-      E = C(h[k[m]]), E > b && (w = m, b = E);
-    }
-    C(h[k[d]]) < n * b && (v = k[d], b = k[w], k[d] = b, L[b] = d, k[w] = v, L[v] = w), b = o[d], w = f[d], S = h[k[d]], u[b] = k[d], a[b] = 1, ++b;
-    for (v = p.length - 1;v !== -1;--v) {
-      m = p[v], E = h[k[m]], p[v] = 0, h[k[m]] = 0, m <= d ? (l[w] = m, c[w] = E, ++w) : (u[b] = k[m], a[b] = E / S, ++b);
-    }
-    o[d + 1] = b, f[d + 1] = w;
-  }
-  for (v = u.length - 1;v !== -1;--v) {
-    u[v] = L[u[v]];
-  }
-  return{L:i, U:s, P:k, Pinv:L};
-}, numeric.ccsLUP = numeric.ccsLUP0, numeric.ccsDim = function(t) {
-  return[numeric.sup(t[1]) + 1, t[0].length - 1];
-}, numeric.ccsGetBlock = function(t, n, r) {
-  var i = numeric.ccsDim(t), s = i[0], o = i[1];
-  typeof n == "undefined" ? n = numeric.linspace(0, s - 1) : typeof n == "number" && (n = [n]), typeof r == "undefined" ? r = numeric.linspace(0, o - 1) : typeof r == "number" && (r = [r]);
-  var u, a, f, l = n.length, c, h = r.length, p, d, v, m = numeric.rep([o], 0), g = [], y = [], b = [m, g, y], w = t[0], E = t[1], S = t[2], x = numeric.rep([s], 0), T = 0, N = numeric.rep([s], 0);
-  for (c = 0;c < h;++c) {
-    d = r[c];
-    var C = w[d], k = w[d + 1];
-    for (u = C;u < k;++u) {
-      p = E[u], N[p] = 1, x[p] = S[u];
-    }
-    for (u = 0;u < l;++u) {
-      v = n[u], N[v] && (g[T] = u, y[T] = x[n[u]], ++T);
-    }
-    for (u = C;u < k;++u) {
-      p = E[u], N[p] = 0;
-    }
-    m[c + 1] = T;
-  }
-  return b;
-}, numeric.ccsDot = function(t, n) {
-  var r = t[0], i = t[1], s = t[2], o = n[0], u = n[1], a = n[2], f = numeric.ccsDim(t), l = numeric.ccsDim(n), c = f[0], h = f[1], p = l[1], d = numeric.rep([c], 0), v = numeric.rep([c], 0), m = Array(c), g = numeric.rep([p], 0), y = [], b = [], w = [g, y, b], E, S, x, T, N, C, k, L, A, O, M;
-  for (x = 0;x !== p;++x) {
-    T = o[x], N = o[x + 1], A = 0;
-    for (S = T;S < N;++S) {
-      O = u[S], M = a[S], C = r[O], k = r[O + 1];
-      for (E = C;E < k;++E) {
-        L = i[E], v[L] === 0 && (m[A] = L, v[L] = 1, A += 1), d[L] = d[L] + s[E] * M;
+      c = abs(y[P[k]]);
+      if (c > a) {
+        e = k;
+        a = c;
       }
     }
-    T = g[x], N = T + A, g[x + 1] = N;
-    for (S = A - 1;S !== -1;--S) {
-      M = T + S, E = m[S], y[M] = E, b[M] = d[E], v[E] = 0, d[E] = 0;
+    if (abs(y[P[i]]) < threshold * a) {
+      j = P[i];
+      a = P[e];
+      P[i] = a;
+      Pinv[a] = i;
+      P[e] = j;
+      Pinv[j] = e;
     }
-    g[x + 1] = g[x] + A;
+    a = Li[i];
+    e = Ui[i];
+    d = y[P[i]];
+    Lj[a] = P[i];
+    Lv[a] = 1;
+    ++a;
+    for (j = xj.length - 1;j !== -1;--j) {
+      k = xj[j];
+      c = y[P[k]];
+      xj[j] = 0;
+      y[P[k]] = 0;
+      if (k <= i) {
+        Uj[e] = k;
+        Uv[e] = c;
+        ++e;
+      } else {
+        Lj[a] = P[k];
+        Lv[a] = c / d;
+        ++a;
+      }
+    }
+    Li[i + 1] = a;
+    Ui[i + 1] = e;
   }
-  return w;
-}, numeric.ccsLUPSolve = function(t, n) {
-  var r = t.L, i = t.U, s = t.P, o = n[0], u = !1;
-  typeof o != "object" && (n = [[0, n.length], numeric.linspace(0, n.length - 1), n], o = n[0], u = !0);
-  var a = n[1], f = n[2], l = r[0].length - 1, c = o.length - 1, h = numeric.rep([l], 0), p = Array(l), d = numeric.rep([l], 0), v = Array(l), m = numeric.rep([c + 1], 0), g = [], y = [], b = numeric.ccsTSolve, w, E, S, x, T, N, C = 0;
-  for (w = 0;w < c;++w) {
-    T = 0, S = o[w], x = o[w + 1];
-    for (E = S;E < x;++E) {
-      N = t.Pinv[a[E]], v[T] = N, d[N] = f[E], ++T;
-    }
-    v.length = T, b(r, d, h, v, p);
-    for (E = v.length - 1;E !== -1;--E) {
-      d[v[E]] = 0;
-    }
-    b(i, h, d, p, v);
-    if (u) {
-      return d;
-    }
-    for (E = p.length - 1;E !== -1;--E) {
-      h[p[E]] = 0;
-    }
-    for (E = v.length - 1;E !== -1;--E) {
-      N = v[E], g[C] = N, y[C] = d[N], d[N] = 0, ++C;
-    }
-    m[w + 1] = C;
+  for (j = Lj.length - 1;j !== -1;--j) {
+    Lj[j] = Pinv[Lj[j]];
   }
-  return[m, g, y];
-}, numeric.ccsbinop = function(t, n) {
-  return typeof n == "undefined" && (n = ""), Function("X", "Y", "var Xi \x3d X[0], Xj \x3d X[1], Xv \x3d X[2];\nvar Yi \x3d Y[0], Yj \x3d Y[1], Yv \x3d Y[2];\nvar n \x3d Xi.length-1,m \x3d Math.max(numeric.sup(Xj),numeric.sup(Yj))+1;\nvar Zi \x3d numeric.rep([n+1],0), Zj \x3d [], Zv \x3d [];\nvar x \x3d numeric.rep([m],0),y \x3d numeric.rep([m],0);\nvar xk,yk,zk;\nvar i,j,j0,j1,k,p\x3d0;\n" + n + "for(i\x3d0;i\x3cn;++i) {\n" + "  j0 \x3d Xi[i]; j1 \x3d Xi[i+1];\n" + "  for(j\x3dj0;j!\x3d\x3dj1;++j) {\n" + 
+  return{L:L, U:U, P:P, Pinv:Pinv};
+};
+numeric.ccsLUP = numeric.ccsLUP0;
+numeric.ccsDim = function ccsDim(A) {
+  return[numeric.sup(A[1]) + 1, A[0].length - 1];
+};
+numeric.ccsGetBlock = function ccsGetBlock(A, i, j) {
+  var s = numeric.ccsDim(A), m = s[0], n = s[1];
+  if (typeof i === "undefined") {
+    i = numeric.linspace(0, m - 1);
+  } else {
+    if (typeof i === "number") {
+      i = [i];
+    }
+  }
+  if (typeof j === "undefined") {
+    j = numeric.linspace(0, n - 1);
+  } else {
+    if (typeof j === "number") {
+      j = [j];
+    }
+  }
+  var p, p0, p1, P = i.length, q, Q = j.length, r, jq, ip;
+  var Bi = numeric.rep([n], 0), Bj = [], Bv = [], B = [Bi, Bj, Bv];
+  var Ai = A[0], Aj = A[1], Av = A[2];
+  var x = numeric.rep([m], 0), count = 0, flags = numeric.rep([m], 0);
+  for (q = 0;q < Q;++q) {
+    jq = j[q];
+    var q0 = Ai[jq];
+    var q1 = Ai[jq + 1];
+    for (p = q0;p < q1;++p) {
+      r = Aj[p];
+      flags[r] = 1;
+      x[r] = Av[p];
+    }
+    for (p = 0;p < P;++p) {
+      ip = i[p];
+      if (flags[ip]) {
+        Bj[count] = p;
+        Bv[count] = x[i[p]];
+        ++count;
+      }
+    }
+    for (p = q0;p < q1;++p) {
+      r = Aj[p];
+      flags[r] = 0;
+    }
+    Bi[q + 1] = count;
+  }
+  return B;
+};
+numeric.ccsDot = function ccsDot(A, B) {
+  var Ai = A[0], Aj = A[1], Av = A[2];
+  var Bi = B[0], Bj = B[1], Bv = B[2];
+  var sA = numeric.ccsDim(A), sB = numeric.ccsDim(B);
+  var m = sA[0], n = sA[1], o = sB[1];
+  var x = numeric.rep([m], 0), flags = numeric.rep([m], 0), xj = Array(m);
+  var Ci = numeric.rep([o], 0), Cj = [], Cv = [], C = [Ci, Cj, Cv];
+  var i, j, k, j0, j1, i0, i1, l, p, a, b;
+  for (k = 0;k !== o;++k) {
+    j0 = Bi[k];
+    j1 = Bi[k + 1];
+    p = 0;
+    for (j = j0;j < j1;++j) {
+      a = Bj[j];
+      b = Bv[j];
+      i0 = Ai[a];
+      i1 = Ai[a + 1];
+      for (i = i0;i < i1;++i) {
+        l = Aj[i];
+        if (flags[l] === 0) {
+          xj[p] = l;
+          flags[l] = 1;
+          p = p + 1;
+        }
+        x[l] = x[l] + Av[i] * b;
+      }
+    }
+    j0 = Ci[k];
+    j1 = j0 + p;
+    Ci[k + 1] = j1;
+    for (j = p - 1;j !== -1;--j) {
+      b = j0 + j;
+      i = xj[j];
+      Cj[b] = i;
+      Cv[b] = x[i];
+      flags[i] = 0;
+      x[i] = 0;
+    }
+    Ci[k + 1] = Ci[k] + p;
+  }
+  return C;
+};
+numeric.ccsLUPSolve = function ccsLUPSolve(LUP, B) {
+  var L = LUP.L, U = LUP.U, P = LUP.P;
+  var Bi = B[0];
+  var flag = false;
+  if (typeof Bi !== "object") {
+    B = [[0, B.length], numeric.linspace(0, B.length - 1), B];
+    Bi = B[0];
+    flag = true;
+  }
+  var Bj = B[1], Bv = B[2];
+  var n = L[0].length - 1, m = Bi.length - 1;
+  var x = numeric.rep([n], 0), xj = Array(n);
+  var b = numeric.rep([n], 0), bj = Array(n);
+  var Xi = numeric.rep([m + 1], 0), Xj = [], Xv = [];
+  var sol = numeric.ccsTSolve;
+  var i, j, j0, j1, k, J, N = 0;
+  for (i = 0;i < m;++i) {
+    k = 0;
+    j0 = Bi[i];
+    j1 = Bi[i + 1];
+    for (j = j0;j < j1;++j) {
+      J = LUP.Pinv[Bj[j]];
+      bj[k] = J;
+      b[J] = Bv[j];
+      ++k;
+    }
+    bj.length = k;
+    sol(L, b, x, bj, xj);
+    for (j = bj.length - 1;j !== -1;--j) {
+      b[bj[j]] = 0;
+    }
+    sol(U, x, b, xj, bj);
+    if (flag) {
+      return b;
+    }
+    for (j = xj.length - 1;j !== -1;--j) {
+      x[xj[j]] = 0;
+    }
+    for (j = bj.length - 1;j !== -1;--j) {
+      J = bj[j];
+      Xj[N] = J;
+      Xv[N] = b[J];
+      b[J] = 0;
+      ++N;
+    }
+    Xi[i + 1] = N;
+  }
+  return[Xi, Xj, Xv];
+};
+numeric.ccsbinop = function ccsbinop(body, setup) {
+  if (typeof setup === "undefined") {
+    setup = "";
+  }
+  return Function("X", "Y", "var Xi \x3d X[0], Xj \x3d X[1], Xv \x3d X[2];\n" + "var Yi \x3d Y[0], Yj \x3d Y[1], Yv \x3d Y[2];\n" + "var n \x3d Xi.length-1,m \x3d Math.max(numeric.sup(Xj),numeric.sup(Yj))+1;\n" + "var Zi \x3d numeric.rep([n+1],0), Zj \x3d [], Zv \x3d [];\n" + "var x \x3d numeric.rep([m],0),y \x3d numeric.rep([m],0);\n" + "var xk,yk,zk;\n" + "var i,j,j0,j1,k,p\x3d0;\n" + setup + "for(i\x3d0;i\x3cn;++i) {\n" + "  j0 \x3d Xi[i]; j1 \x3d Xi[i+1];\n" + "  for(j\x3dj0;j!\x3d\x3dj1;++j) {\n" + 
   "    k \x3d Xj[j];\n" + "    x[k] \x3d 1;\n" + "    Zj[p] \x3d k;\n" + "    ++p;\n" + "  }\n" + "  j0 \x3d Yi[i]; j1 \x3d Yi[i+1];\n" + "  for(j\x3dj0;j!\x3d\x3dj1;++j) {\n" + "    k \x3d Yj[j];\n" + "    y[k] \x3d Yv[j];\n" + "    if(x[k] \x3d\x3d\x3d 0) {\n" + "      Zj[p] \x3d k;\n" + "      ++p;\n" + "    }\n" + "  }\n" + "  Zi[i+1] \x3d p;\n" + "  j0 \x3d Xi[i]; j1 \x3d Xi[i+1];\n" + "  for(j\x3dj0;j!\x3d\x3dj1;++j) x[Xj[j]] \x3d Xv[j];\n" + "  j0 \x3d Zi[i]; j1 \x3d Zi[i+1];\n" + "  for(j\x3dj0;j!\x3d\x3dj1;++j) {\n" + 
-  "    k \x3d Zj[j];\n" + "    xk \x3d x[k];\n" + "    yk \x3d y[k];\n" + t + "\n" + "    Zv[j] \x3d zk;\n" + "  }\n" + "  j0 \x3d Xi[i]; j1 \x3d Xi[i+1];\n" + "  for(j\x3dj0;j!\x3d\x3dj1;++j) x[Xj[j]] \x3d 0;\n" + "  j0 \x3d Yi[i]; j1 \x3d Yi[i+1];\n" + "  for(j\x3dj0;j!\x3d\x3dj1;++j) y[Yj[j]] \x3d 0;\n" + "}\n" + "return [Zi,Zj,Zv];");
-}, function() {
+  "    k \x3d Zj[j];\n" + "    xk \x3d x[k];\n" + "    yk \x3d y[k];\n" + body + "\n" + "    Zv[j] \x3d zk;\n" + "  }\n" + "  j0 \x3d Xi[i]; j1 \x3d Xi[i+1];\n" + "  for(j\x3dj0;j!\x3d\x3dj1;++j) x[Xj[j]] \x3d 0;\n" + "  j0 \x3d Yi[i]; j1 \x3d Yi[i+1];\n" + "  for(j\x3dj0;j!\x3d\x3dj1;++j) y[Yj[j]] \x3d 0;\n" + "}\n" + "return [Zi,Zj,Zv];");
+};
+(function() {
   var k, A, B, C;
   for (k in numeric.ops2) {
-    isFinite(eval("1" + numeric.ops2[k] + "0")) ? A = "[Y[0],Y[1],numeric." + k + "(X,Y[2])]" : A = "NaN", isFinite(eval("0" + numeric.ops2[k] + "1")) ? B = "[X[0],X[1],numeric." + k + "(X[2],Y)]" : B = "NaN", isFinite(eval("1" + numeric.ops2[k] + "0")) && isFinite(eval("0" + numeric.ops2[k] + "1")) ? C = "numeric.ccs" + k + "MM(X,Y)" : C = "NaN", numeric["ccs" + k + "MM"] = numeric.ccsbinop("zk \x3d xk " + numeric.ops2[k] + "yk;"), numeric["ccs" + k] = Function("X", "Y", 'if(typeof X \x3d\x3d\x3d "number") return ' + 
-    A + ";\n" + 'if(typeof Y \x3d\x3d\x3d "number") return ' + B + ";\n" + "return " + C + ";\n");
+    if (isFinite(eval("1" + numeric.ops2[k] + "0"))) {
+      A = "[Y[0],Y[1],numeric." + k + "(X,Y[2])]";
+    } else {
+      A = "NaN";
+    }
+    if (isFinite(eval("0" + numeric.ops2[k] + "1"))) {
+      B = "[X[0],X[1],numeric." + k + "(X[2],Y)]";
+    } else {
+      B = "NaN";
+    }
+    if (isFinite(eval("1" + numeric.ops2[k] + "0")) && isFinite(eval("0" + numeric.ops2[k] + "1"))) {
+      C = "numeric.ccs" + k + "MM(X,Y)";
+    } else {
+      C = "NaN";
+    }
+    numeric["ccs" + k + "MM"] = numeric.ccsbinop("zk \x3d xk " + numeric.ops2[k] + "yk;");
+    numeric["ccs" + k] = Function("X", "Y", 'if(typeof X \x3d\x3d\x3d "number") return ' + A + ";\n" + 'if(typeof Y \x3d\x3d\x3d "number") return ' + B + ";\n" + "return " + C + ";\n");
   }
-}(), numeric.ccsScatter = function(t) {
-  var n = t[0], r = t[1], i = t[2], s = numeric.sup(r) + 1, o = n.length, u = numeric.rep([s], 0), a = Array(o), f = Array(o), l = numeric.rep([s], 0), c;
-  for (c = 0;c < o;++c) {
-    l[r[c]]++;
+})();
+numeric.ccsScatter = function ccsScatter(A) {
+  var Ai = A[0], Aj = A[1], Av = A[2];
+  var n = numeric.sup(Aj) + 1, m = Ai.length;
+  var Ri = numeric.rep([n], 0), Rj = Array(m), Rv = Array(m);
+  var counts = numeric.rep([n], 0), i;
+  for (i = 0;i < m;++i) {
+    counts[Aj[i]]++;
   }
-  for (c = 0;c < s;++c) {
-    u[c + 1] = u[c] + l[c];
+  for (i = 0;i < n;++i) {
+    Ri[i + 1] = Ri[i] + counts[i];
   }
-  var h = u.slice(0), p, d;
-  for (c = 0;c < o;++c) {
-    d = r[c], p = h[d], a[p] = n[c], f[p] = i[c], h[d] = h[d] + 1;
+  var ptr = Ri.slice(0), k, Aii;
+  for (i = 0;i < m;++i) {
+    Aii = Aj[i];
+    k = ptr[Aii];
+    Rj[k] = Ai[i];
+    Rv[k] = Av[i];
+    ptr[Aii] = ptr[Aii] + 1;
   }
-  return[u, a, f];
-}, numeric.ccsGather = function(t) {
-  var n = t[0], r = t[1], i = t[2], s = n.length - 1, o = r.length, u = Array(o), a = Array(o), f = Array(o), l, c, h, p, d;
-  d = 0;
-  for (l = 0;l < s;++l) {
-    h = n[l], p = n[l + 1];
-    for (c = h;c !== p;++c) {
-      a[d] = l, u[d] = r[c], f[d] = i[c], ++d;
+  return[Ri, Rj, Rv];
+};
+numeric.ccsGather = function ccsGather(A) {
+  var Ai = A[0], Aj = A[1], Av = A[2];
+  var n = Ai.length - 1, m = Aj.length;
+  var Ri = Array(m), Rj = Array(m), Rv = Array(m);
+  var i, j, j0, j1, p;
+  p = 0;
+  for (i = 0;i < n;++i) {
+    j0 = Ai[i];
+    j1 = Ai[i + 1];
+    for (j = j0;j !== j1;++j) {
+      Rj[p] = i;
+      Ri[p] = Aj[j];
+      Rv[p] = Av[j];
+      ++p;
     }
   }
-  return[u, a, f];
-}, numeric.sdim = function dim(e, t, n) {
-  typeof t == "undefined" && (t = []);
-  if (typeof e != "object") {
-    return t;
+  return[Ri, Rj, Rv];
+};
+numeric.sdim = function dim(A, ret, k) {
+  if (typeof ret === "undefined") {
+    ret = [];
   }
-  typeof n == "undefined" && (n = 0), n in t || (t[n] = 0), e.length > t[n] && (t[n] = e.length);
-  var r;
-  for (r in e) {
-    e.hasOwnProperty(r) && dim(e[r], t, n + 1);
+  if (typeof A !== "object") {
+    return ret;
   }
-  return t;
-}, numeric.sclone = function clone(e, t, n) {
-  typeof t == "undefined" && (t = 0), typeof n == "undefined" && (n = numeric.sdim(e).length);
-  var r, i = Array(e.length);
-  if (t === n - 1) {
-    for (r in e) {
-      e.hasOwnProperty(r) && (i[r] = e[r]);
+  if (typeof k === "undefined") {
+    k = 0;
+  }
+  if (!(k in ret)) {
+    ret[k] = 0;
+  }
+  if (A.length > ret[k]) {
+    ret[k] = A.length;
+  }
+  var i;
+  for (i in A) {
+    if (A.hasOwnProperty(i)) {
+      dim(A[i], ret, k + 1);
     }
-    return i;
   }
-  for (r in e) {
-    e.hasOwnProperty(r) && (i[r] = clone(e[r], t + 1, n));
+  return ret;
+};
+numeric.sclone = function clone(A, k, n) {
+  if (typeof k === "undefined") {
+    k = 0;
   }
-  return i;
-}, numeric.sdiag = function(t) {
-  var n = t.length, r, i = Array(n), s, o, u;
-  for (r = n - 1;r >= 1;r -= 2) {
-    s = r - 1, i[r] = [], i[r][r] = t[r], i[s] = [], i[s][s] = t[s];
+  if (typeof n === "undefined") {
+    n = numeric.sdim(A).length;
   }
-  return r === 0 && (i[0] = [], i[0][0] = t[r]), i;
-}, numeric.sidentity = function(t) {
-  return numeric.sdiag(numeric.rep([t], 1));
-}, numeric.stranspose = function(t) {
-  var n = [], r = t.length, i, s, o;
-  for (i in t) {
-    if (!t.hasOwnProperty(i)) {
+  var i, ret = Array(A.length);
+  if (k === n - 1) {
+    for (i in A) {
+      if (A.hasOwnProperty(i)) {
+        ret[i] = A[i];
+      }
+    }
+    return ret;
+  }
+  for (i in A) {
+    if (A.hasOwnProperty(i)) {
+      ret[i] = clone(A[i], k + 1, n);
+    }
+  }
+  return ret;
+};
+numeric.sdiag = function diag(d) {
+  var n = d.length, i, ret = Array(n), i1, i2, i3;
+  for (i = n - 1;i >= 1;i -= 2) {
+    i1 = i - 1;
+    ret[i] = [];
+    ret[i][i] = d[i];
+    ret[i1] = [];
+    ret[i1][i1] = d[i1];
+  }
+  if (i === 0) {
+    ret[0] = [];
+    ret[0][0] = d[i];
+  }
+  return ret;
+};
+numeric.sidentity = function identity(n) {
+  return numeric.sdiag(numeric.rep([n], 1));
+};
+numeric.stranspose = function transpose(A) {
+  var ret = [], n = A.length, i, j, Ai;
+  for (i in A) {
+    if (!A.hasOwnProperty(i)) {
       continue;
     }
-    o = t[i];
-    for (s in o) {
-      if (!o.hasOwnProperty(s)) {
+    Ai = A[i];
+    for (j in Ai) {
+      if (!Ai.hasOwnProperty(j)) {
         continue;
       }
-      typeof n[s] != "object" && (n[s] = []), n[s][i] = o[s];
+      if (typeof ret[j] !== "object") {
+        ret[j] = [];
+      }
+      ret[j][i] = Ai[j];
     }
   }
-  return n;
-}, numeric.sLUP = function(t, n) {
+  return ret;
+};
+numeric.sLUP = function LUP(A, tol) {
   throw new Error("The function numeric.sLUP had a bug in it and has been removed. Please use the new numeric.ccsLUP function instead.");
-}, numeric.sdotMM = function(t, n) {
-  var r = t.length, i = n.length, s = numeric.stranspose(n), o = s.length, u, a, f, l, c, h, p = Array(r), d;
-  for (f = r - 1;f >= 0;f--) {
-    d = [], u = t[f];
-    for (c = o - 1;c >= 0;c--) {
-      h = 0, a = s[c];
-      for (l in u) {
-        if (!u.hasOwnProperty(l)) {
+};
+numeric.sdotMM = function dotMM(A, B) {
+  var p = A.length, q = B.length, BT = numeric.stranspose(B), r = BT.length, Ai, BTk;
+  var i, j, k, accum;
+  var ret = Array(p), reti;
+  for (i = p - 1;i >= 0;i--) {
+    reti = [];
+    Ai = A[i];
+    for (k = r - 1;k >= 0;k--) {
+      accum = 0;
+      BTk = BT[k];
+      for (j in Ai) {
+        if (!Ai.hasOwnProperty(j)) {
           continue;
         }
-        l in a && (h += u[l] * a[l]);
+        if (j in BTk) {
+          accum += Ai[j] * BTk[j];
+        }
       }
-      h && (d[c] = h);
+      if (accum) {
+        reti[k] = accum;
+      }
     }
-    p[f] = d;
+    ret[i] = reti;
   }
-  return p;
-}, numeric.sdotMV = function(t, n) {
-  var r = t.length, i, s, o, u = Array(r), a;
-  for (s = r - 1;s >= 0;s--) {
-    i = t[s], a = 0;
-    for (o in i) {
-      if (!i.hasOwnProperty(o)) {
+  return ret;
+};
+numeric.sdotMV = function dotMV(A, x) {
+  var p = A.length, Ai, i, j;
+  var ret = Array(p), accum;
+  for (i = p - 1;i >= 0;i--) {
+    Ai = A[i];
+    accum = 0;
+    for (j in Ai) {
+      if (!Ai.hasOwnProperty(j)) {
         continue;
       }
-      n[o] && (a += i[o] * n[o]);
+      if (x[j]) {
+        accum += Ai[j] * x[j];
+      }
     }
-    a && (u[s] = a);
+    if (accum) {
+      ret[i] = accum;
+    }
   }
-  return u;
-}, numeric.sdotVM = function(t, n) {
-  var r, i, s, o, u = [], a;
-  for (r in t) {
-    if (!t.hasOwnProperty(r)) {
+  return ret;
+};
+numeric.sdotVM = function dotMV(x, A) {
+  var i, j, Ai, alpha;
+  var ret = [], accum;
+  for (i in x) {
+    if (!x.hasOwnProperty(i)) {
       continue;
     }
-    s = n[r], o = t[r];
-    for (i in s) {
-      if (!s.hasOwnProperty(i)) {
+    Ai = A[i];
+    alpha = x[i];
+    for (j in Ai) {
+      if (!Ai.hasOwnProperty(j)) {
         continue;
       }
-      u[i] || (u[i] = 0), u[i] += o * s[i];
+      if (!ret[j]) {
+        ret[j] = 0;
+      }
+      ret[j] += alpha * Ai[j];
     }
   }
-  return u;
-}, numeric.sdotVV = function(t, n) {
-  var r, i = 0;
-  for (r in t) {
-    t[r] && (n[r] && (i += t[r] * n[r]));
+  return ret;
+};
+numeric.sdotVV = function dotVV(x, y) {
+  var i, ret = 0;
+  for (i in x) {
+    if (x[i] && y[i]) {
+      ret += x[i] * y[i];
+    }
   }
-  return i;
-}, numeric.sdot = function(t, n) {
-  var r = numeric.sdim(t).length, i = numeric.sdim(n).length, s = r * 1E3 + i;
-  switch(s) {
+  return ret;
+};
+numeric.sdot = function dot(A, B) {
+  var m = numeric.sdim(A).length, n = numeric.sdim(B).length;
+  var k = m * 1E3 + n;
+  switch(k) {
     case 0:
-      return t * n;
+      return A * B;
     case 1001:
-      return numeric.sdotVV(t, n);
+      return numeric.sdotVV(A, B);
     case 2001:
-      return numeric.sdotMV(t, n);
+      return numeric.sdotMV(A, B);
     case 1002:
-      return numeric.sdotVM(t, n);
+      return numeric.sdotVM(A, B);
     case 2002:
-      return numeric.sdotMM(t, n);
+      return numeric.sdotMM(A, B);
     default:
-      throw new Error("numeric.sdot not implemented for tensors of order " + r + " and " + i);;
+      throw new Error("numeric.sdot not implemented for tensors of order " + m + " and " + n);;
   }
-}, numeric.sscatter = function(t) {
-  var n = t[0].length, r, i, s, o = t.length, u = [], a;
+};
+numeric.sscatter = function scatter(V) {
+  var n = V[0].length, Vij, i, j, m = V.length, A = [], Aj;
   for (i = n - 1;i >= 0;--i) {
-    if (!t[o - 1][i]) {
+    if (!V[m - 1][i]) {
       continue;
     }
-    a = u;
-    for (s = 0;s < o - 2;s++) {
-      r = t[s][i], a[r] || (a[r] = []), a = a[r];
+    Aj = A;
+    for (j = 0;j < m - 2;j++) {
+      Vij = V[j][i];
+      if (!Aj[Vij]) {
+        Aj[Vij] = [];
+      }
+      Aj = Aj[Vij];
     }
-    a[t[s][i]] = t[s + 1][i];
+    Aj[V[j][i]] = V[j + 1][i];
   }
-  return u;
-}, numeric.sgather = function gather(e, t, n) {
-  typeof t == "undefined" && (t = []), typeof n == "undefined" && (n = []);
-  var r, i, s;
-  r = n.length;
-  for (i in e) {
-    if (e.hasOwnProperty(i)) {
-      n[r] = parseInt(i), s = e[i];
-      if (typeof s == "number") {
-        if (s) {
-          if (t.length === 0) {
-            for (i = r + 1;i >= 0;--i) {
-              t[i] = [];
+  return A;
+};
+numeric.sgather = function gather(A, ret, k) {
+  if (typeof ret === "undefined") {
+    ret = [];
+  }
+  if (typeof k === "undefined") {
+    k = [];
+  }
+  var n, i, Ai;
+  n = k.length;
+  for (i in A) {
+    if (A.hasOwnProperty(i)) {
+      k[n] = parseInt(i);
+      Ai = A[i];
+      if (typeof Ai === "number") {
+        if (Ai) {
+          if (ret.length === 0) {
+            for (i = n + 1;i >= 0;--i) {
+              ret[i] = [];
             }
           }
-          for (i = r;i >= 0;--i) {
-            t[i].push(n[i]);
+          for (i = n;i >= 0;--i) {
+            ret[i].push(k[i]);
           }
-          t[r + 1].push(s);
+          ret[n + 1].push(Ai);
         }
       } else {
-        gather(s, t, n);
+        gather(Ai, ret, k);
       }
     }
   }
-  return n.length > r && n.pop(), t;
-}, numeric.cLU = function(t) {
-  var n = t[0], r = t[1], i = t[2], s = n.length, o = 0, u, a, f, l, c, h;
-  for (u = 0;u < s;u++) {
-    n[u] > o && (o = n[u]);
+  if (k.length > n) {
+    k.pop();
   }
-  o++;
-  var p = Array(o), d = Array(o), v = numeric.rep([o], Infinity), m = numeric.rep([o], -Infinity), g, y, b;
-  for (f = 0;f < s;f++) {
-    u = n[f], a = r[f], a < v[u] && (v[u] = a), a > m[u] && (m[u] = a);
+  return ret;
+};
+numeric.cLU = function LU(A) {
+  var I = A[0], J = A[1], V = A[2];
+  var p = I.length, m = 0, i, j, k, a, b, c;
+  for (i = 0;i < p;i++) {
+    if (I[i] > m) {
+      m = I[i];
+    }
   }
-  for (u = 0;u < o - 1;u++) {
-    m[u] > m[u + 1] && (m[u + 1] = m[u]);
+  m++;
+  var L = Array(m), U = Array(m), left = numeric.rep([m], Infinity), right = numeric.rep([m], -Infinity);
+  var Ui, Uj, alpha;
+  for (k = 0;k < p;k++) {
+    i = I[k];
+    j = J[k];
+    if (j < left[i]) {
+      left[i] = j;
+    }
+    if (j > right[i]) {
+      right[i] = j;
+    }
   }
-  for (u = o - 1;u >= 1;u--) {
-    v[u] < v[u - 1] && (v[u - 1] = v[u]);
+  for (i = 0;i < m - 1;i++) {
+    if (right[i] > right[i + 1]) {
+      right[i + 1] = right[i];
+    }
   }
-  var w = 0, E = 0;
-  for (u = 0;u < o;u++) {
-    d[u] = numeric.rep([m[u] - v[u] + 1], 0), p[u] = numeric.rep([u - v[u]], 0), w += u - v[u] + 1, E += m[u] - u + 1;
+  for (i = m - 1;i >= 1;i--) {
+    if (left[i] < left[i - 1]) {
+      left[i - 1] = left[i];
+    }
   }
-  for (f = 0;f < s;f++) {
-    u = n[f], d[u][r[f] - v[u]] = i[f];
+  var countL = 0, countU = 0;
+  for (i = 0;i < m;i++) {
+    U[i] = numeric.rep([right[i] - left[i] + 1], 0);
+    L[i] = numeric.rep([i - left[i]], 0);
+    countL += i - left[i] + 1;
+    countU += right[i] - i + 1;
   }
-  for (u = 0;u < o - 1;u++) {
-    l = u - v[u], g = d[u];
-    for (a = u + 1;v[a] <= u && a < o;a++) {
-      c = u - v[a], h = m[u] - u, y = d[a], b = y[c] / g[l];
-      if (b) {
-        for (f = 1;f <= h;f++) {
-          y[f + c] -= b * g[f + l];
+  for (k = 0;k < p;k++) {
+    i = I[k];
+    U[i][J[k] - left[i]] = V[k];
+  }
+  for (i = 0;i < m - 1;i++) {
+    a = i - left[i];
+    Ui = U[i];
+    for (j = i + 1;left[j] <= i && j < m;j++) {
+      b = i - left[j];
+      c = right[i] - i;
+      Uj = U[j];
+      alpha = Uj[b] / Ui[a];
+      if (alpha) {
+        for (k = 1;k <= c;k++) {
+          Uj[k + b] -= alpha * Ui[k + a];
         }
-        p[a][u - v[a]] = b;
+        L[j][i - left[j]] = alpha;
       }
     }
   }
-  var g = [], y = [], S = [], x = [], T = [], N = [], s, C, k;
-  s = 0, C = 0;
-  for (u = 0;u < o;u++) {
-    l = v[u], c = m[u], k = d[u];
-    for (a = u;a <= c;a++) {
-      k[a - l] && (g[s] = u, y[s] = a, S[s] = k[a - l], s++);
+  var Ui = [], Uj = [], Uv = [], Li = [], Lj = [], Lv = [];
+  var p, q, foo;
+  p = 0;
+  q = 0;
+  for (i = 0;i < m;i++) {
+    a = left[i];
+    b = right[i];
+    foo = U[i];
+    for (j = i;j <= b;j++) {
+      if (foo[j - a]) {
+        Ui[p] = i;
+        Uj[p] = j;
+        Uv[p] = foo[j - a];
+        p++;
+      }
     }
-    k = p[u];
-    for (a = l;a < u;a++) {
-      k[a - l] && (x[C] = u, T[C] = a, N[C] = k[a - l], C++);
+    foo = L[i];
+    for (j = a;j < i;j++) {
+      if (foo[j - a]) {
+        Li[q] = i;
+        Lj[q] = j;
+        Lv[q] = foo[j - a];
+        q++;
+      }
     }
-    x[C] = u, T[C] = u, N[C] = 1, C++;
+    Li[q] = i;
+    Lj[q] = i;
+    Lv[q] = 1;
+    q++;
   }
-  return{U:[g, y, S], L:[x, T, N]};
-}, numeric.cLUsolve = function(t, n) {
-  var r = t.L, i = t.U, s = numeric.clone(n), o = r[0], u = r[1], a = r[2], f = i[0], l = i[1], c = i[2], h = f.length, p = o.length, d = s.length, v, m, g;
-  g = 0;
-  for (v = 0;v < d;v++) {
-    while (u[g] < v) {
-      s[v] -= a[g] * s[u[g]], g++;
+  return{U:[Ui, Uj, Uv], L:[Li, Lj, Lv]};
+};
+numeric.cLUsolve = function LUsolve(lu, b) {
+  var L = lu.L, U = lu.U, ret = numeric.clone(b);
+  var Li = L[0], Lj = L[1], Lv = L[2];
+  var Ui = U[0], Uj = U[1], Uv = U[2];
+  var p = Ui.length, q = Li.length;
+  var m = ret.length, i, j, k;
+  k = 0;
+  for (i = 0;i < m;i++) {
+    while (Lj[k] < i) {
+      ret[i] -= Lv[k] * ret[Lj[k]];
+      k++;
     }
-    g++;
+    k++;
   }
-  g = h - 1;
-  for (v = d - 1;v >= 0;v--) {
-    while (l[g] > v) {
-      s[v] -= c[g] * s[l[g]], g--;
+  k = p - 1;
+  for (i = m - 1;i >= 0;i--) {
+    while (Uj[k] > i) {
+      ret[i] -= Uv[k] * ret[Uj[k]];
+      k--;
     }
-    s[v] /= c[g], g--;
+    ret[i] /= Uv[k];
+    k--;
   }
-  return s;
-}, numeric.cgrid = function(t, n) {
-  typeof t == "number" && (t = [t, t]);
-  var r = numeric.rep(t, -1), i, s, o;
-  if (typeof n != "function") {
-    switch(n) {
+  return ret;
+};
+numeric.cgrid = function grid(n, shape) {
+  if (typeof n === "number") {
+    n = [n, n];
+  }
+  var ret = numeric.rep(n, -1);
+  var i, j, count;
+  if (typeof shape !== "function") {
+    switch(shape) {
       case "L":
-        n = function(e, n) {
-          return e >= t[0] / 2 || n < t[1] / 2;
+        shape = function(i, j) {
+          return i >= n[0] / 2 || j < n[1] / 2;
         };
         break;
       default:
-        n = function(e, t) {
-          return!0;
+        shape = function(i, j) {
+          return true;
         };
+        break;
     }
   }
-  o = 0;
-  for (i = 1;i < t[0] - 1;i++) {
-    for (s = 1;s < t[1] - 1;s++) {
-      n(i, s) && (r[i][s] = o, o++);
+  count = 0;
+  for (i = 1;i < n[0] - 1;i++) {
+    for (j = 1;j < n[1] - 1;j++) {
+      if (shape(i, j)) {
+        ret[i][j] = count;
+        count++;
+      }
     }
   }
-  return r;
-}, numeric.cdelsq = function(t) {
-  var n = [[-1, 0], [0, -1], [0, 1], [1, 0]], r = numeric.dim(t), i = r[0], s = r[1], o, u, a, f, l, c = [], h = [], p = [];
-  for (o = 1;o < i - 1;o++) {
-    for (u = 1;u < s - 1;u++) {
-      if (t[o][u] < 0) {
+  return ret;
+};
+numeric.cdelsq = function delsq(g) {
+  var dir = [[-1, 0], [0, -1], [0, 1], [1, 0]];
+  var s = numeric.dim(g), m = s[0], n = s[1], i, j, k, p, q;
+  var Li = [], Lj = [], Lv = [];
+  for (i = 1;i < m - 1;i++) {
+    for (j = 1;j < n - 1;j++) {
+      if (g[i][j] < 0) {
         continue;
       }
-      for (a = 0;a < 4;a++) {
-        f = o + n[a][0], l = u + n[a][1];
-        if (t[f][l] < 0) {
+      for (k = 0;k < 4;k++) {
+        p = i + dir[k][0];
+        q = j + dir[k][1];
+        if (g[p][q] < 0) {
           continue;
         }
-        c.push(t[o][u]), h.push(t[f][l]), p.push(-1);
+        Li.push(g[i][j]);
+        Lj.push(g[p][q]);
+        Lv.push(-1);
       }
-      c.push(t[o][u]), h.push(t[o][u]), p.push(4);
+      Li.push(g[i][j]);
+      Lj.push(g[i][j]);
+      Lv.push(4);
     }
   }
-  return[c, h, p];
-}, numeric.cdotMV = function(t, n) {
-  var r, i = t[0], s = t[1], o = t[2], u, a = i.length, f;
-  f = 0;
-  for (u = 0;u < a;u++) {
-    i[u] > f && (f = i[u]);
-  }
-  f++, r = numeric.rep([f], 0);
-  for (u = 0;u < a;u++) {
-    r[i[u]] += o[u] * n[s[u]];
-  }
-  return r;
-}, numeric.Spline = function(t, n, r, i, s) {
-  this.x = t, this.yl = n, this.yr = r, this.kl = i, this.kr = s;
-}, numeric.Spline.prototype._at = function(t, n) {
-  var r = this.x, i = this.yl, s = this.yr, o = this.kl, u = this.kr, t, a, f, l, c = numeric.add, h = numeric.sub, p = numeric.mul;
-  a = h(p(o[n], r[n + 1] - r[n]), h(s[n + 1], i[n])), f = c(p(u[n + 1], r[n] - r[n + 1]), h(s[n + 1], i[n])), l = (t - r[n]) / (r[n + 1] - r[n]);
-  var d = l * (1 - l);
-  return c(c(c(p(1 - l, i[n]), p(l, s[n + 1])), p(a, d * (1 - l))), p(f, d * l));
-}, numeric.Spline.prototype.at = function(t) {
-  if (typeof t == "number") {
-    var n = this.x, r = n.length, i, s, o, u = Math.floor, a, f, l;
-    i = 0, s = r - 1;
-    while (s - i > 1) {
-      o = u((i + s) / 2), n[o] <= t ? i = o : s = o;
+  return[Li, Lj, Lv];
+};
+numeric.cdotMV = function dotMV(A, x) {
+  var ret, Ai = A[0], Aj = A[1], Av = A[2], k, p = Ai.length, N;
+  N = 0;
+  for (k = 0;k < p;k++) {
+    if (Ai[k] > N) {
+      N = Ai[k];
     }
-    return this._at(t, i);
   }
-  var r = t.length, c, h = Array(r);
-  for (c = r - 1;c !== -1;--c) {
-    h[c] = this.at(t[c]);
+  N++;
+  ret = numeric.rep([N], 0);
+  for (k = 0;k < p;k++) {
+    ret[Ai[k]] += Av[k] * x[Aj[k]];
   }
-  return h;
-}, numeric.Spline.prototype.diff = function() {
-  var t = this.x, n = this.yl, r = this.yr, i = this.kl, s = this.kr, o = n.length, u, a, f, l = i, c = s, h = Array(o), p = Array(o), d = numeric.add, v = numeric.mul, m = numeric.div, g = numeric.sub;
-  for (u = o - 1;u !== -1;--u) {
-    a = t[u + 1] - t[u], f = g(r[u + 1], n[u]), h[u] = m(d(v(f, 6), v(i[u], -4 * a), v(s[u + 1], -2 * a)), a * a), p[u + 1] = m(d(v(f, -6), v(i[u], 2 * a), v(s[u + 1], 4 * a)), a * a);
+  return ret;
+};
+numeric.Spline = function Spline(x, yl, yr, kl, kr) {
+  this.x = x;
+  this.yl = yl;
+  this.yr = yr;
+  this.kl = kl;
+  this.kr = kr;
+};
+numeric.Spline.prototype._at = function _at(x1, p) {
+  var x = this.x;
+  var yl = this.yl;
+  var yr = this.yr;
+  var kl = this.kl;
+  var kr = this.kr;
+  var x1, a, b, t;
+  var add = numeric.add, sub = numeric.sub, mul = numeric.mul;
+  a = sub(mul(kl[p], x[p + 1] - x[p]), sub(yr[p + 1], yl[p]));
+  b = add(mul(kr[p + 1], x[p] - x[p + 1]), sub(yr[p + 1], yl[p]));
+  t = (x1 - x[p]) / (x[p + 1] - x[p]);
+  var s = t * (1 - t);
+  return add(add(add(mul(1 - t, yl[p]), mul(t, yr[p + 1])), mul(a, s * (1 - t))), mul(b, s * t));
+};
+numeric.Spline.prototype.at = function at(x0) {
+  if (typeof x0 === "number") {
+    var x = this.x;
+    var n = x.length;
+    var p, q, mid, floor = Math.floor, a, b, t;
+    p = 0;
+    q = n - 1;
+    while (q - p > 1) {
+      mid = floor((p + q) / 2);
+      if (x[mid] <= x0) {
+        p = mid;
+      } else {
+        q = mid;
+      }
+    }
+    return this._at(x0, p);
   }
-  return new numeric.Spline(t, l, c, h, p);
-}, numeric.Spline.prototype.roots = function() {
-  function t(e) {
-    return e * e;
+  var n = x0.length, i, ret = Array(n);
+  for (i = n - 1;i !== -1;--i) {
+    ret[i] = this.at(x0[i]);
   }
-  function n(e, t, n, r, i) {
-    var s = n * 2 - (t - e), o = -r * 2 + (t - e), u = (i + 1) * 0.5, a = u * (1 - u);
-    return(1 - u) * e + u * t + s * a * (1 - u) + o * a * u;
+  return ret;
+};
+numeric.Spline.prototype.diff = function diff() {
+  var x = this.x;
+  var yl = this.yl;
+  var yr = this.yr;
+  var kl = this.kl;
+  var kr = this.kr;
+  var n = yl.length;
+  var i, dx, dy;
+  var zl = kl, zr = kr, pl = Array(n), pr = Array(n);
+  var add = numeric.add, mul = numeric.mul, div = numeric.div, sub = numeric.sub;
+  for (i = n - 1;i !== -1;--i) {
+    dx = x[i + 1] - x[i];
+    dy = sub(yr[i + 1], yl[i]);
+    pl[i] = div(add(mul(dy, 6), mul(kl[i], -4 * dx), mul(kr[i + 1], -2 * dx)), dx * dx);
+    pr[i + 1] = div(add(mul(dy, -6), mul(kl[i], 2 * dx), mul(kr[i + 1], 4 * dx)), dx * dx);
   }
-  var r = [], i = this.x, s = this.yl, o = this.yr, u = this.kl, a = this.kr;
-  typeof s[0] == "number" && (s = [s], o = [o], u = [u], a = [a]);
-  var f = s.length, l = i.length - 1, c, h, p, d, v, m, g, y, b, w, r = Array(f), E, S, x, T, N, C, k, L, A, O, M, _, D, P, H, B, j, F = Math.sqrt;
-  for (c = 0;c !== f;++c) {
-    g = s[c], y = o[c], b = u[c], w = a[c], E = [];
-    for (h = 0;h !== l;h++) {
-      h > 0 && (y[h] * g[h] < 0 && E.push(i[h])), A = i[h + 1] - i[h], O = i[h], T = g[h], N = y[h + 1], S = b[h] / A, x = w[h + 1] / A, L = t(S - x + 3 * (T - N)) + 12 * x * T, C = x + 3 * T + 2 * S - 3 * N, k = 3 * (x + S + 2 * (T - N)), L <= 0 ? (_ = C / k, _ > i[h] && _ < i[h + 1] ? M = [i[h], _, i[h + 1]] : M = [i[h], i[h + 1]]) : (_ = (C - F(L)) / k, D = (C + F(L)) / k, M = [i[h]], _ > i[h] && (_ < i[h + 1] && M.push(_)), D > i[h] && (D < i[h + 1] && M.push(D)), M.push(i[h + 1])), H = M[0], 
-      _ = this._at(H, h);
-      for (p = 0;p < M.length - 1;p++) {
-        B = M[p + 1], D = this._at(B, h);
-        if (_ === 0) {
-          E.push(H), H = B, _ = D;
+  return new numeric.Spline(x, zl, zr, pl, pr);
+};
+numeric.Spline.prototype.roots = function roots() {
+  function sqr(x) {
+    return x * x;
+  }
+  function heval(y0, y1, k0, k1, x) {
+    var A = k0 * 2 - (y1 - y0);
+    var B = -k1 * 2 + (y1 - y0);
+    var t = (x + 1) * 0.5;
+    var s = t * (1 - t);
+    return(1 - t) * y0 + t * y1 + A * s * (1 - t) + B * s * t;
+  }
+  var ret = [];
+  var x = this.x, yl = this.yl, yr = this.yr, kl = this.kl, kr = this.kr;
+  if (typeof yl[0] === "number") {
+    yl = [yl];
+    yr = [yr];
+    kl = [kl];
+    kr = [kr];
+  }
+  var m = yl.length, n = x.length - 1, i, j, k, y, s, t;
+  var ai, bi, ci, di, ret = Array(m), ri, k0, k1, y0, y1, A, B, D, dx, cx, stops, z0, z1, zm, t0, t1, tm;
+  var sqrt = Math.sqrt;
+  for (i = 0;i !== m;++i) {
+    ai = yl[i];
+    bi = yr[i];
+    ci = kl[i];
+    di = kr[i];
+    ri = [];
+    for (j = 0;j !== n;j++) {
+      if (j > 0 && bi[j] * ai[j] < 0) {
+        ri.push(x[j]);
+      }
+      dx = x[j + 1] - x[j];
+      cx = x[j];
+      y0 = ai[j];
+      y1 = bi[j + 1];
+      k0 = ci[j] / dx;
+      k1 = di[j + 1] / dx;
+      D = sqr(k0 - k1 + 3 * (y0 - y1)) + 12 * k1 * y0;
+      A = k1 + 3 * y0 + 2 * k0 - 3 * y1;
+      B = 3 * (k1 + k0 + 2 * (y0 - y1));
+      if (D <= 0) {
+        z0 = A / B;
+        if (z0 > x[j] && z0 < x[j + 1]) {
+          stops = [x[j], z0, x[j + 1]];
+        } else {
+          stops = [x[j], x[j + 1]];
+        }
+      } else {
+        z0 = (A - sqrt(D)) / B;
+        z1 = (A + sqrt(D)) / B;
+        stops = [x[j]];
+        if (z0 > x[j] && z0 < x[j + 1]) {
+          stops.push(z0);
+        }
+        if (z1 > x[j] && z1 < x[j + 1]) {
+          stops.push(z1);
+        }
+        stops.push(x[j + 1]);
+      }
+      t0 = stops[0];
+      z0 = this._at(t0, j);
+      for (k = 0;k < stops.length - 1;k++) {
+        t1 = stops[k + 1];
+        z1 = this._at(t1, j);
+        if (z0 === 0) {
+          ri.push(t0);
+          t0 = t1;
+          z0 = z1;
           continue;
         }
-        if (D === 0 || _ * D > 0) {
-          H = B, _ = D;
+        if (z1 === 0 || z0 * z1 > 0) {
+          t0 = t1;
+          z0 = z1;
           continue;
         }
-        var I = 0;
-        for (;;) {
-          j = (_ * B - D * H) / (_ - D);
-          if (j <= H || j >= B) {
+        var side = 0;
+        while (1) {
+          tm = (z0 * t1 - z1 * t0) / (z0 - z1);
+          if (tm <= t0 || tm >= t1) {
             break;
           }
-          P = this._at(j, h);
-          if (P * D > 0) {
-            B = j, D = P, I === -1 && (_ *= 0.5), I = -1;
+          zm = this._at(tm, j);
+          if (zm * z1 > 0) {
+            t1 = tm;
+            z1 = zm;
+            if (side === -1) {
+              z0 *= 0.5;
+            }
+            side = -1;
           } else {
-            if (!(P * _ > 0)) {
+            if (zm * z0 > 0) {
+              t0 = tm;
+              z0 = zm;
+              if (side === 1) {
+                z1 *= 0.5;
+              }
+              side = 1;
+            } else {
               break;
             }
-            H = j, _ = P, I === 1 && (D *= 0.5), I = 1;
           }
         }
-        E.push(j), H = M[p + 1], _ = this._at(H, h);
+        ri.push(tm);
+        t0 = stops[k + 1];
+        z0 = this._at(t0, j);
       }
-      D === 0 && E.push(B);
+      if (z1 === 0) {
+        ri.push(t1);
+      }
     }
-    r[c] = E;
+    ret[i] = ri;
   }
-  return typeof this.yl[0] == "number" ? r[0] : r;
-}, numeric.spline = function(t, n, r, i) {
-  var s = t.length, o = [], u = [], a = [], f, l = numeric.sub, c = numeric.mul, h = numeric.add;
-  for (f = s - 2;f >= 0;f--) {
-    u[f] = t[f + 1] - t[f], a[f] = l(n[f + 1], n[f]);
+  if (typeof this.yl[0] === "number") {
+    return ret[0];
   }
-  if (typeof r == "string" || typeof i == "string") {
-    r = i = "periodic";
+  return ret;
+};
+numeric.spline = function spline(x, y, k1, kn) {
+  var n = x.length, b = [], dx = [], dy = [];
+  var i;
+  var sub = numeric.sub, mul = numeric.mul, add = numeric.add;
+  for (i = n - 2;i >= 0;i--) {
+    dx[i] = x[i + 1] - x[i];
+    dy[i] = sub(y[i + 1], y[i]);
   }
-  var p = [[], [], []];
-  switch(typeof r) {
+  if (typeof k1 === "string" || typeof kn === "string") {
+    k1 = kn = "periodic";
+  }
+  var T = [[], [], []];
+  switch(typeof k1) {
     case "undefined":
-      o[0] = c(3 / (u[0] * u[0]), a[0]), p[0].push(0, 0), p[1].push(0, 1), p[2].push(2 / u[0], 1 / u[0]);
+      b[0] = mul(3 / (dx[0] * dx[0]), dy[0]);
+      T[0].push(0, 0);
+      T[1].push(0, 1);
+      T[2].push(2 / dx[0], 1 / dx[0]);
       break;
     case "string":
-      o[0] = h(c(3 / (u[s - 2] * u[s - 2]), a[s - 2]), c(3 / (u[0] * u[0]), a[0])), p[0].push(0, 0, 0), p[1].push(s - 2, 0, 1), p[2].push(1 / u[s - 2], 2 / u[s - 2] + 2 / u[0], 1 / u[0]);
+      b[0] = add(mul(3 / (dx[n - 2] * dx[n - 2]), dy[n - 2]), mul(3 / (dx[0] * dx[0]), dy[0]));
+      T[0].push(0, 0, 0);
+      T[1].push(n - 2, 0, 1);
+      T[2].push(1 / dx[n - 2], 2 / dx[n - 2] + 2 / dx[0], 1 / dx[0]);
       break;
     default:
-      o[0] = r, p[0].push(0), p[1].push(0), p[2].push(1);
+      b[0] = k1;
+      T[0].push(0);
+      T[1].push(0);
+      T[2].push(1);
+      break;
   }
-  for (f = 1;f < s - 1;f++) {
-    o[f] = h(c(3 / (u[f - 1] * u[f - 1]), a[f - 1]), c(3 / (u[f] * u[f]), a[f])), p[0].push(f, f, f), p[1].push(f - 1, f, f + 1), p[2].push(1 / u[f - 1], 2 / u[f - 1] + 2 / u[f], 1 / u[f]);
+  for (i = 1;i < n - 1;i++) {
+    b[i] = add(mul(3 / (dx[i - 1] * dx[i - 1]), dy[i - 1]), mul(3 / (dx[i] * dx[i]), dy[i]));
+    T[0].push(i, i, i);
+    T[1].push(i - 1, i, i + 1);
+    T[2].push(1 / dx[i - 1], 2 / dx[i - 1] + 2 / dx[i], 1 / dx[i]);
   }
-  switch(typeof i) {
+  switch(typeof kn) {
     case "undefined":
-      o[s - 1] = c(3 / (u[s - 2] * u[s - 2]), a[s - 2]), p[0].push(s - 1, s - 1), p[1].push(s - 2, s - 1), p[2].push(1 / u[s - 2], 2 / u[s - 2]);
+      b[n - 1] = mul(3 / (dx[n - 2] * dx[n - 2]), dy[n - 2]);
+      T[0].push(n - 1, n - 1);
+      T[1].push(n - 2, n - 1);
+      T[2].push(1 / dx[n - 2], 2 / dx[n - 2]);
       break;
     case "string":
-      p[1][p[1].length - 1] = 0;
+      T[1][T[1].length - 1] = 0;
       break;
     default:
-      o[s - 1] = i, p[0].push(s - 1), p[1].push(s - 1), p[2].push(1);
+      b[n - 1] = kn;
+      T[0].push(n - 1);
+      T[1].push(n - 1);
+      T[2].push(1);
+      break;
   }
-  typeof o[0] != "number" ? o = numeric.transpose(o) : o = [o];
-  var d = Array(o.length);
-  if (typeof r == "string") {
-    for (f = d.length - 1;f !== -1;--f) {
-      d[f] = numeric.ccsLUPSolve(numeric.ccsLUP(numeric.ccsScatter(p)), o[f]), d[f][s - 1] = d[f][0];
+  if (typeof b[0] !== "number") {
+    b = numeric.transpose(b);
+  } else {
+    b = [b];
+  }
+  var k = Array(b.length);
+  if (typeof k1 === "string") {
+    for (i = k.length - 1;i !== -1;--i) {
+      k[i] = numeric.ccsLUPSolve(numeric.ccsLUP(numeric.ccsScatter(T)), b[i]);
+      k[i][n - 1] = k[i][0];
     }
   } else {
-    for (f = d.length - 1;f !== -1;--f) {
-      d[f] = numeric.cLUsolve(numeric.cLU(p), o[f]);
+    for (i = k.length - 1;i !== -1;--i) {
+      k[i] = numeric.cLUsolve(numeric.cLU(T), b[i]);
     }
   }
-  return typeof n[0] == "number" ? d = d[0] : d = numeric.transpose(d), new numeric.Spline(t, n, n, d, d);
-}, numeric.fftpow2 = function fftpow2(e, t) {
-  var n = e.length;
+  if (typeof y[0] === "number") {
+    k = k[0];
+  } else {
+    k = numeric.transpose(k);
+  }
+  return new numeric.Spline(x, y, y, k, k);
+};
+numeric.fftpow2 = function fftpow2(x, y) {
+  var n = x.length;
   if (n === 1) {
     return;
   }
-  var r = Math.cos, i = Math.sin, s, o, u = Array(n / 2), a = Array(n / 2), f = Array(n / 2), l = Array(n / 2);
-  o = n / 2;
-  for (s = n - 1;s !== -1;--s) {
-    --o, f[o] = e[s], l[o] = t[s], --s, u[o] = e[s], a[o] = t[s];
+  var cos = Math.cos, sin = Math.sin, i, j;
+  var xe = Array(n / 2), ye = Array(n / 2), xo = Array(n / 2), yo = Array(n / 2);
+  j = n / 2;
+  for (i = n - 1;i !== -1;--i) {
+    --j;
+    xo[j] = x[i];
+    yo[j] = y[i];
+    --i;
+    xe[j] = x[i];
+    ye[j] = y[i];
   }
-  fftpow2(u, a), fftpow2(f, l), o = n / 2;
-  var c, h = -6.283185307179586 / n, p, d;
-  for (s = n - 1;s !== -1;--s) {
-    --o, o === -1 && (o = n / 2 - 1), c = h * s, p = r(c), d = i(c), e[s] = u[o] + p * f[o] - d * l[o], t[s] = a[o] + p * l[o] + d * f[o];
+  fftpow2(xe, ye);
+  fftpow2(xo, yo);
+  j = n / 2;
+  var t, k = -6.283185307179586 / n, ci, si;
+  for (i = n - 1;i !== -1;--i) {
+    --j;
+    if (j === -1) {
+      j = n / 2 - 1;
+    }
+    t = k * i;
+    ci = cos(t);
+    si = sin(t);
+    x[i] = xe[j] + ci * xo[j] - si * yo[j];
+    y[i] = ye[j] + ci * yo[j] + si * xo[j];
   }
-}, numeric._ifftpow2 = function _ifftpow2(e, t) {
-  var n = e.length;
+};
+numeric._ifftpow2 = function _ifftpow2(x, y) {
+  var n = x.length;
   if (n === 1) {
     return;
   }
-  var r = Math.cos, i = Math.sin, s, o, u = Array(n / 2), a = Array(n / 2), f = Array(n / 2), l = Array(n / 2);
-  o = n / 2;
-  for (s = n - 1;s !== -1;--s) {
-    --o, f[o] = e[s], l[o] = t[s], --s, u[o] = e[s], a[o] = t[s];
+  var cos = Math.cos, sin = Math.sin, i, j;
+  var xe = Array(n / 2), ye = Array(n / 2), xo = Array(n / 2), yo = Array(n / 2);
+  j = n / 2;
+  for (i = n - 1;i !== -1;--i) {
+    --j;
+    xo[j] = x[i];
+    yo[j] = y[i];
+    --i;
+    xe[j] = x[i];
+    ye[j] = y[i];
   }
-  _ifftpow2(u, a), _ifftpow2(f, l), o = n / 2;
-  var c, h = 6.283185307179586 / n, p, d;
-  for (s = n - 1;s !== -1;--s) {
-    --o, o === -1 && (o = n / 2 - 1), c = h * s, p = r(c), d = i(c), e[s] = u[o] + p * f[o] - d * l[o], t[s] = a[o] + p * l[o] + d * f[o];
+  _ifftpow2(xe, ye);
+  _ifftpow2(xo, yo);
+  j = n / 2;
+  var t, k = 6.283185307179586 / n, ci, si;
+  for (i = n - 1;i !== -1;--i) {
+    --j;
+    if (j === -1) {
+      j = n / 2 - 1;
+    }
+    t = k * i;
+    ci = cos(t);
+    si = sin(t);
+    x[i] = xe[j] + ci * xo[j] - si * yo[j];
+    y[i] = ye[j] + ci * yo[j] + si * xo[j];
   }
-}, numeric.ifftpow2 = function(t, n) {
-  numeric._ifftpow2(t, n), numeric.diveq(t, t.length), numeric.diveq(n, n.length);
-}, numeric.convpow2 = function(t, n, r, i) {
-  numeric.fftpow2(t, n), numeric.fftpow2(r, i);
-  var s, o = t.length, u, a, f, l;
-  for (s = o - 1;s !== -1;--s) {
-    u = t[s], f = n[s], a = r[s], l = i[s], t[s] = u * a - f * l, n[s] = u * l + f * a;
+};
+numeric.ifftpow2 = function ifftpow2(x, y) {
+  numeric._ifftpow2(x, y);
+  numeric.diveq(x, x.length);
+  numeric.diveq(y, y.length);
+};
+numeric.convpow2 = function convpow2(ax, ay, bx, by) {
+  numeric.fftpow2(ax, ay);
+  numeric.fftpow2(bx, by);
+  var i, n = ax.length, axi, bxi, ayi, byi;
+  for (i = n - 1;i !== -1;--i) {
+    axi = ax[i];
+    ayi = ay[i];
+    bxi = bx[i];
+    byi = by[i];
+    ax[i] = axi * bxi - ayi * byi;
+    ay[i] = axi * byi + ayi * bxi;
   }
-  numeric.ifftpow2(t, n);
-}, numeric.T.prototype.fft = function() {
-  var t = this.x, n = this.y, r = t.length, i = Math.log, s = i(2), o = Math.ceil(i(2 * r - 1) / s), u = Math.pow(2, o), a = numeric.rep([u], 0), f = numeric.rep([u], 0), l = Math.cos, c = Math.sin, h, p = -3.141592653589793 / r, d, v = numeric.rep([u], 0), m = numeric.rep([u], 0), g = Math.floor(r / 2);
-  for (h = 0;h < r;h++) {
-    v[h] = t[h];
+  numeric.ifftpow2(ax, ay);
+};
+numeric.T.prototype.fft = function fft() {
+  var x = this.x, y = this.y;
+  var n = x.length, log = Math.log, log2 = log(2), p = Math.ceil(log(2 * n - 1) / log2), m = Math.pow(2, p);
+  var cx = numeric.rep([m], 0), cy = numeric.rep([m], 0), cos = Math.cos, sin = Math.sin;
+  var k, c = -3.141592653589793 / n, t;
+  var a = numeric.rep([m], 0), b = numeric.rep([m], 0), nhalf = Math.floor(n / 2);
+  for (k = 0;k < n;k++) {
+    a[k] = x[k];
   }
-  if (typeof n != "undefined") {
-    for (h = 0;h < r;h++) {
-      m[h] = n[h];
+  if (typeof y !== "undefined") {
+    for (k = 0;k < n;k++) {
+      b[k] = y[k];
     }
   }
-  a[0] = 1;
-  for (h = 1;h <= u / 2;h++) {
-    d = p * h * h, a[h] = l(d), f[h] = c(d), a[u - h] = l(d), f[u - h] = c(d);
+  cx[0] = 1;
+  for (k = 1;k <= m / 2;k++) {
+    t = c * k * k;
+    cx[k] = cos(t);
+    cy[k] = sin(t);
+    cx[m - k] = cos(t);
+    cy[m - k] = sin(t);
   }
-  var y = new numeric.T(v, m), b = new numeric.T(a, f);
-  return y = y.mul(b), numeric.convpow2(y.x, y.y, numeric.clone(b.x), numeric.neg(b.y)), y = y.mul(b), y.x.length = r, y.y.length = r, y;
-}, numeric.T.prototype.ifft = function() {
-  var t = this.x, n = this.y, r = t.length, i = Math.log, s = i(2), o = Math.ceil(i(2 * r - 1) / s), u = Math.pow(2, o), a = numeric.rep([u], 0), f = numeric.rep([u], 0), l = Math.cos, c = Math.sin, h, p = 3.141592653589793 / r, d, v = numeric.rep([u], 0), m = numeric.rep([u], 0), g = Math.floor(r / 2);
-  for (h = 0;h < r;h++) {
-    v[h] = t[h];
+  var X = new numeric.T(a, b), Y = new numeric.T(cx, cy);
+  X = X.mul(Y);
+  numeric.convpow2(X.x, X.y, numeric.clone(Y.x), numeric.neg(Y.y));
+  X = X.mul(Y);
+  X.x.length = n;
+  X.y.length = n;
+  return X;
+};
+numeric.T.prototype.ifft = function ifft() {
+  var x = this.x, y = this.y;
+  var n = x.length, log = Math.log, log2 = log(2), p = Math.ceil(log(2 * n - 1) / log2), m = Math.pow(2, p);
+  var cx = numeric.rep([m], 0), cy = numeric.rep([m], 0), cos = Math.cos, sin = Math.sin;
+  var k, c = 3.141592653589793 / n, t;
+  var a = numeric.rep([m], 0), b = numeric.rep([m], 0), nhalf = Math.floor(n / 2);
+  for (k = 0;k < n;k++) {
+    a[k] = x[k];
   }
-  if (typeof n != "undefined") {
-    for (h = 0;h < r;h++) {
-      m[h] = n[h];
+  if (typeof y !== "undefined") {
+    for (k = 0;k < n;k++) {
+      b[k] = y[k];
     }
   }
-  a[0] = 1;
-  for (h = 1;h <= u / 2;h++) {
-    d = p * h * h, a[h] = l(d), f[h] = c(d), a[u - h] = l(d), f[u - h] = c(d);
+  cx[0] = 1;
+  for (k = 1;k <= m / 2;k++) {
+    t = c * k * k;
+    cx[k] = cos(t);
+    cy[k] = sin(t);
+    cx[m - k] = cos(t);
+    cy[m - k] = sin(t);
   }
-  var y = new numeric.T(v, m), b = new numeric.T(a, f);
-  return y = y.mul(b), numeric.convpow2(y.x, y.y, numeric.clone(b.x), numeric.neg(b.y)), y = y.mul(b), y.x.length = r, y.y.length = r, y.div(r);
-}, numeric.gradient = function(t, n) {
-  var r = n.length, i = t(n);
-  if (isNaN(i)) {
+  var X = new numeric.T(a, b), Y = new numeric.T(cx, cy);
+  X = X.mul(Y);
+  numeric.convpow2(X.x, X.y, numeric.clone(Y.x), numeric.neg(Y.y));
+  X = X.mul(Y);
+  X.x.length = n;
+  X.y.length = n;
+  return X.div(n);
+};
+numeric.gradient = function gradient(f, x) {
+  var n = x.length;
+  var f0 = f(x);
+  if (isNaN(f0)) {
     throw new Error("gradient: f(x) is a NaN!");
   }
-  var s = Math.max, o, u = numeric.clone(n), a, f, l = Array(r), c = numeric.div, h = numeric.sub, p, d, s = Math.max, v = 0.001, m = Math.abs, g = Math.min, y, b, w, E = 0, S, x, T;
-  for (o = 0;o < r;o++) {
-    var N = s(1E-6 * i, 1E-8);
-    for (;;) {
-      ++E;
-      if (E > 20) {
+  var max = Math.max;
+  var i, x0 = numeric.clone(x), f1, f2, J = Array(n);
+  var div = numeric.div, sub = numeric.sub, errest, roundoff, max = Math.max, eps = 0.001, abs = Math.abs, min = Math.min;
+  var t0, t1, t2, it = 0, d1, d2, N;
+  for (i = 0;i < n;i++) {
+    var h = max(1E-6 * f0, 1E-8);
+    while (1) {
+      ++it;
+      if (it > 20) {
         throw new Error("Numerical gradient fails");
       }
-      u[o] = n[o] + N, a = t(u), u[o] = n[o] - N, f = t(u), u[o] = n[o];
-      if (isNaN(a) || isNaN(f)) {
-        N /= 16;
+      x0[i] = x[i] + h;
+      f1 = f(x0);
+      x0[i] = x[i] - h;
+      f2 = f(x0);
+      x0[i] = x[i];
+      if (isNaN(f1) || isNaN(f2)) {
+        h /= 16;
         continue;
       }
-      l[o] = (a - f) / (2 * N), y = n[o] - N, b = n[o], w = n[o] + N, S = (a - i) / N, x = (i - f) / N, T = s(m(l[o]), m(i), m(a), m(f), m(y), m(b), m(w), 1E-8), p = g(s(m(S - l[o]), m(x - l[o]), m(S - x)) / T, N / T);
-      if (!(p > v)) {
+      J[i] = (f1 - f2) / (2 * h);
+      t0 = x[i] - h;
+      t1 = x[i];
+      t2 = x[i] + h;
+      d1 = (f1 - f0) / h;
+      d2 = (f0 - f2) / h;
+      N = max(abs(J[i]), abs(f0), abs(f1), abs(f2), abs(t0), abs(t1), abs(t2), 1E-8);
+      errest = min(max(abs(d1 - J[i]), abs(d2 - J[i]), abs(d1 - d2)) / N, h / N);
+      if (errest > eps) {
+        h /= 16;
+      } else {
         break;
       }
-      N /= 16;
     }
   }
-  return l;
-}, numeric.uncmin = function(t, n, r, i, s, o, u) {
-  var a = numeric.gradient;
-  typeof u == "undefined" && (u = {}), typeof r == "undefined" && (r = 1E-8), typeof i == "undefined" && (i = function(e) {
-    return a(t, e);
-  }), typeof s == "undefined" && (s = 1E3), n = numeric.clone(n);
-  var f = n.length, l = t(n), c, h;
-  if (isNaN(l)) {
+  return J;
+};
+numeric.uncmin = function uncmin(f, x0, tol, gradient, maxit, callback, options) {
+  var grad = numeric.gradient;
+  if (typeof options === "undefined") {
+    options = {};
+  }
+  if (typeof tol === "undefined") {
+    tol = 1E-8;
+  }
+  if (typeof gradient === "undefined") {
+    gradient = function(x) {
+      return grad(f, x);
+    };
+  }
+  if (typeof maxit === "undefined") {
+    maxit = 1E3;
+  }
+  x0 = numeric.clone(x0);
+  var n = x0.length;
+  var f0 = f(x0), f1, df0;
+  if (isNaN(f0)) {
     throw new Error("uncmin: f(x0) is a NaN!");
   }
-  var p = Math.max, d = numeric.norm2;
-  r = p(r, numeric.epsilon);
-  var v, m, g, y = u.Hinv || numeric.identity(f), b = numeric.dot, w = numeric.inv, E = numeric.sub, S = numeric.add, x = numeric.tensor, T = numeric.div, N = numeric.mul, C = numeric.all, k = numeric.isFinite, L = numeric.neg, A = 0, O, M, _, D, P, H, B, j, F, I, q, R, U = "";
-  m = i(n);
-  while (A < s) {
-    if (typeof o == "function" && o(A, n, l, m, y)) {
-      U = "Callback returned true";
-      break;
-    }
-    if (!C(k(m))) {
-      U = "Gradient has Infinity or NaN";
-      break;
-    }
-    v = L(b(y, m));
-    if (!C(k(v))) {
-      U = "Search direction has Infinity or NaN";
-      break;
-    }
-    I = d(v);
-    if (I < r) {
-      U = "Newton step smaller than tol";
-      break;
-    }
-    F = 1, h = b(m, v), _ = n;
-    while (A < s) {
-      if (F * I < r) {
+  var max = Math.max, norm2 = numeric.norm2;
+  tol = max(tol, numeric.epsilon);
+  var step, g0, g1, H1 = options.Hinv || numeric.identity(n);
+  var dot = numeric.dot, inv = numeric.inv, sub = numeric.sub, add = numeric.add, ten = numeric.tensor, div = numeric.div, mul = numeric.mul;
+  var all = numeric.all, isfinite = numeric.isFinite, neg = numeric.neg;
+  var it = 0, i, s, x1, y, Hy, Hs, ys, i0, t, nstep, t1, t2;
+  var msg = "";
+  g0 = gradient(x0);
+  while (it < maxit) {
+    if (typeof callback === "function") {
+      if (callback(it, x0, f0, g0, H1)) {
+        msg = "Callback returned true";
         break;
       }
-      M = N(v, F), _ = S(n, M), c = t(_);
-      if (c - l >= 0.1 * F * h || isNaN(c)) {
-        F *= 0.5, ++A;
+    }
+    if (!all(isfinite(g0))) {
+      msg = "Gradient has Infinity or NaN";
+      break;
+    }
+    step = neg(dot(H1, g0));
+    if (!all(isfinite(step))) {
+      msg = "Search direction has Infinity or NaN";
+      break;
+    }
+    nstep = norm2(step);
+    if (nstep < tol) {
+      msg = "Newton step smaller than tol";
+      break;
+    }
+    t = 1;
+    df0 = dot(g0, step);
+    x1 = x0;
+    while (it < maxit) {
+      if (t * nstep < tol) {
+        break;
+      }
+      s = mul(step, t);
+      x1 = add(x0, s);
+      f1 = f(x1);
+      if (f1 - f0 >= 0.1 * t * df0 || isNaN(f1)) {
+        t *= 0.5;
+        ++it;
         continue;
       }
       break;
     }
-    if (F * I < r) {
-      U = "Line search step size smaller than tol";
+    if (t * nstep < tol) {
+      msg = "Line search step size smaller than tol";
       break;
     }
-    if (A === s) {
-      U = "maxit reached during line search";
+    if (it === maxit) {
+      msg = "maxit reached during line search";
       break;
     }
-    g = i(_), D = E(g, m), B = b(D, M), P = b(y, D), y = E(S(y, N((B + b(D, P)) / (B * B), x(M, M))), T(S(x(P, M), x(M, P)), B)), n = _, l = c, m = g, ++A;
+    g1 = gradient(x1);
+    y = sub(g1, g0);
+    ys = dot(y, s);
+    Hy = dot(H1, y);
+    H1 = sub(add(H1, mul((ys + dot(y, Hy)) / (ys * ys), ten(s, s))), div(add(ten(Hy, s), ten(s, Hy)), ys));
+    x0 = x1;
+    f0 = f1;
+    g0 = g1;
+    ++it;
   }
-  return{solution:n, f:l, gradient:m, invHessian:y, iterations:A, message:U};
-}, numeric.Dopri = function(t, n, r, i, s, o, u) {
-  this.x = t, this.y = n, this.f = r, this.ymid = i, this.iterations = s, this.events = u, this.message = o;
-}, numeric.Dopri.prototype._at = function(t, n) {
-  function r(e) {
-    return e * e;
+  return{solution:x0, f:f0, gradient:g0, invHessian:H1, iterations:it, message:msg};
+};
+numeric.Dopri = function Dopri(x, y, f, ymid, iterations, msg, events) {
+  this.x = x;
+  this.y = y;
+  this.f = f;
+  this.ymid = ymid;
+  this.iterations = iterations;
+  this.events = events;
+  this.message = msg;
+};
+numeric.Dopri.prototype._at = function _at(xi, j) {
+  function sqr(x) {
+    return x * x;
   }
-  var i = this, s = i.x, o = i.y, u = i.f, a = i.ymid, f = s.length, l, c, h, p, d, v, t, m = Math.floor, g, y = 0.5, b = numeric.add, w = numeric.mul, E = numeric.sub, S, x, T;
-  return l = s[n], c = s[n + 1], p = o[n], d = o[n + 1], g = c - l, h = l + y * g, v = a[n], S = E(u[n], w(p, 1 / (l - h) + 2 / (l - c))), x = E(u[n + 1], w(d, 1 / (c - h) + 2 / (c - l))), T = [r(t - c) * (t - h) / r(l - c) / (l - h), r(t - l) * r(t - c) / r(l - h) / r(c - h), r(t - l) * (t - h) / r(c - l) / (c - h), (t - l) * r(t - c) * (t - h) / r(l - c) / (l - h), (t - c) * r(t - l) * (t - h) / r(l - c) / (c - h)], b(b(b(b(w(p, T[0]), w(v, T[1])), w(d, T[2])), w(S, T[3])), w(x, T[4]));
-}, numeric.Dopri.prototype.at = function(t) {
-  var n, r, i, s = Math.floor;
-  if (typeof t != "number") {
-    var o = t.length, u = Array(o);
-    for (n = o - 1;n !== -1;--n) {
-      u[n] = this.at(t[n]);
+  var sol = this;
+  var xs = sol.x;
+  var ys = sol.y;
+  var k1 = sol.f;
+  var ymid = sol.ymid;
+  var n = xs.length;
+  var x0, x1, xh, y0, y1, yh, xi;
+  var floor = Math.floor, h;
+  var c = 0.5;
+  var add = numeric.add, mul = numeric.mul, sub = numeric.sub, p, q, w;
+  x0 = xs[j];
+  x1 = xs[j + 1];
+  y0 = ys[j];
+  y1 = ys[j + 1];
+  h = x1 - x0;
+  xh = x0 + c * h;
+  yh = ymid[j];
+  p = sub(k1[j], mul(y0, 1 / (x0 - xh) + 2 / (x0 - x1)));
+  q = sub(k1[j + 1], mul(y1, 1 / (x1 - xh) + 2 / (x1 - x0)));
+  w = [sqr(xi - x1) * (xi - xh) / sqr(x0 - x1) / (x0 - xh), sqr(xi - x0) * sqr(xi - x1) / sqr(x0 - xh) / sqr(x1 - xh), sqr(xi - x0) * (xi - xh) / sqr(x1 - x0) / (x1 - xh), (xi - x0) * sqr(xi - x1) * (xi - xh) / sqr(x0 - x1) / (x0 - xh), (xi - x1) * sqr(xi - x0) * (xi - xh) / sqr(x0 - x1) / (x1 - xh)];
+  return add(add(add(add(mul(y0, w[0]), mul(yh, w[1])), mul(y1, w[2])), mul(p, w[3])), mul(q, w[4]));
+};
+numeric.Dopri.prototype.at = function at(x) {
+  var i, j, k, floor = Math.floor;
+  if (typeof x !== "number") {
+    var n = x.length, ret = Array(n);
+    for (i = n - 1;i !== -1;--i) {
+      ret[i] = this.at(x[i]);
     }
-    return u;
+    return ret;
   }
-  var a = this.x;
-  n = 0, r = a.length - 1;
-  while (r - n > 1) {
-    i = s(0.5 * (n + r)), a[i] <= t ? n = i : r = i;
+  var x0 = this.x;
+  i = 0;
+  j = x0.length - 1;
+  while (j - i > 1) {
+    k = floor(0.5 * (i + j));
+    if (x0[k] <= x) {
+      i = k;
+    } else {
+      j = k;
+    }
   }
-  return this._at(t, n);
-}, numeric.dopri = function(t, n, r, i, s, o, u) {
-  typeof s == "undefined" && (s = 1E-6), typeof o == "undefined" && (o = 1E3);
-  var a = [t], f = [r], l = [i(t, r)], c, h, p, d, v, m, g = [], y = 0.2, b = [0.075, 0.225], w = [44 / 45, -56 / 15, 32 / 9], E = [19372 / 6561, -25360 / 2187, 64448 / 6561, -212 / 729], S = [9017 / 3168, -355 / 33, 46732 / 5247, 49 / 176, -5103 / 18656], x = [35 / 384, 0, 500 / 1113, 125 / 192, -2187 / 6784, 11 / 84], T = [0.10013431883002395, 0, 0.3918321794184259, -0.02982460176594817, 0.05893268337240795, -0.04497888809104361, 0.023904308236133973], N = [0.2, 0.3, 0.8, 8 / 9, 1, 1], C = [-71 / 
-  57600, 0, 71 / 16695, -71 / 1920, 17253 / 339200, -22 / 525, 0.025], k = 0, L, A, O = (n - t) / 10, M = 0, _ = numeric.add, D = numeric.mul, P, H, B = Math.max, j = Math.min, F = Math.abs, I = numeric.norminf, q = Math.pow, R = numeric.any, U = numeric.lt, z = numeric.and, W = numeric.sub, X, V, $, J = new numeric.Dopri(a, f, l, g, -1, "");
-  typeof u == "function" && (X = u(t, r));
-  while (t < n && M < o) {
-    ++M, t + O > n && (O = n - t), c = i(t + N[0] * O, _(r, D(y * O, l[k]))), h = i(t + N[1] * O, _(_(r, D(b[0] * O, l[k])), D(b[1] * O, c))), p = i(t + N[2] * O, _(_(_(r, D(w[0] * O, l[k])), D(w[1] * O, c)), D(w[2] * O, h))), d = i(t + N[3] * O, _(_(_(_(r, D(E[0] * O, l[k])), D(E[1] * O, c)), D(E[2] * O, h)), D(E[3] * O, p))), v = i(t + N[4] * O, _(_(_(_(_(r, D(S[0] * O, l[k])), D(S[1] * O, c)), D(S[2] * O, h)), D(S[3] * O, p)), D(S[4] * O, d))), P = _(_(_(_(_(r, D(l[k], O * x[0])), D(h, O * x[2])), 
-    D(p, O * x[3])), D(d, O * x[4])), D(v, O * x[5])), m = i(t + O, P), L = _(_(_(_(_(D(l[k], O * C[0]), D(h, O * C[2])), D(p, O * C[3])), D(d, O * C[4])), D(v, O * C[5])), D(m, O * C[6])), typeof L == "number" ? H = F(L) : H = I(L);
-    if (H > s) {
-      O = 0.2 * O * q(s / H, 0.25);
-      if (t + O === t) {
-        J.msg = "Step size became too small";
+  return this._at(x, i);
+};
+numeric.dopri = function dopri(x0, x1, y0, f, tol, maxit, event) {
+  if (typeof tol === "undefined") {
+    tol = 1E-6;
+  }
+  if (typeof maxit === "undefined") {
+    maxit = 1E3;
+  }
+  var xs = [x0], ys = [y0], k1 = [f(x0, y0)], k2, k3, k4, k5, k6, k7, ymid = [];
+  var A2 = 1 / 5;
+  var A3 = [3 / 40, 9 / 40];
+  var A4 = [44 / 45, -56 / 15, 32 / 9];
+  var A5 = [19372 / 6561, -25360 / 2187, 64448 / 6561, -212 / 729];
+  var A6 = [9017 / 3168, -355 / 33, 46732 / 5247, 49 / 176, -5103 / 18656];
+  var b = [35 / 384, 0, 500 / 1113, 125 / 192, -2187 / 6784, 11 / 84];
+  var bm = [0.5 * 6025192743 / 30085553152, 0, 0.5 * 51252292925 / 65400821598, 0.5 * -2691868925 / 45128329728, 0.5 * 187940372067 / 1594534317056, 0.5 * -1776094331 / 19743644256, 0.5 * 11237099 / 235043384];
+  var c = [1 / 5, 3 / 10, 4 / 5, 8 / 9, 1, 1];
+  var e = [-71 / 57600, 0, 71 / 16695, -71 / 1920, 17253 / 339200, -22 / 525, 1 / 40];
+  var i = 0, er, j;
+  var h = (x1 - x0) / 10;
+  var it = 0;
+  var add = numeric.add, mul = numeric.mul, y1, erinf;
+  var max = Math.max, min = Math.min, abs = Math.abs, norminf = numeric.norminf, pow = Math.pow;
+  var any = numeric.any, lt = numeric.lt, and = numeric.and, sub = numeric.sub;
+  var e0, e1, ev;
+  var ret = new numeric.Dopri(xs, ys, k1, ymid, -1, "");
+  if (typeof event === "function") {
+    e0 = event(x0, y0);
+  }
+  while (x0 < x1 && it < maxit) {
+    ++it;
+    if (x0 + h > x1) {
+      h = x1 - x0;
+    }
+    k2 = f(x0 + c[0] * h, add(y0, mul(A2 * h, k1[i])));
+    k3 = f(x0 + c[1] * h, add(add(y0, mul(A3[0] * h, k1[i])), mul(A3[1] * h, k2)));
+    k4 = f(x0 + c[2] * h, add(add(add(y0, mul(A4[0] * h, k1[i])), mul(A4[1] * h, k2)), mul(A4[2] * h, k3)));
+    k5 = f(x0 + c[3] * h, add(add(add(add(y0, mul(A5[0] * h, k1[i])), mul(A5[1] * h, k2)), mul(A5[2] * h, k3)), mul(A5[3] * h, k4)));
+    k6 = f(x0 + c[4] * h, add(add(add(add(add(y0, mul(A6[0] * h, k1[i])), mul(A6[1] * h, k2)), mul(A6[2] * h, k3)), mul(A6[3] * h, k4)), mul(A6[4] * h, k5)));
+    y1 = add(add(add(add(add(y0, mul(k1[i], h * b[0])), mul(k3, h * b[2])), mul(k4, h * b[3])), mul(k5, h * b[4])), mul(k6, h * b[5]));
+    k7 = f(x0 + h, y1);
+    er = add(add(add(add(add(mul(k1[i], h * e[0]), mul(k3, h * e[2])), mul(k4, h * e[3])), mul(k5, h * e[4])), mul(k6, h * e[5])), mul(k7, h * e[6]));
+    if (typeof er === "number") {
+      erinf = abs(er);
+    } else {
+      erinf = norminf(er);
+    }
+    if (erinf > tol) {
+      h = 0.2 * h * pow(tol / erinf, 0.25);
+      if (x0 + h === x0) {
+        ret.msg = "Step size became too small";
         break;
       }
       continue;
     }
-    g[k] = _(_(_(_(_(_(r, D(l[k], O * T[0])), D(h, O * T[2])), D(p, O * T[3])), D(d, O * T[4])), D(v, O * T[5])), D(m, O * T[6])), ++k, a[k] = t + O, f[k] = P, l[k] = m;
-    if (typeof u == "function") {
-      var K, Q = t, G = t + 0.5 * O, Y;
-      V = u(G, g[k - 1]), $ = z(U(X, 0), U(0, V)), R($) || (Q = G, G = t + O, X = V, V = u(G, P), $ = z(U(X, 0), U(0, V)));
-      if (R($)) {
-        var Z, et, tt, nt, rt = 0, it = 1, st = 1;
-        for (;;) {
-          if (typeof X == "number") {
-            Y = (st * V * Q - it * X * G) / (st * V - it * X);
+    ymid[i] = add(add(add(add(add(add(y0, mul(k1[i], h * bm[0])), mul(k3, h * bm[2])), mul(k4, h * bm[3])), mul(k5, h * bm[4])), mul(k6, h * bm[5])), mul(k7, h * bm[6]));
+    ++i;
+    xs[i] = x0 + h;
+    ys[i] = y1;
+    k1[i] = k7;
+    if (typeof event === "function") {
+      var yi, xl = x0, xr = x0 + 0.5 * h, xi;
+      e1 = event(xr, ymid[i - 1]);
+      ev = and(lt(e0, 0), lt(0, e1));
+      if (!any(ev)) {
+        xl = xr;
+        xr = x0 + h;
+        e0 = e1;
+        e1 = event(xr, y1);
+        ev = and(lt(e0, 0), lt(0, e1));
+      }
+      if (any(ev)) {
+        var xc, yc, en, ei;
+        var side = 0, sl = 1, sr = 1;
+        while (1) {
+          if (typeof e0 === "number") {
+            xi = (sr * e1 * xl - sl * e0 * xr) / (sr * e1 - sl * e0);
           } else {
-            Y = G;
-            for (A = X.length - 1;A !== -1;--A) {
-              X[A] < 0 && (V[A] > 0 && (Y = j(Y, (st * V[A] * Q - it * X[A] * G) / (st * V[A] - it * X[A]))));
+            xi = xr;
+            for (j = e0.length - 1;j !== -1;--j) {
+              if (e0[j] < 0 && e1[j] > 0) {
+                xi = min(xi, (sr * e1[j] * xl - sl * e0[j] * xr) / (sr * e1[j] - sl * e0[j]));
+              }
             }
           }
-          if (Y <= Q || Y >= G) {
+          if (xi <= xl || xi >= xr) {
             break;
           }
-          K = J._at(Y, k - 1), nt = u(Y, K), tt = z(U(X, 0), U(0, nt)), R(tt) ? (G = Y, V = nt, $ = tt, st = 1, rt === -1 ? it *= 0.5 : it = 1, rt = -1) : (Q = Y, X = nt, it = 1, rt === 1 ? st *= 0.5 : st = 1, rt = 1);
+          yi = ret._at(xi, i - 1);
+          ei = event(xi, yi);
+          en = and(lt(e0, 0), lt(0, ei));
+          if (any(en)) {
+            xr = xi;
+            e1 = ei;
+            ev = en;
+            sr = 1;
+            if (side === -1) {
+              sl *= 0.5;
+            } else {
+              sl = 1;
+            }
+            side = -1;
+          } else {
+            xl = xi;
+            e0 = ei;
+            sl = 1;
+            if (side === 1) {
+              sr *= 0.5;
+            } else {
+              sr = 1;
+            }
+            side = 1;
+          }
         }
-        return P = J._at(0.5 * (t + Y), k - 1), J.f[k] = i(Y, K), J.x[k] = Y, J.y[k] = K, J.ymid[k - 1] = P, J.events = $, J.iterations = M, J;
+        y1 = ret._at(0.5 * (x0 + xi), i - 1);
+        ret.f[i] = f(xi, yi);
+        ret.x[i] = xi;
+        ret.y[i] = yi;
+        ret.ymid[i - 1] = y1;
+        ret.events = ev;
+        ret.iterations = it;
+        return ret;
       }
     }
-    t += O, r = P, X = V, O = j(0.8 * O * q(s / H, 0.25), 4 * O);
+    x0 += h;
+    y0 = y1;
+    e0 = e1;
+    h = min(0.8 * h * pow(tol / erinf, 0.25), 4 * h);
   }
-  return J.iterations = M, J;
-}, numeric.LU = function(e, t) {
-  t = t || !1;
-  var n = Math.abs, r, i, s, o, u, a, f, l, c, h = e.length, p = h - 1, d = new Array(h);
-  t || (e = numeric.clone(e));
-  for (s = 0;s < h;++s) {
-    f = s, a = e[s], c = n(a[s]);
-    for (i = s + 1;i < h;++i) {
-      o = n(e[i][s]), c < o && (c = o, f = i);
-    }
-    d[s] = f, f != s && (e[s] = e[f], e[f] = a, a = e[s]), u = a[s];
-    for (r = s + 1;r < h;++r) {
-      e[r][s] /= u;
-    }
-    for (r = s + 1;r < h;++r) {
-      l = e[r];
-      for (i = s + 1;i < p;++i) {
-        l[i] -= l[s] * a[i], ++i, l[i] -= l[s] * a[i];
+  ret.iterations = it;
+  return ret;
+};
+numeric.LU = function(A, fast) {
+  fast = fast || false;
+  var abs = Math.abs;
+  var i, j, k, absAjk, Akk, Ak, Pk, Ai;
+  var max;
+  var n = A.length, n1 = n - 1;
+  var P = new Array(n);
+  if (!fast) {
+    A = numeric.clone(A);
+  }
+  for (k = 0;k < n;++k) {
+    Pk = k;
+    Ak = A[k];
+    max = abs(Ak[k]);
+    for (j = k + 1;j < n;++j) {
+      absAjk = abs(A[j][k]);
+      if (max < absAjk) {
+        max = absAjk;
+        Pk = j;
       }
-      i === p && (l[i] -= l[s] * a[i]);
     }
-  }
-  return{LU:e, P:d};
-}, numeric.LUsolve = function(t, n) {
-  var r, i, s = t.LU, o = s.length, u = numeric.clone(n), a = t.P, f, l, c, h;
-  for (r = o - 1;r !== -1;--r) {
-    u[r] = n[r];
-  }
-  for (r = 0;r < o;++r) {
-    f = a[r], a[r] !== r && (h = u[r], u[r] = u[f], u[f] = h), l = s[r];
-    for (i = 0;i < r;++i) {
-      u[r] -= u[i] * l[i];
+    P[k] = Pk;
+    if (Pk != k) {
+      A[k] = A[Pk];
+      A[Pk] = Ak;
+      Ak = A[k];
     }
-  }
-  for (r = o - 1;r >= 0;--r) {
-    l = s[r];
-    for (i = r + 1;i < o;++i) {
-      u[r] -= u[i] * l[i];
+    Akk = Ak[k];
+    for (i = k + 1;i < n;++i) {
+      A[i][k] /= Akk;
     }
-    u[r] /= l[r];
-  }
-  return u;
-}, numeric.solve = function(t, n, r) {
-  return numeric.LUsolve(numeric.LU(t, r), n);
-}, numeric.echelonize = function(t) {
-  var n = numeric.dim(t), r = n[0], i = n[1], s = numeric.identity(r), o = Array(r), u, a, f, l, c, h, p, d, v = Math.abs, m = numeric.diveq;
-  t = numeric.clone(t);
-  for (u = 0;u < r;++u) {
-    f = 0, c = t[u], h = s[u];
-    for (a = 1;a < i;++a) {
-      v(c[f]) < v(c[a]) && (f = a);
-    }
-    o[u] = f, m(h, c[f]), m(c, c[f]);
-    for (a = 0;a < r;++a) {
-      if (a !== u) {
-        p = t[a], d = p[f];
-        for (l = i - 1;l !== -1;--l) {
-          p[l] -= c[l] * d;
-        }
-        p = s[a];
-        for (l = r - 1;l !== -1;--l) {
-          p[l] -= h[l] * d;
-        }
+    for (i = k + 1;i < n;++i) {
+      Ai = A[i];
+      for (j = k + 1;j < n1;++j) {
+        Ai[j] -= Ai[k] * Ak[j];
+        ++j;
+        Ai[j] -= Ai[k] * Ak[j];
+      }
+      if (j === n1) {
+        Ai[j] -= Ai[k] * Ak[j];
       }
     }
   }
-  return{I:s, A:t, P:o};
-}, numeric.__solveLP = function(t, n, r, i, s, o, u) {
-  var a = numeric.sum, f = numeric.log, l = numeric.mul, c = numeric.sub, h = numeric.dot, p = numeric.div, d = numeric.add, v = t.length, m = r.length, g, y = !1, b, w = 0, E = 1, S, x, T = numeric.transpose(n), N = numeric.svd, C = numeric.transpose, k = numeric.leq, L = Math.sqrt, A = Math.abs, O = numeric.muleq, M = numeric.norminf, _ = numeric.any, D = Math.min, P = numeric.all, H = numeric.gt, B = Array(v), j = Array(m), F = numeric.rep([m], 1), I, q = numeric.solve, R = c(r, h(n, o)), U, z = 
-  h(t, t), W;
-  for (U = w;U < s;++U) {
-    var X, V, $;
-    for (X = m - 1;X !== -1;--X) {
-      j[X] = p(n[X], R[X]);
+  return{LU:A, P:P};
+};
+numeric.LUsolve = function LUsolve(LUP, b) {
+  var i, j;
+  var LU = LUP.LU;
+  var n = LU.length;
+  var x = numeric.clone(b);
+  var P = LUP.P;
+  var Pi, LUi, LUii, tmp;
+  for (i = n - 1;i !== -1;--i) {
+    x[i] = b[i];
+  }
+  for (i = 0;i < n;++i) {
+    Pi = P[i];
+    if (P[i] !== i) {
+      tmp = x[i];
+      x[i] = x[Pi];
+      x[Pi] = tmp;
     }
-    var J = C(j);
-    for (X = v - 1;X !== -1;--X) {
-      B[X] = a(J[X]);
+    LUi = LU[i];
+    for (j = 0;j < i;++j) {
+      x[i] -= x[j] * LUi[j];
     }
-    E = 0.25 * A(z / h(t, B));
-    var K = 100 * L(z / h(B, B));
-    if (!isFinite(E) || E > K) {
-      E = K;
+  }
+  for (i = n - 1;i >= 0;--i) {
+    LUi = LU[i];
+    for (j = i + 1;j < n;++j) {
+      x[i] -= x[j] * LUi[j];
     }
-    W = d(t, l(E, B)), I = h(J, j);
-    for (X = v - 1;X !== -1;--X) {
-      I[X][X] += 1;
+    x[i] /= LUi[i];
+  }
+  return x;
+};
+numeric.solve = function solve(A, b, fast) {
+  return numeric.LUsolve(numeric.LU(A, fast), b);
+};
+numeric.echelonize = function echelonize(A) {
+  var s = numeric.dim(A), m = s[0], n = s[1];
+  var I = numeric.identity(m);
+  var P = Array(m);
+  var i, j, k, l, Ai, Ii, Z, a;
+  var abs = Math.abs;
+  var diveq = numeric.diveq;
+  A = numeric.clone(A);
+  for (i = 0;i < m;++i) {
+    k = 0;
+    Ai = A[i];
+    Ii = I[i];
+    for (j = 1;j < n;++j) {
+      if (abs(Ai[k]) < abs(Ai[j])) {
+        k = j;
+      }
     }
-    $ = q(I, p(W, E), !0);
-    var Q = p(R, h(n, $)), G = 1;
-    for (X = m - 1;X !== -1;--X) {
-      Q[X] < 0 && (G = D(G, -0.999 * Q[X]));
+    P[i] = k;
+    diveq(Ii, Ai[k]);
+    diveq(Ai, Ai[k]);
+    for (j = 0;j < m;++j) {
+      if (j !== i) {
+        Z = A[j];
+        a = Z[k];
+        for (l = n - 1;l !== -1;--l) {
+          Z[l] -= Ai[l] * a;
+        }
+        Z = I[j];
+        for (l = m - 1;l !== -1;--l) {
+          Z[l] -= Ii[l] * a;
+        }
+      }
     }
-    g = c(o, l($, G)), R = c(r, h(n, g));
-    if (!P(H(R, 0))) {
-      return{solution:o, message:"", iterations:U};
+  }
+  return{I:I, A:A, P:P};
+};
+numeric.__solveLP = function __solveLP(c, A, b, tol, maxit, x, flag) {
+  var sum = numeric.sum, log = numeric.log, mul = numeric.mul, sub = numeric.sub, dot = numeric.dot, div = numeric.div, add = numeric.add;
+  var m = c.length, n = b.length, y;
+  var unbounded = false, cb, i0 = 0;
+  var alpha = 1;
+  var f0, df0, AT = numeric.transpose(A), svd = numeric.svd, transpose = numeric.transpose, leq = numeric.leq, sqrt = Math.sqrt, abs = Math.abs;
+  var muleq = numeric.muleq;
+  var norm = numeric.norminf, any = numeric.any, min = Math.min;
+  var all = numeric.all, gt = numeric.gt;
+  var p = Array(m), A0 = Array(n), e = numeric.rep([n], 1), H;
+  var solve = numeric.solve, z = sub(b, dot(A, x)), count;
+  var dotcc = dot(c, c);
+  var g;
+  for (count = i0;count < maxit;++count) {
+    var i, j, d;
+    for (i = n - 1;i !== -1;--i) {
+      A0[i] = div(A[i], z[i]);
     }
-    o = g;
-    if (E < i) {
-      return{solution:g, message:"", iterations:U};
+    var A1 = transpose(A0);
+    for (i = m - 1;i !== -1;--i) {
+      p[i] = sum(A1[i]);
     }
-    if (u) {
-      var Y = h(t, W), Z = h(n, W);
-      y = !0;
-      for (X = m - 1;X !== -1;--X) {
-        if (Y * Z[X] < 0) {
-          y = !1;
+    alpha = 0.25 * abs(dotcc / dot(c, p));
+    var a1 = 100 * sqrt(dotcc / dot(p, p));
+    if (!isFinite(alpha) || alpha > a1) {
+      alpha = a1;
+    }
+    g = add(c, mul(alpha, p));
+    H = dot(A1, A0);
+    for (i = m - 1;i !== -1;--i) {
+      H[i][i] += 1;
+    }
+    d = solve(H, div(g, alpha), true);
+    var t0 = div(z, dot(A, d));
+    var t = 1;
+    for (i = n - 1;i !== -1;--i) {
+      if (t0[i] < 0) {
+        t = min(t, -0.999 * t0[i]);
+      }
+    }
+    y = sub(x, mul(d, t));
+    z = sub(b, dot(A, y));
+    if (!all(gt(z, 0))) {
+      return{solution:x, message:"", iterations:count};
+    }
+    x = y;
+    if (alpha < tol) {
+      return{solution:y, message:"", iterations:count};
+    }
+    if (flag) {
+      var s = dot(c, g), Ag = dot(A, g);
+      unbounded = true;
+      for (i = n - 1;i !== -1;--i) {
+        if (s * Ag[i] < 0) {
+          unbounded = false;
           break;
         }
       }
     } else {
-      o[v - 1] >= 0 ? y = !1 : y = !0;
+      if (x[m - 1] >= 0) {
+        unbounded = false;
+      } else {
+        unbounded = true;
+      }
     }
-    if (y) {
-      return{solution:g, message:"Unbounded", iterations:U};
+    if (unbounded) {
+      return{solution:y, message:"Unbounded", iterations:count};
     }
   }
-  return{solution:o, message:"maximum iteration count exceeded", iterations:U};
-}, numeric._solveLP = function(t, n, r, i, s) {
-  var o = t.length, u = r.length, a, f = numeric.sum, l = numeric.log, c = numeric.mul, h = numeric.sub, p = numeric.dot, d = numeric.div, v = numeric.add, m = numeric.rep([o], 0).concat([1]), g = numeric.rep([u, 1], -1), y = numeric.blockMatrix([[n, g]]), b = r, a = numeric.rep([o], 0).concat(Math.max(0, numeric.sup(numeric.neg(r))) + 1), w = numeric.__solveLP(m, y, b, i, s, a, !1), E = numeric.clone(w.solution);
-  E.length = o;
-  var S = numeric.inf(h(r, p(n, E)));
-  if (S < 0) {
-    return{solution:NaN, message:"Infeasible", iterations:w.iterations};
+  return{solution:x, message:"maximum iteration count exceeded", iterations:count};
+};
+numeric._solveLP = function _solveLP(c, A, b, tol, maxit) {
+  var m = c.length, n = b.length, y;
+  var sum = numeric.sum, log = numeric.log, mul = numeric.mul, sub = numeric.sub, dot = numeric.dot, div = numeric.div, add = numeric.add;
+  var c0 = numeric.rep([m], 0).concat([1]);
+  var J = numeric.rep([n, 1], -1);
+  var A0 = numeric.blockMatrix([[A, J]]);
+  var b0 = b;
+  var y = numeric.rep([m], 0).concat(Math.max(0, numeric.sup(numeric.neg(b))) + 1);
+  var x0 = numeric.__solveLP(c0, A0, b0, tol, maxit, y, false);
+  var x = numeric.clone(x0.solution);
+  x.length = m;
+  var foo = numeric.inf(sub(b, dot(A, x)));
+  if (foo < 0) {
+    return{solution:NaN, message:"Infeasible", iterations:x0.iterations};
   }
-  var x = numeric.__solveLP(t, n, r, i, s - w.iterations, E, !0);
-  return x.iterations += w.iterations, x;
-}, numeric.solveLP = function(t, n, r, i, s, o, u) {
-  typeof u == "undefined" && (u = 1E3), typeof o == "undefined" && (o = numeric.epsilon);
-  if (typeof i == "undefined") {
-    return numeric._solveLP(t, n, r, o, u);
+  var ret = numeric.__solveLP(c, A, b, tol, maxit - x0.iterations, x, true);
+  ret.iterations += x0.iterations;
+  return ret;
+};
+numeric.solveLP = function solveLP(c, A, b, Aeq, beq, tol, maxit) {
+  if (typeof maxit === "undefined") {
+    maxit = 1E3;
   }
-  var a = i.length, f = i[0].length, l = n.length, c = numeric.echelonize(i), h = numeric.rep([f], 0), p = c.P, d = [], v;
-  for (v = p.length - 1;v !== -1;--v) {
-    h[p[v]] = 1;
+  if (typeof tol === "undefined") {
+    tol = numeric.epsilon;
   }
-  for (v = f - 1;v !== -1;--v) {
-    h[v] === 0 && d.push(v);
+  if (typeof Aeq === "undefined") {
+    return numeric._solveLP(c, A, b, tol, maxit);
   }
-  var m = numeric.getRange, g = numeric.linspace(0, a - 1), y = numeric.linspace(0, l - 1), b = m(i, g, d), w = m(n, y, p), E = m(n, y, d), S = numeric.dot, x = numeric.sub, T = S(w, c.I), N = x(E, S(T, b)), C = x(r, S(T, s)), k = Array(p.length), L = Array(d.length);
-  for (v = p.length - 1;v !== -1;--v) {
-    k[v] = t[p[v]];
+  var m = Aeq.length, n = Aeq[0].length, o = A.length;
+  var B = numeric.echelonize(Aeq);
+  var flags = numeric.rep([n], 0);
+  var P = B.P;
+  var Q = [];
+  var i;
+  for (i = P.length - 1;i !== -1;--i) {
+    flags[P[i]] = 1;
   }
-  for (v = d.length - 1;v !== -1;--v) {
-    L[v] = t[d[v]];
+  for (i = n - 1;i !== -1;--i) {
+    if (flags[i] === 0) {
+      Q.push(i);
+    }
   }
-  var A = x(L, S(k, S(c.I, b))), O = numeric._solveLP(A, N, C, o, u), M = O.solution;
-  if (M !== M) {
-    return O;
+  var g = numeric.getRange;
+  var I = numeric.linspace(0, m - 1), J = numeric.linspace(0, o - 1);
+  var Aeq2 = g(Aeq, I, Q), A1 = g(A, J, P), A2 = g(A, J, Q), dot = numeric.dot, sub = numeric.sub;
+  var A3 = dot(A1, B.I);
+  var A4 = sub(A2, dot(A3, Aeq2)), b4 = sub(b, dot(A3, beq));
+  var c1 = Array(P.length), c2 = Array(Q.length);
+  for (i = P.length - 1;i !== -1;--i) {
+    c1[i] = c[P[i]];
   }
-  var _ = S(c.I, x(s, S(b, M))), D = Array(t.length);
-  for (v = p.length - 1;v !== -1;--v) {
-    D[p[v]] = _[v];
+  for (i = Q.length - 1;i !== -1;--i) {
+    c2[i] = c[Q[i]];
   }
-  for (v = d.length - 1;v !== -1;--v) {
-    D[d[v]] = M[v];
+  var c4 = sub(c2, dot(c1, dot(B.I, Aeq2)));
+  var S = numeric._solveLP(c4, A4, b4, tol, maxit);
+  var x2 = S.solution;
+  if (x2 !== x2) {
+    return S;
   }
-  return{solution:D, message:O.message, iterations:O.iterations};
-}, numeric.MPStoLP = function(t) {
-  function y(e) {
-    throw new Error("MPStoLP: " + e + "\nLine " + s + ": " + t[s] + "\nCurrent state: " + r[n] + "\n");
+  var x1 = dot(B.I, sub(beq, dot(Aeq2, x2)));
+  var x = Array(c.length);
+  for (i = P.length - 1;i !== -1;--i) {
+    x[P[i]] = x1[i];
   }
-  t instanceof String && t.split("\n");
-  var n = 0, r = ["Initial state", "NAME", "ROWS", "COLUMNS", "RHS", "BOUNDS", "ENDATA"], i = t.length, s, o, u, a = 0, f = {}, l = [], c = 0, h = {}, p = 0, d, v = [], m = [], g = [];
-  for (s = 0;s < i;++s) {
-    u = t[s];
-    var b = u.match(/\S*/g), w = [];
-    for (o = 0;o < b.length;++o) {
-      b[o] !== "" && w.push(b[o]);
+  for (i = Q.length - 1;i !== -1;--i) {
+    x[Q[i]] = x2[i];
+  }
+  return{solution:x, message:S.message, iterations:S.iterations};
+};
+numeric.MPStoLP = function MPStoLP(MPS) {
+  if (MPS instanceof String) {
+    MPS.split("\n");
+  }
+  var state = 0;
+  var states = ["Initial state", "NAME", "ROWS", "COLUMNS", "RHS", "BOUNDS", "ENDATA"];
+  var n = MPS.length;
+  var i, j, z, N = 0, rows = {}, sign = [], rl = 0, vars = {}, nv = 0;
+  var name;
+  var c = [], A = [], b = [];
+  function err(e) {
+    throw new Error("MPStoLP: " + e + "\nLine " + i + ": " + MPS[i] + "\nCurrent state: " + states[state] + "\n");
+  }
+  for (i = 0;i < n;++i) {
+    z = MPS[i];
+    var w0 = z.match(/\S*/g);
+    var w = [];
+    for (j = 0;j < w0.length;++j) {
+      if (w0[j] !== "") {
+        w.push(w0[j]);
+      }
     }
     if (w.length === 0) {
       continue;
     }
-    for (o = 0;o < r.length;++o) {
-      if (u.substr(0, r[o].length) === r[o]) {
+    for (j = 0;j < states.length;++j) {
+      if (z.substr(0, states[j].length) === states[j]) {
         break;
       }
     }
-    if (o < r.length) {
-      n = o, o === 1 && (d = w[1]);
-      if (o === 6) {
-        return{name:d, c:v, A:numeric.transpose(m), b:g, rows:f, vars:h};
+    if (j < states.length) {
+      state = j;
+      if (j === 1) {
+        name = w[1];
+      }
+      if (j === 6) {
+        return{name:name, c:c, A:numeric.transpose(A), b:b, rows:rows, vars:vars};
       }
       continue;
     }
-    switch(n) {
+    switch(state) {
       case 0:
       ;
       case 1:
-        y("Unexpected line");
+        err("Unexpected line");
       case 2:
         switch(w[0]) {
           case "N":
-            a === 0 ? a = w[1] : y("Two or more N rows");
+            if (N === 0) {
+              N = w[1];
+            } else {
+              err("Two or more N rows");
+            }
             break;
           case "L":
-            f[w[1]] = c, l[c] = 1, g[c] = 0, ++c;
+            rows[w[1]] = rl;
+            sign[rl] = 1;
+            b[rl] = 0;
+            ++rl;
             break;
           case "G":
-            f[w[1]] = c, l[c] = -1, g[c] = 0, ++c;
+            rows[w[1]] = rl;
+            sign[rl] = -1;
+            b[rl] = 0;
+            ++rl;
             break;
           case "E":
-            f[w[1]] = c, l[c] = 0, g[c] = 0, ++c;
+            rows[w[1]] = rl;
+            sign[rl] = 0;
+            b[rl] = 0;
+            ++rl;
             break;
           default:
-            y("Parse error " + numeric.prettyPrint(w));
+            err("Parse error " + numeric.prettyPrint(w));
         }
         break;
       case 3:
-        h.hasOwnProperty(w[0]) || (h[w[0]] = p, v[p] = 0, m[p] = numeric.rep([c], 0), ++p);
-        var E = h[w[0]];
-        for (o = 1;o < w.length;o += 2) {
-          if (w[o] === a) {
-            v[E] = parseFloat(w[o + 1]);
+        if (!vars.hasOwnProperty(w[0])) {
+          vars[w[0]] = nv;
+          c[nv] = 0;
+          A[nv] = numeric.rep([rl], 0);
+          ++nv;
+        }
+        var p = vars[w[0]];
+        for (j = 1;j < w.length;j += 2) {
+          if (w[j] === N) {
+            c[p] = parseFloat(w[j + 1]);
             continue;
           }
-          var S = f[w[o]];
-          m[E][S] = (l[S] < 0 ? -1 : 1) * parseFloat(w[o + 1]);
+          var q = rows[w[j]];
+          A[p][q] = (sign[q] < 0 ? -1 : 1) * parseFloat(w[j + 1]);
         }
         break;
       case 4:
-        for (o = 1;o < w.length;o += 2) {
-          g[f[w[o]]] = (l[f[w[o]]] < 0 ? -1 : 1) * parseFloat(w[o + 1]);
+        for (j = 1;j < w.length;j += 2) {
+          b[rows[w[j]]] = (sign[rows[w[j]]] < 0 ? -1 : 1) * parseFloat(w[j + 1]);
         }
         break;
       case 5:
         break;
       case 6:
-        y("Internal error");
+        err("Internal error");
     }
   }
-  y("Reached end of file without ENDATA");
-}, numeric.seedrandom = {pow:Math.pow, random:Math.random}, function(e, t, n, r, i, s, o) {
-  function u(e) {
-    var t, r, i = this, s = e.length, o = 0, u = i.i = i.j = i.m = 0;
-    i.S = [], i.c = [], s || (e = [s++]);
-    while (o < n) {
-      i.S[o] = o++;
-    }
-    for (o = 0;o < n;o++) {
-      t = i.S[o], u = l(u + t + e[o % s]), r = i.S[u], i.S[o] = r, i.S[u] = t;
-    }
-    i.g = function(t) {
-      var r = i.S, s = l(i.i + 1), o = r[s], u = l(i.j + o), a = r[u];
-      r[s] = a, r[u] = o;
-      var f = r[l(o + a)];
-      while (--t) {
-        s = l(s + 1), o = r[s], u = l(u + o), a = r[u], r[s] = a, r[u] = o, f = f * n + r[l(o + a)];
+  err("Reached end of file without ENDATA");
+};
+numeric.seedrandom = {pow:Math.pow, random:Math.random};
+(function(pool, math, width, chunks, significance, overflow, startdenom) {
+  math["seedrandom"] = function seedrandom(seed, use_entropy) {
+    var key = [];
+    var arc4;
+    seed = mixkey(flatten(use_entropy ? [seed, pool] : arguments.length ? seed : [(new Date).getTime(), pool, window], 3), key);
+    arc4 = new ARC4(key);
+    mixkey(arc4.S, pool);
+    math["random"] = function random() {
+      var n = arc4.g(chunks);
+      var d = startdenom;
+      var x = 0;
+      while (n < significance) {
+        n = (n + x) * width;
+        d *= width;
+        x = arc4.g(1);
       }
-      return i.i = s, i.j = u, f;
-    }, i.g(n);
+      while (n >= overflow) {
+        n /= 2;
+        d /= 2;
+        x >>>= 1;
+      }
+      return(n + x) / d;
+    };
+    return seed;
+  };
+  function ARC4(key) {
+    var t, u, me = this, keylen = key.length;
+    var i = 0, j = me.i = me.j = me.m = 0;
+    me.S = [];
+    me.c = [];
+    if (!keylen) {
+      key = [keylen++];
+    }
+    while (i < width) {
+      me.S[i] = i++;
+    }
+    for (i = 0;i < width;i++) {
+      t = me.S[i];
+      j = lowbits(j + t + key[i % keylen]);
+      u = me.S[j];
+      me.S[i] = u;
+      me.S[j] = t;
+    }
+    me.g = function getnext(count) {
+      var s = me.S;
+      var i = lowbits(me.i + 1);
+      var t = s[i];
+      var j = lowbits(me.j + t);
+      var u = s[j];
+      s[i] = u;
+      s[j] = t;
+      var r = s[lowbits(t + u)];
+      while (--count) {
+        i = lowbits(i + 1);
+        t = s[i];
+        j = lowbits(j + t);
+        u = s[j];
+        s[i] = u;
+        s[j] = t;
+        r = r * width + s[lowbits(t + u)];
+      }
+      me.i = i;
+      me.j = j;
+      return r;
+    };
+    me.g(width);
   }
-  function a(e, t, n, r, i) {
-    n = [], i = typeof e;
-    if (t && i == "object") {
-      for (r in e) {
-        if (r.indexOf("S") < 5) {
+  function flatten(obj, depth, result, prop, typ) {
+    result = [];
+    typ = typeof obj;
+    if (depth && typ == "object") {
+      for (prop in obj) {
+        if (prop.indexOf("S") < 5) {
           try {
-            n.push(a(e[r], t - 1));
-          } catch (s) {
+            result.push(flatten(obj[prop], depth - 1));
+          } catch (e) {
           }
         }
       }
     }
-    return n.length ? n : e + (i != "string" ? "\x00" : "");
+    return result.length ? result : obj + (typ != "string" ? "\x00" : "");
   }
-  function f(e, t, n, r) {
-    e += "", n = 0;
-    for (r = 0;r < e.length;r++) {
-      t[l(r)] = l((n ^= t[l(r)] * 19) + e.charCodeAt(r));
+  function mixkey(seed, key, smear, j) {
+    seed += "";
+    smear = 0;
+    for (j = 0;j < seed.length;j++) {
+      key[lowbits(j)] = lowbits((smear ^= key[lowbits(j)] * 19) + seed.charCodeAt(j));
     }
-    e = "";
-    for (r in t) {
-      e += String.fromCharCode(t[r]);
+    seed = "";
+    for (j in key) {
+      seed += String.fromCharCode(key[j]);
     }
-    return e;
+    return seed;
   }
-  function l(e) {
-    return e & n - 1;
+  function lowbits(n) {
+    return n & width - 1;
   }
-  t.seedrandom = function(c, h) {
-    var p = [], d;
-    return c = f(a(h ? [c, e] : arguments.length ? c : [(new Date).getTime(), e, window], 3), p), d = new u(p), f(d.S, e), t.random = function() {
-      var t = d.g(r), u = o, a = 0;
-      while (t < i) {
-        t = (t + a) * n, u *= n, a = d.g(1);
+  startdenom = math.pow(width, chunks);
+  significance = math.pow(2, significance);
+  overflow = significance * 2;
+  mixkey(math.random(), pool);
+})([], numeric.seedrandom, 256, 6, 52);
+(function(exports) {
+  function base0to1(A) {
+    if (typeof A !== "object") {
+      return A;
+    }
+    var ret = [], i, n = A.length;
+    for (i = 0;i < n;i++) {
+      ret[i + 1] = base0to1(A[i]);
+    }
+    return ret;
+  }
+  function base1to0(A) {
+    if (typeof A !== "object") {
+      return A;
+    }
+    var ret = [], i, n = A.length;
+    for (i = 1;i < n;i++) {
+      ret[i - 1] = base1to0(A[i]);
+    }
+    return ret;
+  }
+  function dpori(a, lda, n) {
+    var i, j, k, kp1, t;
+    for (k = 1;k <= n;k = k + 1) {
+      a[k][k] = 1 / a[k][k];
+      t = -a[k][k];
+      for (i = 1;i < k;i = i + 1) {
+        a[i][k] = t * a[i][k];
       }
-      while (t >= s) {
-        t /= 2, u /= 2, a >>>= 1;
-      }
-      return(t + a) / u;
-    }, c;
-  }, o = t.pow(n, r), i = t.pow(2, i), s = i * 2, f(t.random(), e);
-}([], numeric.seedrandom, 256, 6, 52), function(e) {
-  function t(e) {
-    if (typeof e != "object") {
-      return e;
-    }
-    var n = [], r, i = e.length;
-    for (r = 0;r < i;r++) {
-      n[r + 1] = t(e[r]);
-    }
-    return n;
-  }
-  function n(e) {
-    if (typeof e != "object") {
-      return e;
-    }
-    var t = [], r, i = e.length;
-    for (r = 1;r < i;r++) {
-      t[r - 1] = n(e[r]);
-    }
-    return t;
-  }
-  function r(e, t, n) {
-    var r, i, s, o, u;
-    for (s = 1;s <= n;s += 1) {
-      e[s][s] = 1 / e[s][s], u = -e[s][s];
-      for (r = 1;r < s;r += 1) {
-        e[r][s] = u * e[r][s];
-      }
-      o = s + 1;
-      if (n < o) {
+      kp1 = k + 1;
+      if (n < kp1) {
         break;
       }
-      for (i = o;i <= n;i += 1) {
-        u = e[s][i], e[s][i] = 0;
-        for (r = 1;r <= s;r += 1) {
-          e[r][i] = e[r][i] + u * e[r][s];
+      for (j = kp1;j <= n;j = j + 1) {
+        t = a[k][j];
+        a[k][j] = 0;
+        for (i = 1;i <= k;i = i + 1) {
+          a[i][j] = a[i][j] + t * a[i][k];
         }
       }
     }
   }
-  function i(e, t, n, r) {
-    var i, s, o, u;
-    for (s = 1;s <= n;s += 1) {
-      u = 0;
-      for (i = 1;i < s;i += 1) {
-        u += e[i][s] * r[i];
+  function dposl(a, lda, n, b) {
+    var i, k, kb, t;
+    for (k = 1;k <= n;k = k + 1) {
+      t = 0;
+      for (i = 1;i < k;i = i + 1) {
+        t = t + a[i][k] * b[i];
       }
-      r[s] = (r[s] - u) / e[s][s];
+      b[k] = (b[k] - t) / a[k][k];
     }
-    for (o = 1;o <= n;o += 1) {
-      s = n + 1 - o, r[s] = r[s] / e[s][s], u = -r[s];
-      for (i = 1;i < s;i += 1) {
-        r[i] = r[i] + u * e[i][s];
+    for (kb = 1;kb <= n;kb = kb + 1) {
+      k = n + 1 - kb;
+      b[k] = b[k] / a[k][k];
+      t = -b[k];
+      for (i = 1;i < k;i = i + 1) {
+        b[i] = b[i] + t * a[i][k];
       }
-    }
-  }
-  function s(e, t, n, r) {
-    var i, s, o, u, a, f;
-    for (s = 1;s <= n;s += 1) {
-      r[1] = s, f = 0, o = s - 1;
-      if (o < 1) {
-        f = e[s][s] - f;
-        if (f <= 0) {
-          break;
-        }
-        e[s][s] = Math.sqrt(f);
-      } else {
-        for (u = 1;u <= o;u += 1) {
-          a = e[u][s];
-          for (i = 1;i < u;i += 1) {
-            a -= e[i][s] * e[i][u];
-          }
-          a /= e[u][u], e[u][s] = a, f += a * a;
-        }
-        f = e[s][s] - f;
-        if (f <= 0) {
-          break;
-        }
-        e[s][s] = Math.sqrt(f);
-      }
-      r[1] = 0;
     }
   }
-  function o(e, t, n, o, u, a, f, l, c, h, p, d, v, m, g, y) {
-    function V() {
-      m[1] = m[1] + 1, E = L;
-      for (b = 1;b <= h;b += 1) {
-        E += 1, P = -l[b];
-        for (w = 1;w <= o;w += 1) {
-          P += f[w][b] * u[w];
-        }
-        Math.abs(P) < U && (P = 0);
-        if (b > p) {
-          g[E] = P;
-        } else {
-          g[E] = -Math.abs(P);
-          if (P > 0) {
-            for (w = 1;w <= o;w += 1) {
-              f[w][b] = -f[w][b];
-            }
-            l[b] = -l[b];
-          }
-        }
-      }
-      for (b = 1;b <= v;b += 1) {
-        g[L + d[b]] = 0;
-      }
-      O = 0, D = 0;
-      for (b = 1;b <= h;b += 1) {
-        g[L + b] < D * g[_ + b] && (O = b, D = g[L + b] / g[_ + b]);
-      }
-      return O === 0 ? 999 : 0;
-    }
-    function $() {
-      for (b = 1;b <= o;b += 1) {
-        P = 0;
-        for (w = 1;w <= o;w += 1) {
-          P += e[w][b] * f[w][O];
-        }
-        g[b] = P;
-      }
-      S = N;
-      for (b = 1;b <= o;b += 1) {
-        g[S + b] = 0;
-      }
-      for (w = v + 1;w <= o;w += 1) {
-        for (b = 1;b <= o;b += 1) {
-          g[S + b] = g[S + b] + e[b][w] * g[w];
-        }
-      }
-      q = !0;
-      for (b = v;b >= 1;b -= 1) {
-        P = g[b], E = k + b * (b + 3) / 2, S = E - b;
-        for (w = b + 1;w <= v;w += 1) {
-          P -= g[E] * g[C + w], E += w;
-        }
-        P /= g[S], g[C + b] = P;
-        if (d[b] < p) {
+  function dpofa(a, lda, n, info) {
+    var i, j, jm1, k, t, s;
+    for (j = 1;j <= n;j = j + 1) {
+      info[1] = j;
+      s = 0;
+      jm1 = j - 1;
+      if (jm1 < 1) {
+        s = a[j][j] - s;
+        if (s <= 0) {
           break;
         }
-        if (P < 0) {
+        a[j][j] = Math.sqrt(s);
+      } else {
+        for (k = 1;k <= jm1;k = k + 1) {
+          t = a[k][j];
+          for (i = 1;i < k;i = i + 1) {
+            t = t - a[i][j] * a[i][k];
+          }
+          t = t / a[k][k];
+          a[k][j] = t;
+          s = s + t * t;
+        }
+        s = a[j][j] - s;
+        if (s <= 0) {
           break;
         }
-        q = !1, T = b;
+        a[j][j] = Math.sqrt(s);
       }
-      if (!q) {
-        H = g[A + T] / g[C + T];
-        for (b = 1;b <= v;b += 1) {
-          if (d[b] < p) {
-            break;
-          }
-          if (g[C + b] < 0) {
-            break;
-          }
-          D = g[A + b] / g[C + b], D < H && (H = D, T = b);
-        }
-      }
-      P = 0;
-      for (b = N + 1;b <= N + o;b += 1) {
-        P += g[b] * g[b];
-      }
-      if (Math.abs(P) <= U) {
-        if (q) {
-          return y[1] = 1, 999;
-        }
-        for (b = 1;b <= v;b += 1) {
-          g[A + b] = g[A + b] - H * g[C + b];
-        }
-        return g[A + v + 1] = g[A + v + 1] + H, 700;
-      }
-      P = 0;
-      for (b = 1;b <= o;b += 1) {
-        P += g[N + b] * f[b][O];
-      }
-      B = -g[L + O] / P, R = !0, q || H < B && (B = H, R = !1);
-      for (b = 1;b <= o;b += 1) {
-        u[b] = u[b] + B * g[N + b], Math.abs(u[b]) < U && (u[b] = 0);
-      }
-      a[1] = a[1] + B * P * (B / 2 + g[A + v + 1]);
-      for (b = 1;b <= v;b += 1) {
-        g[A + b] = g[A + b] - B * g[C + b];
-      }
-      g[A + v + 1] = g[A + v + 1] + B;
-      if (!R) {
-        P = -l[O];
-        for (w = 1;w <= o;w += 1) {
-          P += u[w] * f[w][O];
-        }
-        if (O > p) {
-          g[L + O] = P;
-        } else {
-          g[L + O] = -Math.abs(P);
-          if (P > 0) {
-            for (w = 1;w <= o;w += 1) {
-              f[w][O] = -f[w][O];
-            }
-            l[O] = -l[O];
-          }
-        }
-        return 700;
-      }
-      v += 1, d[v] = O, E = k + (v - 1) * v / 2 + 1;
-      for (b = 1;b <= v - 1;b += 1) {
-        g[E] = g[b], E += 1;
-      }
-      if (v === o) {
-        g[E] = g[o];
-      } else {
-        for (b = o;b >= v + 1;b -= 1) {
-          if (g[b] === 0) {
-            break;
-          }
-          j = Math.max(Math.abs(g[b - 1]), Math.abs(g[b])), F = Math.min(Math.abs(g[b - 1]), Math.abs(g[b])), g[b - 1] >= 0 ? D = Math.abs(j * Math.sqrt(1 + F * F / (j * j))) : D = -Math.abs(j * Math.sqrt(1 + F * F / (j * j))), j = g[b - 1] / D, F = g[b] / D;
-          if (j === 1) {
-            break;
-          }
-          if (j === 0) {
-            g[b - 1] = F * D;
-            for (w = 1;w <= o;w += 1) {
-              D = e[w][b - 1], e[w][b - 1] = e[w][b], e[w][b] = D;
-            }
-          } else {
-            g[b - 1] = D, I = F / (1 + j);
-            for (w = 1;w <= o;w += 1) {
-              D = j * e[w][b - 1] + F * e[w][b], e[w][b] = I * (e[w][b - 1] + D) - e[w][b], e[w][b - 1] = D;
-            }
-          }
-        }
-        g[E] = g[v];
-      }
-      return 0;
+      info[1] = 0;
     }
-    function J() {
-      E = k + T * (T + 1) / 2 + 1, S = E + T;
-      if (g[S] === 0) {
-        return 798;
-      }
-      j = Math.max(Math.abs(g[S - 1]), Math.abs(g[S])), F = Math.min(Math.abs(g[S - 1]), Math.abs(g[S])), g[S - 1] >= 0 ? D = Math.abs(j * Math.sqrt(1 + F * F / (j * j))) : D = -Math.abs(j * Math.sqrt(1 + F * F / (j * j))), j = g[S - 1] / D, F = g[S] / D;
-      if (j === 1) {
-        return 798;
-      }
-      if (j === 0) {
-        for (b = T + 1;b <= v;b += 1) {
-          D = g[S - 1], g[S - 1] = g[S], g[S] = D, S += b;
-        }
-        for (b = 1;b <= o;b += 1) {
-          D = e[b][T], e[b][T] = e[b][T + 1], e[b][T + 1] = D;
-        }
-      } else {
-        I = F / (1 + j);
-        for (b = T + 1;b <= v;b += 1) {
-          D = j * g[S - 1] + F * g[S], g[S] = I * (g[S - 1] + D) - g[S], g[S - 1] = D, S += b;
-        }
-        for (b = 1;b <= o;b += 1) {
-          D = j * e[b][T] + F * e[b][T + 1], e[b][T + 1] = I * (e[b][T] + D) - e[b][T + 1], e[b][T] = D;
-        }
-      }
-      return 0;
-    }
-    function K() {
-      S = E - T;
-      for (b = 1;b <= T;b += 1) {
-        g[S] = g[E], E += 1, S += 1;
-      }
-      return g[A + T] = g[A + T + 1], d[T] = d[T + 1], T += 1, T < v ? 797 : 0;
-    }
-    function Q() {
-      return g[A + v] = g[A + v + 1], g[A + v + 1] = 0, d[v] = 0, v -= 1, m[2] = m[2] + 1, 0;
-    }
-    var b, w, E, S, x, T, N, C, k, L, A, O, M, _, D, P, H, B, j, F, I, q, R, U, z, W, X;
-    M = Math.min(o, h), E = 2 * o + M * (M + 5) / 2 + 2 * h + 1, U = 1E-60;
+  }
+  function qpgen2(dmat, dvec, fddmat, n, sol, crval, amat, bvec, fdamat, q, meq, iact, nact, iter, work, ierr) {
+    var i, j, l, l1, info, it1, iwzv, iwrv, iwrm, iwsv, iwuv, nvl, r, iwnbv, temp, sum, t1, tt, gc, gs, nu, t1inf, t2min, vsmall, tmpa, tmpb, go;
+    r = Math.min(n, q);
+    l = 2 * n + r * (r + 5) / 2 + 2 * q + 1;
+    vsmall = 1E-60;
     do {
-      U += U, z = 1 + 0.1 * U, W = 1 + 0.2 * U;
-    } while (z <= 1 || W <= 1);
-    for (b = 1;b <= o;b += 1) {
-      g[b] = t[b];
+      vsmall = vsmall + vsmall;
+      tmpa = 1 + 0.1 * vsmall;
+      tmpb = 1 + 0.2 * vsmall;
+    } while (tmpa <= 1 || tmpb <= 1);
+    for (i = 1;i <= n;i = i + 1) {
+      work[i] = dvec[i];
     }
-    for (b = o + 1;b <= E;b += 1) {
-      g[b] = 0;
+    for (i = n + 1;i <= l;i = i + 1) {
+      work[i] = 0;
     }
-    for (b = 1;b <= h;b += 1) {
-      d[b] = 0;
+    for (i = 1;i <= q;i = i + 1) {
+      iact[i] = 0;
     }
-    x = [];
-    if (y[1] === 0) {
-      s(e, n, o, x);
-      if (x[1] !== 0) {
-        y[1] = 2;
+    info = [];
+    if (ierr[1] === 0) {
+      dpofa(dmat, fddmat, n, info);
+      if (info[1] !== 0) {
+        ierr[1] = 2;
         return;
       }
-      i(e, n, o, t), r(e, n, o);
+      dposl(dmat, fddmat, n, dvec);
+      dpori(dmat, fddmat, n);
     } else {
-      for (w = 1;w <= o;w += 1) {
-        u[w] = 0;
-        for (b = 1;b <= w;b += 1) {
-          u[w] = u[w] + e[b][w] * t[b];
+      for (j = 1;j <= n;j = j + 1) {
+        sol[j] = 0;
+        for (i = 1;i <= j;i = i + 1) {
+          sol[j] = sol[j] + dmat[i][j] * dvec[i];
         }
       }
-      for (w = 1;w <= o;w += 1) {
-        t[w] = 0;
-        for (b = w;b <= o;b += 1) {
-          t[w] = t[w] + e[w][b] * u[b];
+      for (j = 1;j <= n;j = j + 1) {
+        dvec[j] = 0;
+        for (i = j;i <= n;i = i + 1) {
+          dvec[j] = dvec[j] + dmat[j][i] * sol[i];
         }
       }
     }
-    a[1] = 0;
-    for (w = 1;w <= o;w += 1) {
-      u[w] = t[w], a[1] = a[1] + g[w] * u[w], g[w] = 0;
-      for (b = w + 1;b <= o;b += 1) {
-        e[b][w] = 0;
+    crval[1] = 0;
+    for (j = 1;j <= n;j = j + 1) {
+      sol[j] = dvec[j];
+      crval[1] = crval[1] + work[j] * sol[j];
+      work[j] = 0;
+      for (i = j + 1;i <= n;i = i + 1) {
+        dmat[i][j] = 0;
       }
     }
-    a[1] = -a[1] / 2, y[1] = 0, N = o, C = N + o, A = C + M, k = A + M + 1, L = k + M * (M + 1) / 2, _ = L + h;
-    for (b = 1;b <= h;b += 1) {
-      P = 0;
-      for (w = 1;w <= o;w += 1) {
-        P += f[w][b] * f[w][b];
+    crval[1] = -crval[1] / 2;
+    ierr[1] = 0;
+    iwzv = n;
+    iwrv = iwzv + n;
+    iwuv = iwrv + r;
+    iwrm = iwuv + r + 1;
+    iwsv = iwrm + r * (r + 1) / 2;
+    iwnbv = iwsv + q;
+    for (i = 1;i <= q;i = i + 1) {
+      sum = 0;
+      for (j = 1;j <= n;j = j + 1) {
+        sum = sum + amat[j][i] * amat[j][i];
       }
-      g[_ + b] = Math.sqrt(P);
+      work[iwnbv + i] = Math.sqrt(sum);
     }
-    v = 0, m[1] = 0, m[2] = 0, X = 0;
-    for (;;) {
-      X = V();
-      if (X === 999) {
-        return;
+    nact = 0;
+    iter[1] = 0;
+    iter[2] = 0;
+    function fn_goto_50() {
+      iter[1] = iter[1] + 1;
+      l = iwsv;
+      for (i = 1;i <= q;i = i + 1) {
+        l = l + 1;
+        sum = -bvec[i];
+        for (j = 1;j <= n;j = j + 1) {
+          sum = sum + amat[j][i] * sol[j];
+        }
+        if (Math.abs(sum) < vsmall) {
+          sum = 0;
+        }
+        if (i > meq) {
+          work[l] = sum;
+        } else {
+          work[l] = -Math.abs(sum);
+          if (sum > 0) {
+            for (j = 1;j <= n;j = j + 1) {
+              amat[j][i] = -amat[j][i];
+            }
+            bvec[i] = -bvec[i];
+          }
+        }
       }
-      for (;;) {
-        X = $();
-        if (X === 0) {
+      for (i = 1;i <= nact;i = i + 1) {
+        work[iwsv + iact[i]] = 0;
+      }
+      nvl = 0;
+      temp = 0;
+      for (i = 1;i <= q;i = i + 1) {
+        if (work[iwsv + i] < temp * work[iwnbv + i]) {
+          nvl = i;
+          temp = work[iwsv + i] / work[iwnbv + i];
+        }
+      }
+      if (nvl === 0) {
+        return 999;
+      }
+      return 0;
+    }
+    function fn_goto_55() {
+      for (i = 1;i <= n;i = i + 1) {
+        sum = 0;
+        for (j = 1;j <= n;j = j + 1) {
+          sum = sum + dmat[j][i] * amat[j][nvl];
+        }
+        work[i] = sum;
+      }
+      l1 = iwzv;
+      for (i = 1;i <= n;i = i + 1) {
+        work[l1 + i] = 0;
+      }
+      for (j = nact + 1;j <= n;j = j + 1) {
+        for (i = 1;i <= n;i = i + 1) {
+          work[l1 + i] = work[l1 + i] + dmat[i][j] * work[j];
+        }
+      }
+      t1inf = true;
+      for (i = nact;i >= 1;i = i - 1) {
+        sum = work[i];
+        l = iwrm + i * (i + 3) / 2;
+        l1 = l - i;
+        for (j = i + 1;j <= nact;j = j + 1) {
+          sum = sum - work[l] * work[iwrv + j];
+          l = l + j;
+        }
+        sum = sum / work[l1];
+        work[iwrv + i] = sum;
+        if (iact[i] < meq) {
           break;
         }
-        if (X === 999) {
+        if (sum < 0) {
+          break;
+        }
+        t1inf = false;
+        it1 = i;
+      }
+      if (!t1inf) {
+        t1 = work[iwuv + it1] / work[iwrv + it1];
+        for (i = 1;i <= nact;i = i + 1) {
+          if (iact[i] < meq) {
+            break;
+          }
+          if (work[iwrv + i] < 0) {
+            break;
+          }
+          temp = work[iwuv + i] / work[iwrv + i];
+          if (temp < t1) {
+            t1 = temp;
+            it1 = i;
+          }
+        }
+      }
+      sum = 0;
+      for (i = iwzv + 1;i <= iwzv + n;i = i + 1) {
+        sum = sum + work[i] * work[i];
+      }
+      if (Math.abs(sum) <= vsmall) {
+        if (t1inf) {
+          ierr[1] = 1;
+          return 999;
+        } else {
+          for (i = 1;i <= nact;i = i + 1) {
+            work[iwuv + i] = work[iwuv + i] - t1 * work[iwrv + i];
+          }
+          work[iwuv + nact + 1] = work[iwuv + nact + 1] + t1;
+          return 700;
+        }
+      } else {
+        sum = 0;
+        for (i = 1;i <= n;i = i + 1) {
+          sum = sum + work[iwzv + i] * amat[i][nvl];
+        }
+        tt = -work[iwsv + nvl] / sum;
+        t2min = true;
+        if (!t1inf) {
+          if (t1 < tt) {
+            tt = t1;
+            t2min = false;
+          }
+        }
+        for (i = 1;i <= n;i = i + 1) {
+          sol[i] = sol[i] + tt * work[iwzv + i];
+          if (Math.abs(sol[i]) < vsmall) {
+            sol[i] = 0;
+          }
+        }
+        crval[1] = crval[1] + tt * sum * (tt / 2 + work[iwuv + nact + 1]);
+        for (i = 1;i <= nact;i = i + 1) {
+          work[iwuv + i] = work[iwuv + i] - tt * work[iwrv + i];
+        }
+        work[iwuv + nact + 1] = work[iwuv + nact + 1] + tt;
+        if (t2min) {
+          nact = nact + 1;
+          iact[nact] = nvl;
+          l = iwrm + (nact - 1) * nact / 2 + 1;
+          for (i = 1;i <= nact - 1;i = i + 1) {
+            work[l] = work[i];
+            l = l + 1;
+          }
+          if (nact === n) {
+            work[l] = work[n];
+          } else {
+            for (i = n;i >= nact + 1;i = i - 1) {
+              if (work[i] === 0) {
+                break;
+              }
+              gc = Math.max(Math.abs(work[i - 1]), Math.abs(work[i]));
+              gs = Math.min(Math.abs(work[i - 1]), Math.abs(work[i]));
+              if (work[i - 1] >= 0) {
+                temp = Math.abs(gc * Math.sqrt(1 + gs * gs / (gc * gc)));
+              } else {
+                temp = -Math.abs(gc * Math.sqrt(1 + gs * gs / (gc * gc)));
+              }
+              gc = work[i - 1] / temp;
+              gs = work[i] / temp;
+              if (gc === 1) {
+                break;
+              }
+              if (gc === 0) {
+                work[i - 1] = gs * temp;
+                for (j = 1;j <= n;j = j + 1) {
+                  temp = dmat[j][i - 1];
+                  dmat[j][i - 1] = dmat[j][i];
+                  dmat[j][i] = temp;
+                }
+              } else {
+                work[i - 1] = temp;
+                nu = gs / (1 + gc);
+                for (j = 1;j <= n;j = j + 1) {
+                  temp = gc * dmat[j][i - 1] + gs * dmat[j][i];
+                  dmat[j][i] = nu * (dmat[j][i - 1] + temp) - dmat[j][i];
+                  dmat[j][i - 1] = temp;
+                }
+              }
+            }
+            work[l] = work[nact];
+          }
+        } else {
+          sum = -bvec[nvl];
+          for (j = 1;j <= n;j = j + 1) {
+            sum = sum + sol[j] * amat[j][nvl];
+          }
+          if (nvl > meq) {
+            work[iwsv + nvl] = sum;
+          } else {
+            work[iwsv + nvl] = -Math.abs(sum);
+            if (sum > 0) {
+              for (j = 1;j <= n;j = j + 1) {
+                amat[j][nvl] = -amat[j][nvl];
+              }
+              bvec[nvl] = -bvec[nvl];
+            }
+          }
+          return 700;
+        }
+      }
+      return 0;
+    }
+    function fn_goto_797() {
+      l = iwrm + it1 * (it1 + 1) / 2 + 1;
+      l1 = l + it1;
+      if (work[l1] === 0) {
+        return 798;
+      }
+      gc = Math.max(Math.abs(work[l1 - 1]), Math.abs(work[l1]));
+      gs = Math.min(Math.abs(work[l1 - 1]), Math.abs(work[l1]));
+      if (work[l1 - 1] >= 0) {
+        temp = Math.abs(gc * Math.sqrt(1 + gs * gs / (gc * gc)));
+      } else {
+        temp = -Math.abs(gc * Math.sqrt(1 + gs * gs / (gc * gc)));
+      }
+      gc = work[l1 - 1] / temp;
+      gs = work[l1] / temp;
+      if (gc === 1) {
+        return 798;
+      }
+      if (gc === 0) {
+        for (i = it1 + 1;i <= nact;i = i + 1) {
+          temp = work[l1 - 1];
+          work[l1 - 1] = work[l1];
+          work[l1] = temp;
+          l1 = l1 + i;
+        }
+        for (i = 1;i <= n;i = i + 1) {
+          temp = dmat[i][it1];
+          dmat[i][it1] = dmat[i][it1 + 1];
+          dmat[i][it1 + 1] = temp;
+        }
+      } else {
+        nu = gs / (1 + gc);
+        for (i = it1 + 1;i <= nact;i = i + 1) {
+          temp = gc * work[l1 - 1] + gs * work[l1];
+          work[l1] = nu * (work[l1 - 1] + temp) - work[l1];
+          work[l1 - 1] = temp;
+          l1 = l1 + i;
+        }
+        for (i = 1;i <= n;i = i + 1) {
+          temp = gc * dmat[i][it1] + gs * dmat[i][it1 + 1];
+          dmat[i][it1 + 1] = nu * (dmat[i][it1] + temp) - dmat[i][it1 + 1];
+          dmat[i][it1] = temp;
+        }
+      }
+      return 0;
+    }
+    function fn_goto_798() {
+      l1 = l - it1;
+      for (i = 1;i <= it1;i = i + 1) {
+        work[l1] = work[l];
+        l = l + 1;
+        l1 = l1 + 1;
+      }
+      work[iwuv + it1] = work[iwuv + it1 + 1];
+      iact[it1] = iact[it1 + 1];
+      it1 = it1 + 1;
+      if (it1 < nact) {
+        return 797;
+      }
+      return 0;
+    }
+    function fn_goto_799() {
+      work[iwuv + nact] = work[iwuv + nact + 1];
+      work[iwuv + nact + 1] = 0;
+      iact[nact] = 0;
+      nact = nact - 1;
+      iter[2] = iter[2] + 1;
+      return 0;
+    }
+    go = 0;
+    while (true) {
+      go = fn_goto_50();
+      if (go === 999) {
+        return;
+      }
+      while (true) {
+        go = fn_goto_55();
+        if (go === 0) {
+          break;
+        }
+        if (go === 999) {
           return;
         }
-        if (X === 700) {
-          if (T === v) {
-            Q();
+        if (go === 700) {
+          if (it1 === nact) {
+            fn_goto_799();
           } else {
-            for (;;) {
-              J(), X = K();
-              if (X !== 797) {
+            while (true) {
+              fn_goto_797();
+              go = fn_goto_798();
+              if (go !== 797) {
                 break;
               }
             }
-            Q();
+            fn_goto_799();
           }
         }
       }
     }
   }
-  function u(e, r, i, s, u, a) {
-    e = t(e), r = t(r), i = t(i);
-    var f, l, c, h, p, d = [], v = [], m = [], g = [], y = [], b;
-    u = u || 0, a = a ? t(a) : [undefined, 0], s = s ? t(s) : [], l = e.length - 1, c = i[1].length - 1;
-    if (!s) {
-      for (f = 1;f <= c;f += 1) {
-        s[f] = 0;
+  function solveQP(Dmat, dvec, Amat, bvec, meq, factorized) {
+    Dmat = base0to1(Dmat);
+    dvec = base0to1(dvec);
+    Amat = base0to1(Amat);
+    var i, n, q, nact, r, crval = [], iact = [], sol = [], work = [], iter = [], message;
+    meq = meq || 0;
+    factorized = factorized ? base0to1(factorized) : [undefined, 0];
+    bvec = bvec ? base0to1(bvec) : [];
+    n = Dmat.length - 1;
+    q = Amat[1].length - 1;
+    if (!bvec) {
+      for (i = 1;i <= q;i = i + 1) {
+        bvec[i] = 0;
       }
     }
-    for (f = 1;f <= c;f += 1) {
-      v[f] = 0;
+    for (i = 1;i <= q;i = i + 1) {
+      iact[i] = 0;
     }
-    h = 0, p = Math.min(l, c);
-    for (f = 1;f <= l;f += 1) {
-      m[f] = 0;
+    nact = 0;
+    r = Math.min(n, q);
+    for (i = 1;i <= n;i = i + 1) {
+      sol[i] = 0;
     }
-    d[1] = 0;
-    for (f = 1;f <= 2 * l + p * (p + 5) / 2 + 2 * c + 1;f += 1) {
-      g[f] = 0;
+    crval[1] = 0;
+    for (i = 1;i <= 2 * n + r * (r + 5) / 2 + 2 * q + 1;i = i + 1) {
+      work[i] = 0;
     }
-    for (f = 1;f <= 2;f += 1) {
-      y[f] = 0;
+    for (i = 1;i <= 2;i = i + 1) {
+      iter[i] = 0;
     }
-    return o(e, r, l, l, m, d, i, s, l, c, u, v, h, y, g, a), b = "", a[1] === 1 && (b = "constraints are inconsistent, no solution!"), a[1] === 2 && (b = "matrix D in quadratic function is not positive definite!"), {solution:n(m), value:n(d), unconstrained_solution:n(r), iterations:n(y), iact:n(v), message:b};
+    qpgen2(Dmat, dvec, n, n, sol, crval, Amat, bvec, n, q, meq, iact, nact, iter, work, factorized);
+    message = "";
+    if (factorized[1] === 1) {
+      message = "constraints are inconsistent, no solution!";
+    }
+    if (factorized[1] === 2) {
+      message = "matrix D in quadratic function is not positive definite!";
+    }
+    return{solution:base1to0(sol), value:base1to0(crval), unconstrained_solution:base1to0(dvec), iterations:base1to0(iter), iact:base1to0(iact), message:message};
   }
-  e.solveQP = u;
-}(numeric), numeric.svd = function(t) {
-  function g(e, t) {
-    return e = Math.abs(e), t = Math.abs(t), e > t ? e * Math.sqrt(1 + t * t / e / e) : t == 0 ? e : t * Math.sqrt(1 + e * e / t / t);
-  }
-  var n, r = numeric.epsilon, i = 1E-64 / r, s = 50, o = 0, u = 0, a = 0, f = 0, l = 0, c = numeric.clone(t), h = c.length, p = c[0].length;
-  if (h < p) {
+  exports.solveQP = solveQP;
+})(numeric);
+numeric.svd = function svd(A) {
+  var temp;
+  var prec = numeric.epsilon;
+  var tolerance = 1E-64 / prec;
+  var itmax = 50;
+  var c = 0;
+  var i = 0;
+  var j = 0;
+  var k = 0;
+  var l = 0;
+  var u = numeric.clone(A);
+  var m = u.length;
+  var n = u[0].length;
+  if (m < n) {
     throw "Need more rows than columns";
   }
-  var d = new Array(p), v = new Array(p);
-  for (u = 0;u < p;u++) {
-    d[u] = v[u] = 0;
+  var e = new Array(n);
+  var q = new Array(n);
+  for (i = 0;i < n;i++) {
+    e[i] = q[i] = 0;
   }
-  var m = numeric.rep([p, p], 0), y = 0, b = 0, w = 0, E = 0, S = 0, x = 0, T = 0;
-  for (u = 0;u < p;u++) {
-    d[u] = b, T = 0, l = u + 1;
-    for (a = u;a < h;a++) {
-      T += c[a][u] * c[a][u];
-    }
-    if (T <= i) {
-      b = 0;
+  var v = numeric.rep([n, n], 0);
+  function pythag(a, b) {
+    a = Math.abs(a);
+    b = Math.abs(b);
+    if (a > b) {
+      return a * Math.sqrt(1 + b * b / a / a);
     } else {
-      y = c[u][u], b = Math.sqrt(T), y >= 0 && (b = -b), w = y * b - T, c[u][u] = y - b;
-      for (a = l;a < p;a++) {
-        T = 0;
-        for (f = u;f < h;f++) {
-          T += c[f][u] * c[f][a];
-        }
-        y = T / w;
-        for (f = u;f < h;f++) {
-          c[f][a] += y * c[f][u];
-        }
+      if (b == 0) {
+        return a;
       }
     }
-    v[u] = b, T = 0;
-    for (a = l;a < p;a++) {
-      T += c[u][a] * c[u][a];
+    return b * Math.sqrt(1 + a * a / b / b);
+  }
+  var f = 0;
+  var g = 0;
+  var h = 0;
+  var x = 0;
+  var y = 0;
+  var z = 0;
+  var s = 0;
+  for (i = 0;i < n;i++) {
+    e[i] = g;
+    s = 0;
+    l = i + 1;
+    for (j = i;j < m;j++) {
+      s += u[j][i] * u[j][i];
     }
-    if (T <= i) {
-      b = 0;
+    if (s <= tolerance) {
+      g = 0;
     } else {
-      y = c[u][u + 1], b = Math.sqrt(T), y >= 0 && (b = -b), w = y * b - T, c[u][u + 1] = y - b;
-      for (a = l;a < p;a++) {
-        d[a] = c[u][a] / w;
+      f = u[i][i];
+      g = Math.sqrt(s);
+      if (f >= 0) {
+        g = -g;
       }
-      for (a = l;a < h;a++) {
-        T = 0;
-        for (f = l;f < p;f++) {
-          T += c[a][f] * c[u][f];
+      h = f * g - s;
+      u[i][i] = f - g;
+      for (j = l;j < n;j++) {
+        s = 0;
+        for (k = i;k < m;k++) {
+          s += u[k][i] * u[k][j];
         }
-        for (f = l;f < p;f++) {
-          c[a][f] += T * d[f];
+        f = s / h;
+        for (k = i;k < m;k++) {
+          u[k][j] += f * u[k][i];
         }
       }
     }
-    S = Math.abs(v[u]) + Math.abs(d[u]), S > E && (E = S);
+    q[i] = g;
+    s = 0;
+    for (j = l;j < n;j++) {
+      s = s + u[i][j] * u[i][j];
+    }
+    if (s <= tolerance) {
+      g = 0;
+    } else {
+      f = u[i][i + 1];
+      g = Math.sqrt(s);
+      if (f >= 0) {
+        g = -g;
+      }
+      h = f * g - s;
+      u[i][i + 1] = f - g;
+      for (j = l;j < n;j++) {
+        e[j] = u[i][j] / h;
+      }
+      for (j = l;j < m;j++) {
+        s = 0;
+        for (k = l;k < n;k++) {
+          s += u[j][k] * u[i][k];
+        }
+        for (k = l;k < n;k++) {
+          u[j][k] += s * e[k];
+        }
+      }
+    }
+    y = Math.abs(q[i]) + Math.abs(e[i]);
+    if (y > x) {
+      x = y;
+    }
   }
-  for (u = p - 1;u != -1;u += -1) {
-    if (b != 0) {
-      w = b * c[u][u + 1];
-      for (a = l;a < p;a++) {
-        m[a][u] = c[u][a] / w;
+  for (i = n - 1;i != -1;i += -1) {
+    if (g != 0) {
+      h = g * u[i][i + 1];
+      for (j = l;j < n;j++) {
+        v[j][i] = u[i][j] / h;
       }
-      for (a = l;a < p;a++) {
-        T = 0;
-        for (f = l;f < p;f++) {
-          T += c[u][f] * m[f][a];
+      for (j = l;j < n;j++) {
+        s = 0;
+        for (k = l;k < n;k++) {
+          s += u[i][k] * v[k][j];
         }
-        for (f = l;f < p;f++) {
-          m[f][a] += T * m[f][u];
+        for (k = l;k < n;k++) {
+          v[k][j] += s * v[k][i];
         }
       }
     }
-    for (a = l;a < p;a++) {
-      m[u][a] = 0, m[a][u] = 0;
+    for (j = l;j < n;j++) {
+      v[i][j] = 0;
+      v[j][i] = 0;
     }
-    m[u][u] = 1, b = d[u], l = u;
+    v[i][i] = 1;
+    g = e[i];
+    l = i;
   }
-  for (u = p - 1;u != -1;u += -1) {
-    l = u + 1, b = v[u];
-    for (a = l;a < p;a++) {
-      c[u][a] = 0;
+  for (i = n - 1;i != -1;i += -1) {
+    l = i + 1;
+    g = q[i];
+    for (j = l;j < n;j++) {
+      u[i][j] = 0;
     }
-    if (b != 0) {
-      w = c[u][u] * b;
-      for (a = l;a < p;a++) {
-        T = 0;
-        for (f = l;f < h;f++) {
-          T += c[f][u] * c[f][a];
+    if (g != 0) {
+      h = u[i][i] * g;
+      for (j = l;j < n;j++) {
+        s = 0;
+        for (k = l;k < m;k++) {
+          s += u[k][i] * u[k][j];
         }
-        y = T / w;
-        for (f = u;f < h;f++) {
-          c[f][a] += y * c[f][u];
+        f = s / h;
+        for (k = i;k < m;k++) {
+          u[k][j] += f * u[k][i];
         }
       }
-      for (a = u;a < h;a++) {
-        c[a][u] = c[a][u] / b;
+      for (j = i;j < m;j++) {
+        u[j][i] = u[j][i] / g;
       }
     } else {
-      for (a = u;a < h;a++) {
-        c[a][u] = 0;
+      for (j = i;j < m;j++) {
+        u[j][i] = 0;
       }
     }
-    c[u][u] += 1;
+    u[i][i] += 1;
   }
-  r *= E;
-  for (f = p - 1;f != -1;f += -1) {
-    for (var N = 0;N < s;N++) {
-      var C = !1;
-      for (l = f;l != -1;l += -1) {
-        if (Math.abs(d[l]) <= r) {
-          C = !0;
+  prec = prec * x;
+  for (k = n - 1;k != -1;k += -1) {
+    for (var iteration = 0;iteration < itmax;iteration++) {
+      var test_convergence = false;
+      for (l = k;l != -1;l += -1) {
+        if (Math.abs(e[l]) <= prec) {
+          test_convergence = true;
           break;
         }
-        if (Math.abs(v[l - 1]) <= r) {
+        if (Math.abs(q[l - 1]) <= prec) {
           break;
         }
       }
-      if (!C) {
-        o = 0, T = 1;
-        var k = l - 1;
-        for (u = l;u < f + 1;u++) {
-          y = T * d[u], d[u] = o * d[u];
-          if (Math.abs(y) <= r) {
+      if (!test_convergence) {
+        c = 0;
+        s = 1;
+        var l1 = l - 1;
+        for (i = l;i < k + 1;i++) {
+          f = s * e[i];
+          e[i] = c * e[i];
+          if (Math.abs(f) <= prec) {
             break;
           }
-          b = v[u], w = g(y, b), v[u] = w, o = b / w, T = -y / w;
-          for (a = 0;a < h;a++) {
-            S = c[a][k], x = c[a][u], c[a][k] = S * o + x * T, c[a][u] = -S * T + x * o;
+          g = q[i];
+          h = pythag(f, g);
+          q[i] = h;
+          c = g / h;
+          s = -f / h;
+          for (j = 0;j < m;j++) {
+            y = u[j][l1];
+            z = u[j][i];
+            u[j][l1] = y * c + z * s;
+            u[j][i] = -y * s + z * c;
           }
         }
       }
-      x = v[f];
-      if (l == f) {
-        if (x < 0) {
-          v[f] = -x;
-          for (a = 0;a < p;a++) {
-            m[a][f] = -m[a][f];
+      z = q[k];
+      if (l == k) {
+        if (z < 0) {
+          q[k] = -z;
+          for (j = 0;j < n;j++) {
+            v[j][k] = -v[j][k];
           }
         }
         break;
       }
-      if (N >= s - 1) {
+      if (iteration >= itmax - 1) {
         throw "Error: no convergence.";
       }
-      E = v[l], S = v[f - 1], b = d[f - 1], w = d[f], y = ((S - x) * (S + x) + (b - w) * (b + w)) / (2 * w * S), b = g(y, 1), y < 0 ? y = ((E - x) * (E + x) + w * (S / (y - b) - w)) / E : y = ((E - x) * (E + x) + w * (S / (y + b) - w)) / E, o = 1, T = 1;
-      for (u = l + 1;u < f + 1;u++) {
-        b = d[u], S = v[u], w = T * b, b = o * b, x = g(y, w), d[u - 1] = x, o = y / x, T = w / x, y = E * o + b * T, b = -E * T + b * o, w = S * T, S *= o;
-        for (a = 0;a < p;a++) {
-          E = m[a][u - 1], x = m[a][u], m[a][u - 1] = E * o + x * T, m[a][u] = -E * T + x * o;
+      x = q[l];
+      y = q[k - 1];
+      g = e[k - 1];
+      h = e[k];
+      f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2 * h * y);
+      g = pythag(f, 1);
+      if (f < 0) {
+        f = ((x - z) * (x + z) + h * (y / (f - g) - h)) / x;
+      } else {
+        f = ((x - z) * (x + z) + h * (y / (f + g) - h)) / x;
+      }
+      c = 1;
+      s = 1;
+      for (i = l + 1;i < k + 1;i++) {
+        g = e[i];
+        y = q[i];
+        h = s * g;
+        g = c * g;
+        z = pythag(f, h);
+        e[i - 1] = z;
+        c = f / z;
+        s = h / z;
+        f = x * c + g * s;
+        g = -x * s + g * c;
+        h = y * s;
+        y = y * c;
+        for (j = 0;j < n;j++) {
+          x = v[j][i - 1];
+          z = v[j][i];
+          v[j][i - 1] = x * c + z * s;
+          v[j][i] = -x * s + z * c;
         }
-        x = g(y, w), v[u - 1] = x, o = y / x, T = w / x, y = o * b + T * S, E = -T * b + o * S;
-        for (a = 0;a < h;a++) {
-          S = c[a][u - 1], x = c[a][u], c[a][u - 1] = S * o + x * T, c[a][u] = -S * T + x * o;
+        z = pythag(f, h);
+        q[i - 1] = z;
+        c = f / z;
+        s = h / z;
+        f = c * g + s * y;
+        x = -s * g + c * y;
+        for (j = 0;j < m;j++) {
+          y = u[j][i - 1];
+          z = u[j][i];
+          u[j][i - 1] = y * c + z * s;
+          u[j][i] = -y * s + z * c;
         }
       }
-      d[l] = 0, d[f] = y, v[f] = E;
+      e[l] = 0;
+      e[k] = f;
+      q[k] = x;
     }
   }
-  for (u = 0;u < v.length;u++) {
-    v[u] < r && (v[u] = 0);
+  for (i = 0;i < q.length;i++) {
+    if (q[i] < prec) {
+      q[i] = 0;
+    }
   }
-  for (u = 0;u < p;u++) {
-    for (a = u - 1;a >= 0;a--) {
-      if (v[a] < v[u]) {
-        o = v[a], v[a] = v[u], v[u] = o;
-        for (f = 0;f < c.length;f++) {
-          n = c[f][u], c[f][u] = c[f][a], c[f][a] = n;
+  for (i = 0;i < n;i++) {
+    for (j = i - 1;j >= 0;j--) {
+      if (q[j] < q[i]) {
+        c = q[j];
+        q[j] = q[i];
+        q[i] = c;
+        for (k = 0;k < u.length;k++) {
+          temp = u[k][i];
+          u[k][i] = u[k][j];
+          u[k][j] = temp;
         }
-        for (f = 0;f < m.length;f++) {
-          n = m[f][u], m[f][u] = m[f][a], m[f][a] = n;
+        for (k = 0;k < v.length;k++) {
+          temp = v[k][i];
+          v[k][i] = v[k][j];
+          v[k][j] = temp;
         }
-        u = a;
+        i = j;
       }
     }
   }
-  return{U:c, S:v, V:m};
+  return{U:u, S:q, V:v};
 };
 goog.provide("clojure.walk");
 goog.require("cljs.core");
@@ -31436,8 +33399,8 @@ qgame.utils.math.round = function() {
     return round.call(null, x, 0);
   };
   var round__2 = function(x, digits) {
-    return qgame.utils.math.matrix_safe.call(null, function(p1__4916_SHARP_) {
-      return qgame.utils.math.math.round.call(null, p1__4916_SHARP_, digits);
+    return qgame.utils.math.matrix_safe.call(null, function(p1__4910_SHARP_) {
+      return qgame.utils.math.math.round.call(null, p1__4910_SHARP_, digits);
     }, x);
   };
   round = function(x, digits) {
@@ -31462,26 +33425,26 @@ qgame.utils.math.add = function() {
     return qgame.utils.math.matrix_safe.call(null, qgame.utils.math.math.add, x, y);
   };
   var add__3 = function() {
-    var G__4917__delegate = function(x, y, more) {
+    var G__4911__delegate = function(x, y, more) {
       return cljs.core.reduce.call(null, add, add.call(null, x, y), more);
     };
-    var G__4917 = function(x, y, var_args) {
+    var G__4911 = function(x, y, var_args) {
       var more = null;
       if (arguments.length > 2) {
         more = cljs.core.array_seq(Array.prototype.slice.call(arguments, 2), 0);
       }
-      return G__4917__delegate.call(this, x, y, more);
+      return G__4911__delegate.call(this, x, y, more);
     };
-    G__4917.cljs$lang$maxFixedArity = 2;
-    G__4917.cljs$lang$applyTo = function(arglist__4918) {
-      var x = cljs.core.first(arglist__4918);
-      arglist__4918 = cljs.core.next(arglist__4918);
-      var y = cljs.core.first(arglist__4918);
-      var more = cljs.core.rest(arglist__4918);
-      return G__4917__delegate(x, y, more);
+    G__4911.cljs$lang$maxFixedArity = 2;
+    G__4911.cljs$lang$applyTo = function(arglist__4912) {
+      var x = cljs.core.first(arglist__4912);
+      arglist__4912 = cljs.core.next(arglist__4912);
+      var y = cljs.core.first(arglist__4912);
+      var more = cljs.core.rest(arglist__4912);
+      return G__4911__delegate(x, y, more);
     };
-    G__4917.cljs$core$IFn$_invoke$arity$variadic = G__4917__delegate;
-    return G__4917;
+    G__4911.cljs$core$IFn$_invoke$arity$variadic = G__4911__delegate;
+    return G__4911;
   }();
   add = function(x, y, var_args) {
     var more = var_args;
@@ -31511,26 +33474,26 @@ qgame.utils.math.subtract = function() {
     return qgame.utils.math.matrix_safe.call(null, qgame.utils.math.math.subtract, x, y);
   };
   var subtract__3 = function() {
-    var G__4919__delegate = function(x, y, more) {
+    var G__4913__delegate = function(x, y, more) {
       return cljs.core.reduce.call(null, subtract, subtract.call(null, x, y), more);
     };
-    var G__4919 = function(x, y, var_args) {
+    var G__4913 = function(x, y, var_args) {
       var more = null;
       if (arguments.length > 2) {
         more = cljs.core.array_seq(Array.prototype.slice.call(arguments, 2), 0);
       }
-      return G__4919__delegate.call(this, x, y, more);
+      return G__4913__delegate.call(this, x, y, more);
     };
-    G__4919.cljs$lang$maxFixedArity = 2;
-    G__4919.cljs$lang$applyTo = function(arglist__4920) {
-      var x = cljs.core.first(arglist__4920);
-      arglist__4920 = cljs.core.next(arglist__4920);
-      var y = cljs.core.first(arglist__4920);
-      var more = cljs.core.rest(arglist__4920);
-      return G__4919__delegate(x, y, more);
+    G__4913.cljs$lang$maxFixedArity = 2;
+    G__4913.cljs$lang$applyTo = function(arglist__4914) {
+      var x = cljs.core.first(arglist__4914);
+      arglist__4914 = cljs.core.next(arglist__4914);
+      var y = cljs.core.first(arglist__4914);
+      var more = cljs.core.rest(arglist__4914);
+      return G__4913__delegate(x, y, more);
     };
-    G__4919.cljs$core$IFn$_invoke$arity$variadic = G__4919__delegate;
-    return G__4919;
+    G__4913.cljs$core$IFn$_invoke$arity$variadic = G__4913__delegate;
+    return G__4913;
   }();
   subtract = function(x, y, var_args) {
     var more = var_args;
@@ -31623,31 +33586,31 @@ qgame.utils.math.mat_EQ__QMARK_ = function() {
     }
   };
   var mat_EQ__QMARK___3 = function() {
-    var G__4921__delegate = function(mat01, mat02, more) {
-      var and__3438__auto__ = mat_EQ__QMARK_.call(null, mat01, mat02);
-      if (and__3438__auto__) {
+    var G__4915__delegate = function(mat01, mat02, more) {
+      var and__3391__auto__ = mat_EQ__QMARK_.call(null, mat01, mat02);
+      if (and__3391__auto__) {
         return cljs.core.apply.call(null, mat_EQ__QMARK_, mat02, more);
       } else {
-        return and__3438__auto__;
+        return and__3391__auto__;
       }
     };
-    var G__4921 = function(mat01, mat02, var_args) {
+    var G__4915 = function(mat01, mat02, var_args) {
       var more = null;
       if (arguments.length > 2) {
         more = cljs.core.array_seq(Array.prototype.slice.call(arguments, 2), 0);
       }
-      return G__4921__delegate.call(this, mat01, mat02, more);
+      return G__4915__delegate.call(this, mat01, mat02, more);
     };
-    G__4921.cljs$lang$maxFixedArity = 2;
-    G__4921.cljs$lang$applyTo = function(arglist__4922) {
-      var mat01 = cljs.core.first(arglist__4922);
-      arglist__4922 = cljs.core.next(arglist__4922);
-      var mat02 = cljs.core.first(arglist__4922);
-      var more = cljs.core.rest(arglist__4922);
-      return G__4921__delegate(mat01, mat02, more);
+    G__4915.cljs$lang$maxFixedArity = 2;
+    G__4915.cljs$lang$applyTo = function(arglist__4916) {
+      var mat01 = cljs.core.first(arglist__4916);
+      arglist__4916 = cljs.core.next(arglist__4916);
+      var mat02 = cljs.core.first(arglist__4916);
+      var more = cljs.core.rest(arglist__4916);
+      return G__4915__delegate(mat01, mat02, more);
     };
-    G__4921.cljs$core$IFn$_invoke$arity$variadic = G__4921__delegate;
-    return G__4921;
+    G__4915.cljs$core$IFn$_invoke$arity$variadic = G__4915__delegate;
+    return G__4915;
   }();
   mat_EQ__QMARK_ = function(mat01, mat02, var_args) {
     var more = var_args;
@@ -31667,9 +33630,9 @@ qgame.utils.math.mat_EQ__QMARK_ = function() {
 }();
 qgame.utils.math.square_QMARK_ = function square_QMARK_(coll) {
   var mat = qgame.utils.math.nested_to_matrix.call(null, coll);
-  var vec__4924 = mat.size();
-  var rows = cljs.core.nth.call(null, vec__4924, 0, null);
-  var cols = cljs.core.nth.call(null, vec__4924, 1, null);
+  var vec__4918 = mat.size();
+  var rows = cljs.core.nth.call(null, vec__4918, 0, null);
+  var cols = cljs.core.nth.call(null, vec__4918, 1, null);
   return cljs.core._EQ_.call(null, rows, cols);
 };
 qgame.utils.math.complex_conjugate = function complex_conjugate(x) {
@@ -31680,9 +33643,9 @@ qgame.utils.math.conjugate_transpose = function conjugate_transpose(mat) {
 };
 qgame.utils.math.unitary_QMARK_ = function unitary_QMARK_(coll) {
   var mat = qgame.utils.math.nested_to_matrix.call(null, coll);
-  var vec__4926 = mat.size();
-  var m = cljs.core.nth.call(null, vec__4926, 0, null);
-  var n = cljs.core.nth.call(null, vec__4926, 1, null);
+  var vec__4920 = mat.size();
+  var m = cljs.core.nth.call(null, vec__4920, 0, null);
+  var n = cljs.core.nth.call(null, vec__4920, 1, null);
   var id_mat = qgame.utils.math.math.eye.call(null, m, n);
   var conj_trans = qgame.utils.math.conjugate_transpose.call(null, mat);
   return qgame.utils.math.mat_EQ__QMARK_.call(null, id_mat, qgame.utils.math.nested_to_matrix.call(null, qgame.utils.math.round.call(null, qgame.utils.math.multiply.call(null, mat, conj_trans), 5)), qgame.utils.math.nested_to_matrix.call(null, qgame.utils.math.round.call(null, qgame.utils.math.multiply.call(null, conj_trans, mat), 5)));
@@ -31694,14 +33657,14 @@ qgame.utils.math.eval_math_string = function eval_math_string(s) {
   return qgame.utils.math.round.call(null, qgame.utils.math.math.eval.call(null, s), 9);
 };
 qgame.utils.math.eigenvalues = function eigenvalues(coll) {
-  var m = clojure.walk.postwalk.call(null, function(x) {
+  var mat = clojure.walk.postwalk.call(null, function(x) {
     if (cljs.core.sequential_QMARK_.call(null, x)) {
       return cljs.core.to_array.call(null, x);
     } else {
       return x;
     }
   }, coll);
-  return qgame.utils.math.numeric.eigen.call(null, m).lambda.x;
+  return cljs.core.vec.call(null, qgame.utils.math.numeric.eig.call(null, mat).lambda.x);
 };
 goog.provide("qgame.utils.general");
 goog.require("cljs.core");
@@ -31999,25 +33962,25 @@ qgame.utils.amplitudes.amplitudes_to_probability = function amplitudes_to_probab
 };
 qgame.utils.amplitudes.qubits_to_amplitude_indices = function qubits_to_amplitude_indices(qubits, tot_num_qubits) {
   var excluded_qubits = cljs.core.remove.call(null, cljs.core.reduce.call(null, cljs.core.conj, cljs.core.PersistentHashSet.EMPTY, qubits), cljs.core.range.call(null, tot_num_qubits));
-  var iter__4167__auto__ = function iter__4843(s__4844) {
+  var iter__4120__auto__ = function iter__4841(s__4842) {
     return new cljs.core.LazySeq(null, function() {
-      var s__4844__$1 = s__4844;
+      var s__4842__$1 = s__4842;
       while (true) {
-        var temp__4092__auto__ = cljs.core.seq.call(null, s__4844__$1);
+        var temp__4092__auto__ = cljs.core.seq.call(null, s__4842__$1);
         if (temp__4092__auto__) {
-          var s__4844__$2 = temp__4092__auto__;
-          if (cljs.core.chunked_seq_QMARK_.call(null, s__4844__$2)) {
-            var c__4165__auto__ = cljs.core.chunk_first.call(null, s__4844__$2);
-            var size__4166__auto__ = cljs.core.count.call(null, c__4165__auto__);
-            var b__4846 = cljs.core.chunk_buffer.call(null, size__4166__auto__);
+          var s__4842__$2 = temp__4092__auto__;
+          if (cljs.core.chunked_seq_QMARK_.call(null, s__4842__$2)) {
+            var c__4118__auto__ = cljs.core.chunk_first.call(null, s__4842__$2);
+            var size__4119__auto__ = cljs.core.count.call(null, c__4118__auto__);
+            var b__4844 = cljs.core.chunk_buffer.call(null, size__4119__auto__);
             if (function() {
-              var i__4845 = 0;
+              var i__4843 = 0;
               while (true) {
-                if (i__4845 < size__4166__auto__) {
-                  var seed_index = cljs.core._nth.call(null, c__4165__auto__, i__4845);
-                  cljs.core.chunk_append.call(null, b__4846, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits));
-                  var G__4847 = i__4845 + 1;
-                  i__4845 = G__4847;
+                if (i__4843 < size__4119__auto__) {
+                  var seed_index = cljs.core._nth.call(null, c__4118__auto__, i__4843);
+                  cljs.core.chunk_append.call(null, b__4844, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits));
+                  var G__4845 = i__4843 + 1;
+                  i__4843 = G__4845;
                   continue;
                 } else {
                   return true;
@@ -32025,13 +33988,13 @@ qgame.utils.amplitudes.qubits_to_amplitude_indices = function qubits_to_amplitud
                 break;
               }
             }()) {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4846), iter__4843.call(null, cljs.core.chunk_rest.call(null, s__4844__$2)));
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4844), iter__4841.call(null, cljs.core.chunk_rest.call(null, s__4842__$2)));
             } else {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4846), null);
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4844), null);
             }
           } else {
-            var seed_index = cljs.core.first.call(null, s__4844__$2);
-            return cljs.core.cons.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits), iter__4843.call(null, cljs.core.rest.call(null, s__4844__$2)));
+            var seed_index = cljs.core.first.call(null, s__4842__$2);
+            return cljs.core.cons.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits), iter__4841.call(null, cljs.core.rest.call(null, s__4842__$2)));
           }
         } else {
           return null;
@@ -32040,7 +34003,7 @@ qgame.utils.amplitudes.qubits_to_amplitude_indices = function qubits_to_amplitud
       }
     }, null, null);
   };
-  return iter__4167__auto__.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [0], null), excluded_qubits));
+  return iter__4120__auto__.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [0], null), excluded_qubits));
 };
 qgame.utils.amplitudes.qubit_state_amplitudes = function qubit_state_amplitudes(amplitudes, qubit, binary_state) {
   var excluded_qubits = cljs.core.remove.call(null, cljs.core.PersistentHashSet.fromArray([qubit], true), cljs.core.range.call(null, qgame.utils.amplitudes.get_num_qubits.call(null, amplitudes)));
@@ -32048,26 +34011,23 @@ qgame.utils.amplitudes.qubit_state_amplitudes = function qubit_state_amplitudes(
   var indices = qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), excluded_qubits);
   return cljs.core.map.call(null, cljs.core.partial.call(null, cljs.core.get, amplitudes), indices);
 };
-qgame.utils.amplitudes.probability_of = function probability_of(p__4848, qubit, binary_state) {
-  var map__4850 = p__4848;
-  var map__4850__$1 = cljs.core.seq_QMARK_.call(null, map__4850) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4850) : map__4850;
-  var amplitudes = cljs.core.get.call(null, map__4850__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
+qgame.utils.amplitudes.probability_of = function probability_of(p__4846, qubit, binary_state) {
+  var map__4848 = p__4846;
+  var map__4848__$1 = cljs.core.seq_QMARK_.call(null, map__4848) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4848) : map__4848;
+  var amplitudes = cljs.core.get.call(null, map__4848__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
   var sub_amplitudes = qgame.utils.amplitudes.qubit_state_amplitudes.call(null, amplitudes, qubit, binary_state);
   return qgame.utils.amplitudes.amplitudes_to_probability.call(null, sub_amplitudes);
 };
-qgame.utils.amplitudes.phase_of = function phase_of(p__4851, qubit, binary_state) {
-  var map__4853 = p__4851;
-  var map__4853__$1 = cljs.core.seq_QMARK_.call(null, map__4853) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4853) : map__4853;
-  var amplitudes = cljs.core.get.call(null, map__4853__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
+qgame.utils.amplitudes.phase_of = function phase_of(p__4849, qubit, binary_state) {
+  var map__4851 = p__4849;
+  var map__4851__$1 = cljs.core.seq_QMARK_.call(null, map__4851) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4851) : map__4851;
+  var amplitudes = cljs.core.get.call(null, map__4851__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
   var sub_amplitudes = qgame.utils.amplitudes.qubit_state_amplitudes.call(null, amplitudes, qubit, binary_state);
   var amplitude = cljs.core.reduce.call(null, qgame.utils.math.add, sub_amplitudes);
   return qgame.utils.math.to_phase.call(null, amplitude);
 };
 qgame.utils.amplitudes.substate_to_index = function substate_to_index(substate) {
-  return cljs.core.reduce_kv.call(null, function(idx, p__4856) {
-    var vec__4857 = p__4856;
-    var qubit = cljs.core.nth.call(null, vec__4857, 0, null);
-    var state = cljs.core.nth.call(null, vec__4857, 1, null);
+  return cljs.core.reduce_kv.call(null, function(idx, qubit, state) {
     if (state === 0) {
       return idx;
     } else {
@@ -32075,37 +34035,39 @@ qgame.utils.amplitudes.substate_to_index = function substate_to_index(substate) 
     }
   }, 0, substate);
 };
-qgame.utils.amplitudes.combine = function combine(substate, substate_STAR_) {
+qgame.utils.amplitudes.combine = function combine(amplitudes, substate, substate_STAR_) {
   var idx = qgame.utils.amplitudes.substate_to_index.call(null, substate);
-  var idx_STAR_ = qgame.utils.math.complex_conjugate.call(null, qgame.utils.amplitudes.substate_to_index.call(null, substate_STAR_));
-  return qgame.utils.math.mult.call(null, idx, idx_STAR_);
+  var idx_STAR_ = qgame.utils.amplitudes.substate_to_index.call(null, substate_STAR_);
+  var amp = cljs.core.get.call(null, amplitudes, idx);
+  var amp_STAR_ = qgame.utils.math.complex_conjugate.call(null, cljs.core.get.call(null, amplitudes, idx_STAR_));
+  return qgame.utils.math.multiply.call(null, amp, amp_STAR_);
 };
 qgame.utils.amplitudes.all_combinations = function all_combinations(qubits) {
   var all_zero_state = cljs.core.zipmap.call(null, qubits, cljs.core.repeat.call(null, 0));
   var all_one_state = cljs.core.zipmap.call(null, qubits, cljs.core.repeat.call(null, 1));
   return qgame.utils.general.itermap.call(null, cljs.core.conj, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [all_zero_state], null), all_one_state);
 };
-qgame.utils.amplitudes.reduced_entry = function reduced_entry(partial_substate, partial_substate_STAR_, excluded_qubits) {
+qgame.utils.amplitudes.reduced_entry = function reduced_entry(amplitudes, partial_substate, partial_substate_STAR_, excluded_qubits) {
   var sub_amplitudes = function() {
-    var iter__4167__auto__ = function iter__4862(s__4863) {
+    var iter__4120__auto__ = function iter__4856(s__4857) {
       return new cljs.core.LazySeq(null, function() {
-        var s__4863__$1 = s__4863;
+        var s__4857__$1 = s__4857;
         while (true) {
-          var temp__4092__auto__ = cljs.core.seq.call(null, s__4863__$1);
+          var temp__4092__auto__ = cljs.core.seq.call(null, s__4857__$1);
           if (temp__4092__auto__) {
-            var s__4863__$2 = temp__4092__auto__;
-            if (cljs.core.chunked_seq_QMARK_.call(null, s__4863__$2)) {
-              var c__4165__auto__ = cljs.core.chunk_first.call(null, s__4863__$2);
-              var size__4166__auto__ = cljs.core.count.call(null, c__4165__auto__);
-              var b__4865 = cljs.core.chunk_buffer.call(null, size__4166__auto__);
+            var s__4857__$2 = temp__4092__auto__;
+            if (cljs.core.chunked_seq_QMARK_.call(null, s__4857__$2)) {
+              var c__4118__auto__ = cljs.core.chunk_first.call(null, s__4857__$2);
+              var size__4119__auto__ = cljs.core.count.call(null, c__4118__auto__);
+              var b__4859 = cljs.core.chunk_buffer.call(null, size__4119__auto__);
               if (function() {
-                var i__4864 = 0;
+                var i__4858 = 0;
                 while (true) {
-                  if (i__4864 < size__4166__auto__) {
-                    var remaining_substate = cljs.core._nth.call(null, c__4165__auto__, i__4864);
-                    cljs.core.chunk_append.call(null, b__4865, qgame.utils.amplitudes.combine.call(null, cljs.core.merge.call(null, partial_substate, remaining_substate), cljs.core.merge.call(null, partial_substate_STAR_, remaining_substate)));
-                    var G__4866 = i__4864 + 1;
-                    i__4864 = G__4866;
+                  if (i__4858 < size__4119__auto__) {
+                    var remaining_substate = cljs.core._nth.call(null, c__4118__auto__, i__4858);
+                    cljs.core.chunk_append.call(null, b__4859, qgame.utils.amplitudes.combine.call(null, amplitudes, cljs.core.merge.call(null, partial_substate, remaining_substate), cljs.core.merge.call(null, partial_substate_STAR_, remaining_substate)));
+                    var G__4860 = i__4858 + 1;
+                    i__4858 = G__4860;
                     continue;
                   } else {
                     return true;
@@ -32113,13 +34075,13 @@ qgame.utils.amplitudes.reduced_entry = function reduced_entry(partial_substate, 
                   break;
                 }
               }()) {
-                return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4865), iter__4862.call(null, cljs.core.chunk_rest.call(null, s__4863__$2)));
+                return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4859), iter__4856.call(null, cljs.core.chunk_rest.call(null, s__4857__$2)));
               } else {
-                return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4865), null);
+                return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4859), null);
               }
             } else {
-              var remaining_substate = cljs.core.first.call(null, s__4863__$2);
-              return cljs.core.cons.call(null, qgame.utils.amplitudes.combine.call(null, cljs.core.merge.call(null, partial_substate, remaining_substate), cljs.core.merge.call(null, partial_substate_STAR_, remaining_substate)), iter__4862.call(null, cljs.core.rest.call(null, s__4863__$2)));
+              var remaining_substate = cljs.core.first.call(null, s__4857__$2);
+              return cljs.core.cons.call(null, qgame.utils.amplitudes.combine.call(null, amplitudes, cljs.core.merge.call(null, partial_substate, remaining_substate), cljs.core.merge.call(null, partial_substate_STAR_, remaining_substate)), iter__4856.call(null, cljs.core.rest.call(null, s__4857__$2)));
             }
           } else {
             return null;
@@ -32128,51 +34090,51 @@ qgame.utils.amplitudes.reduced_entry = function reduced_entry(partial_substate, 
         }
       }, null, null);
     };
-    return iter__4167__auto__.call(null, qgame.utils.amplitudes.all_combinations.call(null, excluded_qubits));
+    return iter__4120__auto__.call(null, qgame.utils.amplitudes.all_combinations.call(null, excluded_qubits));
   }();
   return cljs.core.reduce.call(null, qgame.utils.math.add, sub_amplitudes);
 };
 qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(amplitudes, qubits) {
   var all_combinations = qgame.utils.amplitudes.all_combinations.call(null, qubits);
   var excluded_qubits = cljs.core.remove.call(null, cljs.core.set.call(null, qubits), cljs.core.range.call(null, qgame.utils.amplitudes.get_num_qubits.call(null, amplitudes)));
-  var iter__4167__auto__ = function iter__4887(s__4888) {
+  var iter__4120__auto__ = function iter__4881(s__4882) {
     return new cljs.core.LazySeq(null, function() {
-      var s__4888__$1 = s__4888;
+      var s__4882__$1 = s__4882;
       while (true) {
-        var temp__4092__auto__ = cljs.core.seq.call(null, s__4888__$1);
+        var temp__4092__auto__ = cljs.core.seq.call(null, s__4882__$1);
         if (temp__4092__auto__) {
-          var s__4888__$2 = temp__4092__auto__;
-          if (cljs.core.chunked_seq_QMARK_.call(null, s__4888__$2)) {
-            var c__4165__auto__ = cljs.core.chunk_first.call(null, s__4888__$2);
-            var size__4166__auto__ = cljs.core.count.call(null, c__4165__auto__);
-            var b__4890 = cljs.core.chunk_buffer.call(null, size__4166__auto__);
+          var s__4882__$2 = temp__4092__auto__;
+          if (cljs.core.chunked_seq_QMARK_.call(null, s__4882__$2)) {
+            var c__4118__auto__ = cljs.core.chunk_first.call(null, s__4882__$2);
+            var size__4119__auto__ = cljs.core.count.call(null, c__4118__auto__);
+            var b__4884 = cljs.core.chunk_buffer.call(null, size__4119__auto__);
             if (function() {
-              var i__4889 = 0;
+              var i__4883 = 0;
               while (true) {
-                if (i__4889 < size__4166__auto__) {
-                  var row = cljs.core._nth.call(null, c__4165__auto__, i__4889);
-                  cljs.core.chunk_append.call(null, b__4890, function() {
-                    var iter__4167__auto__ = function(i__4889, row, c__4165__auto__, size__4166__auto__, b__4890, s__4888__$2, temp__4092__auto__) {
-                      return function iter__4899(s__4900) {
-                        return new cljs.core.LazySeq(null, function(i__4889, row, c__4165__auto__, size__4166__auto__, b__4890, s__4888__$2, temp__4092__auto__) {
+                if (i__4883 < size__4119__auto__) {
+                  var row = cljs.core._nth.call(null, c__4118__auto__, i__4883);
+                  cljs.core.chunk_append.call(null, b__4884, function() {
+                    var iter__4120__auto__ = function(i__4883, row, c__4118__auto__, size__4119__auto__, b__4884, s__4882__$2, temp__4092__auto__) {
+                      return function iter__4893(s__4894) {
+                        return new cljs.core.LazySeq(null, function(i__4883, row, c__4118__auto__, size__4119__auto__, b__4884, s__4882__$2, temp__4092__auto__) {
                           return function() {
-                            var s__4900__$1 = s__4900;
+                            var s__4894__$1 = s__4894;
                             while (true) {
-                              var temp__4092__auto____$1 = cljs.core.seq.call(null, s__4900__$1);
+                              var temp__4092__auto____$1 = cljs.core.seq.call(null, s__4894__$1);
                               if (temp__4092__auto____$1) {
-                                var s__4900__$2 = temp__4092__auto____$1;
-                                if (cljs.core.chunked_seq_QMARK_.call(null, s__4900__$2)) {
-                                  var c__4165__auto____$1 = cljs.core.chunk_first.call(null, s__4900__$2);
-                                  var size__4166__auto____$1 = cljs.core.count.call(null, c__4165__auto____$1);
-                                  var b__4902 = cljs.core.chunk_buffer.call(null, size__4166__auto____$1);
+                                var s__4894__$2 = temp__4092__auto____$1;
+                                if (cljs.core.chunked_seq_QMARK_.call(null, s__4894__$2)) {
+                                  var c__4118__auto____$1 = cljs.core.chunk_first.call(null, s__4894__$2);
+                                  var size__4119__auto____$1 = cljs.core.count.call(null, c__4118__auto____$1);
+                                  var b__4896 = cljs.core.chunk_buffer.call(null, size__4119__auto____$1);
                                   if (function() {
-                                    var i__4901 = 0;
+                                    var i__4895 = 0;
                                     while (true) {
-                                      if (i__4901 < size__4166__auto____$1) {
-                                        var col = cljs.core._nth.call(null, c__4165__auto____$1, i__4901);
-                                        cljs.core.chunk_append.call(null, b__4902, qgame.utils.amplitudes.reduced_entry.call(null, row, col, excluded_qubits));
-                                        var G__4907 = i__4901 + 1;
-                                        i__4901 = G__4907;
+                                      if (i__4895 < size__4119__auto____$1) {
+                                        var col = cljs.core._nth.call(null, c__4118__auto____$1, i__4895);
+                                        cljs.core.chunk_append.call(null, b__4896, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits));
+                                        var G__4901 = i__4895 + 1;
+                                        i__4895 = G__4901;
                                         continue;
                                       } else {
                                         return true;
@@ -32180,13 +34142,13 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
                                       break;
                                     }
                                   }()) {
-                                    return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4902), iter__4899.call(null, cljs.core.chunk_rest.call(null, s__4900__$2)));
+                                    return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4896), iter__4893.call(null, cljs.core.chunk_rest.call(null, s__4894__$2)));
                                   } else {
-                                    return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4902), null);
+                                    return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4896), null);
                                   }
                                 } else {
-                                  var col = cljs.core.first.call(null, s__4900__$2);
-                                  return cljs.core.cons.call(null, qgame.utils.amplitudes.reduced_entry.call(null, row, col, excluded_qubits), iter__4899.call(null, cljs.core.rest.call(null, s__4900__$2)));
+                                  var col = cljs.core.first.call(null, s__4894__$2);
+                                  return cljs.core.cons.call(null, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits), iter__4893.call(null, cljs.core.rest.call(null, s__4894__$2)));
                                 }
                               } else {
                                 return null;
@@ -32194,13 +34156,13 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
                               break;
                             }
                           };
-                        }(i__4889, row, c__4165__auto__, size__4166__auto__, b__4890, s__4888__$2, temp__4092__auto__), null, null);
+                        }(i__4883, row, c__4118__auto__, size__4119__auto__, b__4884, s__4882__$2, temp__4092__auto__), null, null);
                       };
-                    }(i__4889, row, c__4165__auto__, size__4166__auto__, b__4890, s__4888__$2, temp__4092__auto__);
-                    return iter__4167__auto__.call(null, all_combinations);
+                    }(i__4883, row, c__4118__auto__, size__4119__auto__, b__4884, s__4882__$2, temp__4092__auto__);
+                    return iter__4120__auto__.call(null, all_combinations);
                   }());
-                  var G__4908 = i__4889 + 1;
-                  i__4889 = G__4908;
+                  var G__4902 = i__4883 + 1;
+                  i__4883 = G__4902;
                   continue;
                 } else {
                   return true;
@@ -32208,34 +34170,34 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
                 break;
               }
             }()) {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4890), iter__4887.call(null, cljs.core.chunk_rest.call(null, s__4888__$2)));
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4884), iter__4881.call(null, cljs.core.chunk_rest.call(null, s__4882__$2)));
             } else {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4890), null);
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4884), null);
             }
           } else {
-            var row = cljs.core.first.call(null, s__4888__$2);
+            var row = cljs.core.first.call(null, s__4882__$2);
             return cljs.core.cons.call(null, function() {
-              var iter__4167__auto__ = function(row, s__4888__$2, temp__4092__auto__) {
-                return function iter__4903(s__4904) {
-                  return new cljs.core.LazySeq(null, function(row, s__4888__$2, temp__4092__auto__) {
+              var iter__4120__auto__ = function(row, s__4882__$2, temp__4092__auto__) {
+                return function iter__4897(s__4898) {
+                  return new cljs.core.LazySeq(null, function(row, s__4882__$2, temp__4092__auto__) {
                     return function() {
-                      var s__4904__$1 = s__4904;
+                      var s__4898__$1 = s__4898;
                       while (true) {
-                        var temp__4092__auto____$1 = cljs.core.seq.call(null, s__4904__$1);
+                        var temp__4092__auto____$1 = cljs.core.seq.call(null, s__4898__$1);
                         if (temp__4092__auto____$1) {
-                          var s__4904__$2 = temp__4092__auto____$1;
-                          if (cljs.core.chunked_seq_QMARK_.call(null, s__4904__$2)) {
-                            var c__4165__auto__ = cljs.core.chunk_first.call(null, s__4904__$2);
-                            var size__4166__auto__ = cljs.core.count.call(null, c__4165__auto__);
-                            var b__4906 = cljs.core.chunk_buffer.call(null, size__4166__auto__);
+                          var s__4898__$2 = temp__4092__auto____$1;
+                          if (cljs.core.chunked_seq_QMARK_.call(null, s__4898__$2)) {
+                            var c__4118__auto__ = cljs.core.chunk_first.call(null, s__4898__$2);
+                            var size__4119__auto__ = cljs.core.count.call(null, c__4118__auto__);
+                            var b__4900 = cljs.core.chunk_buffer.call(null, size__4119__auto__);
                             if (function() {
-                              var i__4905 = 0;
+                              var i__4899 = 0;
                               while (true) {
-                                if (i__4905 < size__4166__auto__) {
-                                  var col = cljs.core._nth.call(null, c__4165__auto__, i__4905);
-                                  cljs.core.chunk_append.call(null, b__4906, qgame.utils.amplitudes.reduced_entry.call(null, row, col, excluded_qubits));
-                                  var G__4909 = i__4905 + 1;
-                                  i__4905 = G__4909;
+                                if (i__4899 < size__4119__auto__) {
+                                  var col = cljs.core._nth.call(null, c__4118__auto__, i__4899);
+                                  cljs.core.chunk_append.call(null, b__4900, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits));
+                                  var G__4903 = i__4899 + 1;
+                                  i__4899 = G__4903;
                                   continue;
                                 } else {
                                   return true;
@@ -32243,13 +34205,13 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
                                 break;
                               }
                             }()) {
-                              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4906), iter__4903.call(null, cljs.core.chunk_rest.call(null, s__4904__$2)));
+                              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4900), iter__4897.call(null, cljs.core.chunk_rest.call(null, s__4898__$2)));
                             } else {
-                              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4906), null);
+                              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4900), null);
                             }
                           } else {
-                            var col = cljs.core.first.call(null, s__4904__$2);
-                            return cljs.core.cons.call(null, qgame.utils.amplitudes.reduced_entry.call(null, row, col, excluded_qubits), iter__4903.call(null, cljs.core.rest.call(null, s__4904__$2)));
+                            var col = cljs.core.first.call(null, s__4898__$2);
+                            return cljs.core.cons.call(null, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits), iter__4897.call(null, cljs.core.rest.call(null, s__4898__$2)));
                           }
                         } else {
                           return null;
@@ -32257,11 +34219,11 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
                         break;
                       }
                     };
-                  }(row, s__4888__$2, temp__4092__auto__), null, null);
+                  }(row, s__4882__$2, temp__4092__auto__), null, null);
                 };
-              }(row, s__4888__$2, temp__4092__auto__);
-              return iter__4167__auto__.call(null, all_combinations);
-            }(), iter__4887.call(null, cljs.core.rest.call(null, s__4888__$2)));
+              }(row, s__4882__$2, temp__4092__auto__);
+              return iter__4120__auto__.call(null, all_combinations);
+            }(), iter__4881.call(null, cljs.core.rest.call(null, s__4882__$2)));
           }
         } else {
           return null;
@@ -32270,21 +34232,21 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
       }
     }, null, null);
   };
-  return iter__4167__auto__.call(null, all_combinations);
+  return iter__4120__auto__.call(null, all_combinations);
 };
-qgame.utils.amplitudes.tangle_of = function tangle_of(p__4910, qubit_a, qubit_b) {
-  var map__4912 = p__4910;
-  var map__4912__$1 = cljs.core.seq_QMARK_.call(null, map__4912) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4912) : map__4912;
-  var amplitudes = cljs.core.get.call(null, map__4912__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
+qgame.utils.amplitudes.tangle_of = function tangle_of(p__4904, qubit_a, qubit_b) {
+  var map__4906 = p__4904;
+  var map__4906__$1 = cljs.core.seq_QMARK_.call(null, map__4906) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4906) : map__4906;
+  var amplitudes = cljs.core.get.call(null, map__4906__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
   var rho_ab = qgame.utils.amplitudes.reduced_density_matrix.call(null, amplitudes, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [qubit_a, qubit_b], null));
   var non_complex = qgame.utils.math.abs.call(null, rho_ab);
   var eigenvals = qgame.utils.math.eigenvalues.call(null, non_complex);
   var lambdas = qgame.utils.math.sqrt.call(null, eigenvals);
   var diff = cljs.core.reduce.call(null, cljs.core._, cljs.core.sort.call(null, cljs.core._GT_, lambdas));
   return qgame.utils.math.pow.call(null, function() {
-    var x__3757__auto__ = diff;
-    var y__3758__auto__ = 0;
-    return x__3757__auto__ > y__3758__auto__ ? x__3757__auto__ : y__3758__auto__;
+    var x__3710__auto__ = diff;
+    var y__3711__auto__ = 0;
+    return x__3710__auto__ > y__3711__auto__ ? x__3710__auto__ : y__3711__auto__;
   }(), 2);
 };
 goog.provide("qgame.simulator.flow");
@@ -32754,18 +34716,18 @@ qgame.simulator.parser.parse_name_rule = function parse_name_rule(bite, nm_text,
     return qgame.simulator.error.log_and_return_error_BANG_.call(null, "Name is not a word", rule);
   }
 };
-qgame.simulator.parser.parse_bite = function parse_bite(p__5856) {
-  var map__5859 = p__5856;
-  var map__5859__$1 = cljs.core.seq_QMARK_.call(null, map__5859) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5859) : map__5859;
-  var bite = map__5859__$1;
-  var text = cljs.core.get.call(null, map__5859__$1, new cljs.core.Keyword(null, "text", "text", 1017460895));
-  var temp__4090__auto__ = function(p1__5855_SHARP_) {
-    return cljs.core._EQ_.call(null, cljs.core.count.call(null, p1__5855_SHARP_), 1);
+qgame.simulator.parser.parse_bite = function parse_bite(p__4965) {
+  var map__4968 = p__4965;
+  var map__4968__$1 = cljs.core.seq_QMARK_.call(null, map__4968) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4968) : map__4968;
+  var bite = map__4968__$1;
+  var text = cljs.core.get.call(null, map__4968__$1, new cljs.core.Keyword(null, "text", "text", 1017460895));
+  var temp__4090__auto__ = function(p1__4964_SHARP_) {
+    return cljs.core._EQ_.call(null, cljs.core.count.call(null, p1__4964_SHARP_), 1);
   }.call(null, clojure.string.split.call(null, text, /:/, 2)) ? null : clojure.string.split.call(null, text, /:/, 2);
   if (cljs.core.truth_(temp__4090__auto__)) {
-    var vec__5860 = temp__4090__auto__;
-    var nm = cljs.core.nth.call(null, vec__5860, 0, null);
-    var target = cljs.core.nth.call(null, vec__5860, 1, null);
+    var vec__4969 = temp__4090__auto__;
+    var nm = cljs.core.nth.call(null, vec__4969, 0, null);
+    var target = cljs.core.nth.call(null, vec__4969, 1, null);
     if (cljs.core._EQ_.call(null, nm, "forget")) {
       return qgame.simulator.parser.parse_forget_rule.call(null, bite, target);
     } else {
@@ -32785,8 +34747,8 @@ qgame.simulator.parser.replace_named = function replace_named(name_map, s) {
 qgame.simulator.parser.safe_eval_math = function safe_eval_math(s) {
   try {
     return qgame.utils.math.eval_math_string.call(null, s);
-  } catch (e5862) {
-    var _ = e5862;
+  } catch (e4971) {
+    var _ = e4971;
     return null;
   }
 };
@@ -32832,23 +34794,23 @@ qgame.simulator.parser.parser_execute_rule = function parser_execute_rule(name_m
     }
   }
 };
-qgame.simulator.parser.execute_parser_rules = function execute_parser_rules(p__5863, bite) {
-  var map__5866 = p__5863;
-  var map__5866__$1 = cljs.core.seq_QMARK_.call(null, map__5866) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5866) : map__5866;
-  var new_bites = cljs.core.get.call(null, map__5866__$1, new cljs.core.Keyword(null, "new-bites", "new-bites", 3608376192));
-  var name_map = cljs.core.get.call(null, map__5866__$1, new cljs.core.Keyword(null, "name-map", "name-map", 2853325452));
+qgame.simulator.parser.execute_parser_rules = function execute_parser_rules(p__4972, bite) {
+  var map__4975 = p__4972;
+  var map__4975__$1 = cljs.core.seq_QMARK_.call(null, map__4975) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4975) : map__4975;
+  var new_bites = cljs.core.get.call(null, map__4975__$1, new cljs.core.Keyword(null, "new-bites", "new-bites", 3608376192));
+  var name_map = cljs.core.get.call(null, map__4975__$1, new cljs.core.Keyword(null, "name-map", "name-map", 2853325452));
   var typed_bite = qgame.simulator.parser.parse_bite.call(null, bite);
-  var vec__5867 = cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(typed_bite)) ? qgame.simulator.parser.parser_execute_token.call(null, name_map, typed_bite) : qgame.simulator.parser.parser_execute_rule.call(null, name_map, typed_bite);
-  var name_map_STAR_ = cljs.core.nth.call(null, vec__5867, 0, null);
-  var bite_STAR_ = cljs.core.nth.call(null, vec__5867, 1, null);
+  var vec__4976 = cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(typed_bite)) ? qgame.simulator.parser.parser_execute_token.call(null, name_map, typed_bite) : qgame.simulator.parser.parser_execute_rule.call(null, name_map, typed_bite);
+  var name_map_STAR_ = cljs.core.nth.call(null, vec__4976, 0, null);
+  var bite_STAR_ = cljs.core.nth.call(null, vec__4976, 1, null);
   return new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "name-map", "name-map", 2853325452), name_map_STAR_, new cljs.core.Keyword(null, "new-bites", "new-bites", 3608376192), cljs.core.conj.call(null, new_bites, bite_STAR_)], null);
 };
 qgame.simulator.parser.qubit_pattern = /\b(?:[A-T]|1?[0-9])\b/;
-qgame.simulator.parser.parse_qubit = function parse_qubit(p__5868) {
-  var map__5870 = p__5868;
-  var map__5870__$1 = cljs.core.seq_QMARK_.call(null, map__5870) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5870) : map__5870;
-  var token = map__5870__$1;
-  var post_rules = cljs.core.get.call(null, map__5870__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
+qgame.simulator.parser.parse_qubit = function parse_qubit(p__4977) {
+  var map__4979 = p__4977;
+  var map__4979__$1 = cljs.core.seq_QMARK_.call(null, map__4979) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4979) : map__4979;
+  var token = map__4979__$1;
+  var post_rules = cljs.core.get.call(null, map__4979__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
   var temp__4090__auto__ = qgame.simulator.parser.match_only.call(null, qgame.simulator.parser.qubit_pattern, post_rules);
   if (cljs.core.truth_(temp__4090__auto__)) {
     var qubit_str = temp__4090__auto__;
@@ -32860,11 +34822,11 @@ qgame.simulator.parser.parse_qubit = function parse_qubit(p__5868) {
   }
 };
 qgame.simulator.parser.param_pattern = /\b\d+\.?\d*\b/;
-qgame.simulator.parser.parse_param = function parse_param(p__5871) {
-  var map__5873 = p__5871;
-  var map__5873__$1 = cljs.core.seq_QMARK_.call(null, map__5873) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5873) : map__5873;
-  var token = map__5873__$1;
-  var post_rules = cljs.core.get.call(null, map__5873__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
+qgame.simulator.parser.parse_param = function parse_param(p__4980) {
+  var map__4982 = p__4980;
+  var map__4982__$1 = cljs.core.seq_QMARK_.call(null, map__4982) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4982) : map__4982;
+  var token = map__4982__$1;
+  var post_rules = cljs.core.get.call(null, map__4982__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
   var temp__4090__auto__ = qgame.simulator.parser.match_only.call(null, qgame.simulator.parser.param_pattern, post_rules);
   if (cljs.core.truth_(temp__4090__auto__)) {
     var param_str = temp__4090__auto__;
@@ -32875,11 +34837,11 @@ qgame.simulator.parser.parse_param = function parse_param(p__5871) {
   }
 };
 qgame.simulator.parser.bit_pattern = /\b[01]\b/;
-qgame.simulator.parser.parse_bit = function parse_bit(p__5874) {
-  var map__5876 = p__5874;
-  var map__5876__$1 = cljs.core.seq_QMARK_.call(null, map__5876) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5876) : map__5876;
-  var token = map__5876__$1;
-  var post_rules = cljs.core.get.call(null, map__5876__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
+qgame.simulator.parser.parse_bit = function parse_bit(p__4983) {
+  var map__4985 = p__4983;
+  var map__4985__$1 = cljs.core.seq_QMARK_.call(null, map__4985) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4985) : map__4985;
+  var token = map__4985__$1;
+  var post_rules = cljs.core.get.call(null, map__4985__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
   var temp__4092__auto__ = qgame.simulator.parser.match_only.call(null, qgame.simulator.parser.bit_pattern, post_rules);
   if (cljs.core.truth_(temp__4092__auto__)) {
     var bit_str = temp__4092__auto__;
@@ -32889,8 +34851,8 @@ qgame.simulator.parser.parse_bit = function parse_bit(p__5874) {
   }
 };
 qgame.simulator.parser.taste = function taste(parse_with, bite) {
-  var temp__4090__auto__ = function(p1__5877_SHARP_) {
-    return cljs.core.not_EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(p1__5877_SHARP_));
+  var temp__4090__auto__ = function(p1__4986_SHARP_) {
+    return cljs.core.not_EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(p1__4986_SHARP_));
   }.call(null, bite) ? null : bite;
   if (cljs.core.truth_(temp__4090__auto__)) {
     var token = temp__4090__auto__;
@@ -32919,9 +34881,9 @@ qgame.simulator.parser.swallow = function() {
       return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.List.EMPTY, bites], null);
     } else {
       if (n <= cljs.core.count.call(null, bites)) {
-        var vec__5879 = cljs.core.split_at.call(null, n, bites);
-        var to_taste = cljs.core.nth.call(null, vec__5879, 0, null);
-        var bites_ = cljs.core.nth.call(null, vec__5879, 1, null);
+        var vec__4988 = cljs.core.split_at.call(null, n, bites);
+        var to_taste = cljs.core.nth.call(null, vec__4988, 0, null);
+        var bites_ = cljs.core.nth.call(null, vec__4988, 1, null);
         return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.map.call(null, cljs.core.partial.call(null, qgame.simulator.parser.taste, parse_with), to_taste), bites_], null);
       } else {
         return null;
@@ -32943,9 +34905,9 @@ qgame.simulator.parser.swallow = function() {
 }();
 qgame.simulator.parser.package_parse_time = function package_parse_time(fnc, bites) {
   if (cljs.core._EQ_.call(null, cljs.core.get_in.call(null, fnc, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "fn-meta", "fn-meta", 4539079516), new cljs.core.Keyword(null, "name", "name", 1017277949)], null)), "with_oracle")) {
-    var vec__5881 = qgame.simulator.parser.swallow.call(null, qgame.simulator.parser.parse_bit, bites);
-    var swallowed = cljs.core.nth.call(null, vec__5881, 0, null);
-    var bites_ = cljs.core.nth.call(null, vec__5881, 1, null);
+    var vec__4990 = qgame.simulator.parser.swallow.call(null, qgame.simulator.parser.parse_bit, bites);
+    var swallowed = cljs.core.nth.call(null, vec__4990, 0, null);
+    var bites_ = cljs.core.nth.call(null, vec__4990, 1, null);
     var oracle = cljs.core.apply.call(null, (new cljs.core.Keyword(null, "caller", "caller", 3941096189)).cljs$core$IFn$_invoke$arity$1(fnc), cljs.core.map.call(null, new cljs.core.Keyword(null, "value", "value", 1125876963), swallowed));
     cljs.core.swap_BANG_.call(null, qgame.simulator.shared.canonical_functions, cljs.core.assoc, "oracle", oracle);
     return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [null, bites_], null);
@@ -32954,25 +34916,25 @@ qgame.simulator.parser.package_parse_time = function package_parse_time(fnc, bit
     return qgame.simulator.error.log_and_return_error_BANG_.call(null, "Uncrecognized parse time function", fnc);
   }
 };
-qgame.simulator.parser.package_expression = function package_expression(p__5882, bites) {
-  var map__5886 = p__5882;
-  var map__5886__$1 = cljs.core.seq_QMARK_.call(null, map__5886) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5886) : map__5886;
-  var fnc = map__5886__$1;
-  var param_names = cljs.core.get.call(null, map__5886__$1, new cljs.core.Keyword(null, "param-names", "param-names", 740923770));
-  var num_qubits = cljs.core.get.call(null, map__5886__$1, new cljs.core.Keyword(null, "num-qubits", "num-qubits", 1175408835));
+qgame.simulator.parser.package_expression = function package_expression(p__4991, bites) {
+  var map__4995 = p__4991;
+  var map__4995__$1 = cljs.core.seq_QMARK_.call(null, map__4995) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4995) : map__4995;
+  var fnc = map__4995__$1;
+  var param_names = cljs.core.get.call(null, map__4995__$1, new cljs.core.Keyword(null, "param-names", "param-names", 740923770));
+  var num_qubits = cljs.core.get.call(null, map__4995__$1, new cljs.core.Keyword(null, "num-qubits", "num-qubits", 1175408835));
   if (cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "ParseTime", "ParseTime", 1184785266), cljs.core.get_in.call(null, fnc, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "fn-meta", "fn-meta", 4539079516), new cljs.core.Keyword(null, "type", "type", 1017479852)], null)))) {
     return qgame.simulator.parser.package_parse_time.call(null, fnc, bites);
   } else {
     var temp__4090__auto__ = qgame.simulator.parser.swallow.call(null, num_qubits, qgame.simulator.parser.parse_qubit, bites);
     if (cljs.core.truth_(temp__4090__auto__)) {
-      var vec__5887 = temp__4090__auto__;
-      var qubits = cljs.core.nth.call(null, vec__5887, 0, null);
-      var bites_ = cljs.core.nth.call(null, vec__5887, 1, null);
+      var vec__4996 = temp__4090__auto__;
+      var qubits = cljs.core.nth.call(null, vec__4996, 0, null);
+      var bites_ = cljs.core.nth.call(null, vec__4996, 1, null);
       var temp__4090__auto____$1 = qgame.simulator.parser.swallow.call(null, cljs.core.count.call(null, param_names), qgame.simulator.parser.parse_param, bites_);
       if (cljs.core.truth_(temp__4090__auto____$1)) {
-        var vec__5888 = temp__4090__auto____$1;
-        var params = cljs.core.nth.call(null, vec__5888, 0, null);
-        var bites__ = cljs.core.nth.call(null, vec__5888, 1, null);
+        var vec__4997 = temp__4090__auto____$1;
+        var params = cljs.core.nth.call(null, vec__4997, 0, null);
+        var bites__ = cljs.core.nth.call(null, vec__4997, 1, null);
         var expression = cljs.core.assoc.call(null, fnc, new cljs.core.Keyword(null, "type", "type", 1017479852), new cljs.core.Keyword(null, "Expression", "Expression", 1211916842), new cljs.core.Keyword(null, "qubits", "qubits", 4360074396), qubits, new cljs.core.Keyword(null, "params", "params", 4313443576), params);
         return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [expression, bites__], null);
       } else {
@@ -32990,30 +34952,30 @@ qgame.simulator.parser.parse_expressions = function() {
   var parse_expressions__1 = function(bites) {
     return parse_expressions.call(null, cljs.core.PersistentVector.EMPTY, bites);
   };
-  var parse_expressions__2 = function(new_program, p__5890) {
+  var parse_expressions__2 = function(new_program, p__4999) {
     while (true) {
-      var vec__5894 = p__5890;
-      var bite = cljs.core.nth.call(null, vec__5894, 0, null);
-      var remaining = cljs.core.nthnext.call(null, vec__5894, 1);
-      var bites = vec__5894;
+      var vec__5003 = p__4999;
+      var bite = cljs.core.nth.call(null, vec__5003, 0, null);
+      var remaining = cljs.core.nthnext.call(null, vec__5003, 1);
+      var bites = vec__5003;
       if (cljs.core.empty_QMARK_.call(null, bites)) {
         return new_program;
       } else {
-        var vec__5895 = function() {
-          var temp__4090__auto__ = function(new_program, p__5890) {
-            return function(p1__5889_SHARP_) {
-              return cljs.core.not_EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(p1__5889_SHARP_));
+        var vec__5004 = function() {
+          var temp__4090__auto__ = function(new_program, p__4999) {
+            return function(p1__4998_SHARP_) {
+              return cljs.core.not_EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(p1__4998_SHARP_));
             };
-          }(new_program, p__5890).call(null, bite) ? null : bite;
+          }(new_program, p__4999).call(null, bite) ? null : bite;
           if (cljs.core.truth_(temp__4090__auto__)) {
             var token = temp__4090__auto__;
             var temp__4090__auto____$1 = cljs.core.get.call(null, cljs.core.deref.call(null, qgame.simulator.shared.canonical_functions), (new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956)).cljs$core$IFn$_invoke$arity$1(token));
             if (cljs.core.truth_(temp__4090__auto____$1)) {
               var fnc = temp__4090__auto____$1;
               var fnc_PLUS_ = cljs.core.merge.call(null, token, fnc);
-              var vec__5896 = qgame.simulator.parser.package_expression.call(null, fnc_PLUS_, remaining);
-              var expression = cljs.core.nth.call(null, vec__5896, 0, null);
-              var remaining_ = cljs.core.nth.call(null, vec__5896, 1, null);
+              var vec__5005 = qgame.simulator.parser.package_expression.call(null, fnc_PLUS_, remaining);
+              var expression = cljs.core.nth.call(null, vec__5005, 0, null);
+              var remaining_ = cljs.core.nth.call(null, vec__5005, 1, null);
               return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.conj.call(null, new_program, expression), remaining_], null);
             } else {
               return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.conj.call(null, new_program, function() {
@@ -33025,23 +34987,23 @@ qgame.simulator.parser.parse_expressions = function() {
             return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new_program, remaining], null);
           }
         }();
-        var new_program_STAR_ = cljs.core.nth.call(null, vec__5895, 0, null);
-        var remaining_STAR_ = cljs.core.nth.call(null, vec__5895, 1, null);
-        var G__5897 = new_program_STAR_;
-        var G__5898 = remaining_STAR_;
-        new_program = G__5897;
-        p__5890 = G__5898;
+        var new_program_STAR_ = cljs.core.nth.call(null, vec__5004, 0, null);
+        var remaining_STAR_ = cljs.core.nth.call(null, vec__5004, 1, null);
+        var G__5006 = new_program_STAR_;
+        var G__5007 = remaining_STAR_;
+        new_program = G__5006;
+        p__4999 = G__5007;
         continue;
       }
       break;
     }
   };
-  parse_expressions = function(new_program, p__5890) {
+  parse_expressions = function(new_program, p__4999) {
     switch(arguments.length) {
       case 1:
         return parse_expressions__1.call(this, new_program);
       case 2:
-        return parse_expressions__2.call(this, new_program, p__5890);
+        return parse_expressions__2.call(this, new_program, p__4999);
     }
     throw new Error("Invalid arity: " + arguments.length);
   };
@@ -33092,14 +35054,14 @@ qgame.simulator.reader.chew = function() {
         return bites__$1;
       } else {
         var pos = cljs.core.count.call(null, s) - cljs.core.count.call(null, s_);
-        var vec__5072 = clojure.string.split.call(null, s_, qgame.simulator.reader.ignore_pattern, 2);
-        var text = cljs.core.nth.call(null, vec__5072, 0, null);
-        var s__ = cljs.core.nth.call(null, vec__5072, 1, null);
+        var vec__5166 = clojure.string.split.call(null, s_, qgame.simulator.reader.ignore_pattern, 2);
+        var text = cljs.core.nth.call(null, vec__5166, 0, null);
+        var s__ = cljs.core.nth.call(null, vec__5166, 1, null);
         var bite = new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "text", "text", 1017460895), text, new cljs.core.Keyword(null, "character-position", "character-position", 2475872959), pos], null);
-        var G__5073 = [cljs.core.str(s__)].join("");
-        var G__5074 = cljs.core.conj.call(null, bites__$1, bite);
-        s_ = G__5073;
-        bites__$1 = G__5074;
+        var G__5167 = [cljs.core.str(s__)].join("");
+        var G__5168 = cljs.core.conj.call(null, bites__$1, bite);
+        s_ = G__5167;
+        bites__$1 = G__5168;
         continue;
       }
       break;
@@ -33118,14 +35080,14 @@ qgame.simulator.reader.chew = function() {
   chew.cljs$core$IFn$_invoke$arity$2 = chew__2;
   return chew;
 }();
-qgame.simulator.reader.split_into_bites = function split_into_bites(p__5076) {
-  var map__5078 = p__5076;
-  var map__5078__$1 = cljs.core.seq_QMARK_.call(null, map__5078) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5078) : map__5078;
-  var line_number = cljs.core.get.call(null, map__5078__$1, new cljs.core.Keyword(null, "line-number", "line-number", 4279856820));
-  var line = cljs.core.get.call(null, map__5078__$1, new cljs.core.Keyword(null, "line", "line", 1017226086));
+qgame.simulator.reader.split_into_bites = function split_into_bites(p__5170) {
+  var map__5172 = p__5170;
+  var map__5172__$1 = cljs.core.seq_QMARK_.call(null, map__5172) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5172) : map__5172;
+  var line_number = cljs.core.get.call(null, map__5172__$1, new cljs.core.Keyword(null, "line-number", "line-number", 4279856820));
+  var line = cljs.core.get.call(null, map__5172__$1, new cljs.core.Keyword(null, "line", "line", 1017226086));
   var bites = qgame.simulator.reader.chew.call(null, line);
-  return cljs.core.map.call(null, function(p1__5075_SHARP_) {
-    return cljs.core.assoc.call(null, p1__5075_SHARP_, new cljs.core.Keyword(null, "line-number", "line-number", 4279856820), line_number);
+  return cljs.core.map.call(null, function(p1__5169_SHARP_) {
+    return cljs.core.assoc.call(null, p1__5169_SHARP_, new cljs.core.Keyword(null, "line-number", "line-number", 4279856820), line_number);
   }, bites);
 };
 qgame.simulator.reader.read = function read(program) {
