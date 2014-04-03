@@ -32754,18 +32754,18 @@ qgame.simulator.parser.parse_name_rule = function parse_name_rule(bite, nm_text,
     return qgame.simulator.error.log_and_return_error_BANG_.call(null, "Name is not a word", rule);
   }
 };
-qgame.simulator.parser.parse_bite = function parse_bite(p__4965) {
-  var map__4968 = p__4965;
-  var map__4968__$1 = cljs.core.seq_QMARK_.call(null, map__4968) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4968) : map__4968;
-  var bite = map__4968__$1;
-  var text = cljs.core.get.call(null, map__4968__$1, new cljs.core.Keyword(null, "text", "text", 1017460895));
-  var temp__4090__auto__ = function(p1__4964_SHARP_) {
-    return cljs.core._EQ_.call(null, cljs.core.count.call(null, p1__4964_SHARP_), 1);
+qgame.simulator.parser.parse_bite = function parse_bite(p__5856) {
+  var map__5859 = p__5856;
+  var map__5859__$1 = cljs.core.seq_QMARK_.call(null, map__5859) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5859) : map__5859;
+  var bite = map__5859__$1;
+  var text = cljs.core.get.call(null, map__5859__$1, new cljs.core.Keyword(null, "text", "text", 1017460895));
+  var temp__4090__auto__ = function(p1__5855_SHARP_) {
+    return cljs.core._EQ_.call(null, cljs.core.count.call(null, p1__5855_SHARP_), 1);
   }.call(null, clojure.string.split.call(null, text, /:/, 2)) ? null : clojure.string.split.call(null, text, /:/, 2);
   if (cljs.core.truth_(temp__4090__auto__)) {
-    var vec__4969 = temp__4090__auto__;
-    var nm = cljs.core.nth.call(null, vec__4969, 0, null);
-    var target = cljs.core.nth.call(null, vec__4969, 1, null);
+    var vec__5860 = temp__4090__auto__;
+    var nm = cljs.core.nth.call(null, vec__5860, 0, null);
+    var target = cljs.core.nth.call(null, vec__5860, 1, null);
     if (cljs.core._EQ_.call(null, nm, "forget")) {
       return qgame.simulator.parser.parse_forget_rule.call(null, bite, target);
     } else {
@@ -32785,8 +32785,8 @@ qgame.simulator.parser.replace_named = function replace_named(name_map, s) {
 qgame.simulator.parser.safe_eval_math = function safe_eval_math(s) {
   try {
     return qgame.utils.math.eval_math_string.call(null, s);
-  } catch (e4971) {
-    var _ = e4971;
+  } catch (e5862) {
+    var _ = e5862;
     return null;
   }
 };
@@ -32832,23 +32832,23 @@ qgame.simulator.parser.parser_execute_rule = function parser_execute_rule(name_m
     }
   }
 };
-qgame.simulator.parser.execute_parser_rules = function execute_parser_rules(p__4972, bite) {
-  var map__4975 = p__4972;
-  var map__4975__$1 = cljs.core.seq_QMARK_.call(null, map__4975) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4975) : map__4975;
-  var new_bites = cljs.core.get.call(null, map__4975__$1, new cljs.core.Keyword(null, "new-bites", "new-bites", 3608376192));
-  var name_map = cljs.core.get.call(null, map__4975__$1, new cljs.core.Keyword(null, "name-map", "name-map", 2853325452));
+qgame.simulator.parser.execute_parser_rules = function execute_parser_rules(p__5863, bite) {
+  var map__5866 = p__5863;
+  var map__5866__$1 = cljs.core.seq_QMARK_.call(null, map__5866) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5866) : map__5866;
+  var new_bites = cljs.core.get.call(null, map__5866__$1, new cljs.core.Keyword(null, "new-bites", "new-bites", 3608376192));
+  var name_map = cljs.core.get.call(null, map__5866__$1, new cljs.core.Keyword(null, "name-map", "name-map", 2853325452));
   var typed_bite = qgame.simulator.parser.parse_bite.call(null, bite);
-  var vec__4976 = cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(typed_bite)) ? qgame.simulator.parser.parser_execute_token.call(null, name_map, typed_bite) : qgame.simulator.parser.parser_execute_rule.call(null, name_map, typed_bite);
-  var name_map_STAR_ = cljs.core.nth.call(null, vec__4976, 0, null);
-  var bite_STAR_ = cljs.core.nth.call(null, vec__4976, 1, null);
+  var vec__5867 = cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(typed_bite)) ? qgame.simulator.parser.parser_execute_token.call(null, name_map, typed_bite) : qgame.simulator.parser.parser_execute_rule.call(null, name_map, typed_bite);
+  var name_map_STAR_ = cljs.core.nth.call(null, vec__5867, 0, null);
+  var bite_STAR_ = cljs.core.nth.call(null, vec__5867, 1, null);
   return new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "name-map", "name-map", 2853325452), name_map_STAR_, new cljs.core.Keyword(null, "new-bites", "new-bites", 3608376192), cljs.core.conj.call(null, new_bites, bite_STAR_)], null);
 };
 qgame.simulator.parser.qubit_pattern = /\b(?:[A-T]|1?[0-9])\b/;
-qgame.simulator.parser.parse_qubit = function parse_qubit(p__4977) {
-  var map__4979 = p__4977;
-  var map__4979__$1 = cljs.core.seq_QMARK_.call(null, map__4979) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4979) : map__4979;
-  var token = map__4979__$1;
-  var post_rules = cljs.core.get.call(null, map__4979__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
+qgame.simulator.parser.parse_qubit = function parse_qubit(p__5868) {
+  var map__5870 = p__5868;
+  var map__5870__$1 = cljs.core.seq_QMARK_.call(null, map__5870) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5870) : map__5870;
+  var token = map__5870__$1;
+  var post_rules = cljs.core.get.call(null, map__5870__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
   var temp__4090__auto__ = qgame.simulator.parser.match_only.call(null, qgame.simulator.parser.qubit_pattern, post_rules);
   if (cljs.core.truth_(temp__4090__auto__)) {
     var qubit_str = temp__4090__auto__;
@@ -32860,11 +32860,11 @@ qgame.simulator.parser.parse_qubit = function parse_qubit(p__4977) {
   }
 };
 qgame.simulator.parser.param_pattern = /\b\d+\.?\d*\b/;
-qgame.simulator.parser.parse_param = function parse_param(p__4980) {
-  var map__4982 = p__4980;
-  var map__4982__$1 = cljs.core.seq_QMARK_.call(null, map__4982) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4982) : map__4982;
-  var token = map__4982__$1;
-  var post_rules = cljs.core.get.call(null, map__4982__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
+qgame.simulator.parser.parse_param = function parse_param(p__5871) {
+  var map__5873 = p__5871;
+  var map__5873__$1 = cljs.core.seq_QMARK_.call(null, map__5873) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5873) : map__5873;
+  var token = map__5873__$1;
+  var post_rules = cljs.core.get.call(null, map__5873__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
   var temp__4090__auto__ = qgame.simulator.parser.match_only.call(null, qgame.simulator.parser.param_pattern, post_rules);
   if (cljs.core.truth_(temp__4090__auto__)) {
     var param_str = temp__4090__auto__;
@@ -32875,23 +32875,22 @@ qgame.simulator.parser.parse_param = function parse_param(p__4980) {
   }
 };
 qgame.simulator.parser.bit_pattern = /\b[01]\b/;
-qgame.simulator.parser.parse_bit = function parse_bit(p__4983) {
-  var map__4985 = p__4983;
-  var map__4985__$1 = cljs.core.seq_QMARK_.call(null, map__4985) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4985) : map__4985;
-  var token = map__4985__$1;
-  var post_rules = cljs.core.get.call(null, map__4985__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
-  var temp__4090__auto__ = qgame.simulator.parser.match_only.call(null, qgame.simulator.parser.bit_pattern, post_rules);
-  if (cljs.core.truth_(temp__4090__auto__)) {
-    var bit_str = temp__4090__auto__;
+qgame.simulator.parser.parse_bit = function parse_bit(p__5874) {
+  var map__5876 = p__5874;
+  var map__5876__$1 = cljs.core.seq_QMARK_.call(null, map__5876) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5876) : map__5876;
+  var token = map__5876__$1;
+  var post_rules = cljs.core.get.call(null, map__5876__$1, new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956));
+  var temp__4092__auto__ = qgame.simulator.parser.match_only.call(null, qgame.simulator.parser.bit_pattern, post_rules);
+  if (cljs.core.truth_(temp__4092__auto__)) {
+    var bit_str = temp__4092__auto__;
     return cljs.core.assoc.call(null, token, new cljs.core.Keyword(null, "type", "type", 1017479852), new cljs.core.Keyword(null, "Bit", "Bit", 1013971039), new cljs.core.Keyword(null, "value", "value", 1125876963), cljs.core.get.call(null, new cljs.core.PersistentArrayMap(null, 2, ["0", 0, "1", 1], null), bit_str));
   } else {
-    cljs.core.reset_BANG_.call(null, qgame.simulator.shared.current_qgame_fn, arguments.callee.name);
-    return qgame.simulator.error.log_and_return_error_BANG_.call(null, "Bit parse failure", token);
+    return null;
   }
 };
 qgame.simulator.parser.taste = function taste(parse_with, bite) {
-  var temp__4090__auto__ = function(p1__4986_SHARP_) {
-    return cljs.core.not_EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(p1__4986_SHARP_));
+  var temp__4090__auto__ = function(p1__5877_SHARP_) {
+    return cljs.core.not_EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(p1__5877_SHARP_));
   }.call(null, bite) ? null : bite;
   if (cljs.core.truth_(temp__4090__auto__)) {
     var token = temp__4090__auto__;
@@ -32905,7 +32904,7 @@ qgame.simulator.parser.swallow = function() {
   var swallow = null;
   var swallow__2 = function(parse_with, bites) {
     var swallowed = cljs.core.reduce.call(null, function(swallowed, bite) {
-      var temp__4090__auto__ = cljs.core.truth_((new cljs.core.Keyword(null, "error", "error", 1110689146)).cljs$core$IFn$_invoke$arity$1(qgame.simulator.parser.taste.call(null, parse_with, bite))) ? null : qgame.simulator.parser.taste.call(null, parse_with, bite);
+      var temp__4090__auto__ = qgame.simulator.parser.taste.call(null, parse_with, bite);
       if (cljs.core.truth_(temp__4090__auto__)) {
         var parsed = temp__4090__auto__;
         return cljs.core.conj.call(null, swallowed, parsed);
@@ -32920,9 +32919,9 @@ qgame.simulator.parser.swallow = function() {
       return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.List.EMPTY, bites], null);
     } else {
       if (n <= cljs.core.count.call(null, bites)) {
-        var vec__4988 = cljs.core.split_at.call(null, n, bites);
-        var to_taste = cljs.core.nth.call(null, vec__4988, 0, null);
-        var bites_ = cljs.core.nth.call(null, vec__4988, 1, null);
+        var vec__5879 = cljs.core.split_at.call(null, n, bites);
+        var to_taste = cljs.core.nth.call(null, vec__5879, 0, null);
+        var bites_ = cljs.core.nth.call(null, vec__5879, 1, null);
         return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.map.call(null, cljs.core.partial.call(null, qgame.simulator.parser.taste, parse_with), to_taste), bites_], null);
       } else {
         return null;
@@ -32944,9 +32943,9 @@ qgame.simulator.parser.swallow = function() {
 }();
 qgame.simulator.parser.package_parse_time = function package_parse_time(fnc, bites) {
   if (cljs.core._EQ_.call(null, cljs.core.get_in.call(null, fnc, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "fn-meta", "fn-meta", 4539079516), new cljs.core.Keyword(null, "name", "name", 1017277949)], null)), "with_oracle")) {
-    var vec__4990 = qgame.simulator.parser.swallow.call(null, qgame.simulator.parser.parse_bit, bites);
-    var swallowed = cljs.core.nth.call(null, vec__4990, 0, null);
-    var bites_ = cljs.core.nth.call(null, vec__4990, 1, null);
+    var vec__5881 = qgame.simulator.parser.swallow.call(null, qgame.simulator.parser.parse_bit, bites);
+    var swallowed = cljs.core.nth.call(null, vec__5881, 0, null);
+    var bites_ = cljs.core.nth.call(null, vec__5881, 1, null);
     var oracle = cljs.core.apply.call(null, (new cljs.core.Keyword(null, "caller", "caller", 3941096189)).cljs$core$IFn$_invoke$arity$1(fnc), cljs.core.map.call(null, new cljs.core.Keyword(null, "value", "value", 1125876963), swallowed));
     cljs.core.swap_BANG_.call(null, qgame.simulator.shared.canonical_functions, cljs.core.assoc, "oracle", oracle);
     return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [null, bites_], null);
@@ -32955,25 +32954,25 @@ qgame.simulator.parser.package_parse_time = function package_parse_time(fnc, bit
     return qgame.simulator.error.log_and_return_error_BANG_.call(null, "Uncrecognized parse time function", fnc);
   }
 };
-qgame.simulator.parser.package_expression = function package_expression(p__4991, bites) {
-  var map__4995 = p__4991;
-  var map__4995__$1 = cljs.core.seq_QMARK_.call(null, map__4995) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4995) : map__4995;
-  var fnc = map__4995__$1;
-  var param_names = cljs.core.get.call(null, map__4995__$1, new cljs.core.Keyword(null, "param-names", "param-names", 740923770));
-  var num_qubits = cljs.core.get.call(null, map__4995__$1, new cljs.core.Keyword(null, "num-qubits", "num-qubits", 1175408835));
+qgame.simulator.parser.package_expression = function package_expression(p__5882, bites) {
+  var map__5886 = p__5882;
+  var map__5886__$1 = cljs.core.seq_QMARK_.call(null, map__5886) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5886) : map__5886;
+  var fnc = map__5886__$1;
+  var param_names = cljs.core.get.call(null, map__5886__$1, new cljs.core.Keyword(null, "param-names", "param-names", 740923770));
+  var num_qubits = cljs.core.get.call(null, map__5886__$1, new cljs.core.Keyword(null, "num-qubits", "num-qubits", 1175408835));
   if (cljs.core._EQ_.call(null, new cljs.core.Keyword(null, "ParseTime", "ParseTime", 1184785266), cljs.core.get_in.call(null, fnc, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "fn-meta", "fn-meta", 4539079516), new cljs.core.Keyword(null, "type", "type", 1017479852)], null)))) {
     return qgame.simulator.parser.package_parse_time.call(null, fnc, bites);
   } else {
     var temp__4090__auto__ = qgame.simulator.parser.swallow.call(null, num_qubits, qgame.simulator.parser.parse_qubit, bites);
     if (cljs.core.truth_(temp__4090__auto__)) {
-      var vec__4996 = temp__4090__auto__;
-      var qubits = cljs.core.nth.call(null, vec__4996, 0, null);
-      var bites_ = cljs.core.nth.call(null, vec__4996, 1, null);
+      var vec__5887 = temp__4090__auto__;
+      var qubits = cljs.core.nth.call(null, vec__5887, 0, null);
+      var bites_ = cljs.core.nth.call(null, vec__5887, 1, null);
       var temp__4090__auto____$1 = qgame.simulator.parser.swallow.call(null, cljs.core.count.call(null, param_names), qgame.simulator.parser.parse_param, bites_);
       if (cljs.core.truth_(temp__4090__auto____$1)) {
-        var vec__4997 = temp__4090__auto____$1;
-        var params = cljs.core.nth.call(null, vec__4997, 0, null);
-        var bites__ = cljs.core.nth.call(null, vec__4997, 1, null);
+        var vec__5888 = temp__4090__auto____$1;
+        var params = cljs.core.nth.call(null, vec__5888, 0, null);
+        var bites__ = cljs.core.nth.call(null, vec__5888, 1, null);
         var expression = cljs.core.assoc.call(null, fnc, new cljs.core.Keyword(null, "type", "type", 1017479852), new cljs.core.Keyword(null, "Expression", "Expression", 1211916842), new cljs.core.Keyword(null, "qubits", "qubits", 4360074396), qubits, new cljs.core.Keyword(null, "params", "params", 4313443576), params);
         return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [expression, bites__], null);
       } else {
@@ -32991,30 +32990,30 @@ qgame.simulator.parser.parse_expressions = function() {
   var parse_expressions__1 = function(bites) {
     return parse_expressions.call(null, cljs.core.PersistentVector.EMPTY, bites);
   };
-  var parse_expressions__2 = function(new_program, p__4999) {
+  var parse_expressions__2 = function(new_program, p__5890) {
     while (true) {
-      var vec__5003 = p__4999;
-      var bite = cljs.core.nth.call(null, vec__5003, 0, null);
-      var remaining = cljs.core.nthnext.call(null, vec__5003, 1);
-      var bites = vec__5003;
+      var vec__5894 = p__5890;
+      var bite = cljs.core.nth.call(null, vec__5894, 0, null);
+      var remaining = cljs.core.nthnext.call(null, vec__5894, 1);
+      var bites = vec__5894;
       if (cljs.core.empty_QMARK_.call(null, bites)) {
         return new_program;
       } else {
-        var vec__5004 = function() {
-          var temp__4090__auto__ = function(new_program, p__4999) {
-            return function(p1__4998_SHARP_) {
-              return cljs.core.not_EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(p1__4998_SHARP_));
+        var vec__5895 = function() {
+          var temp__4090__auto__ = function(new_program, p__5890) {
+            return function(p1__5889_SHARP_) {
+              return cljs.core.not_EQ_.call(null, new cljs.core.Keyword(null, "Token", "Token", 1094892875), (new cljs.core.Keyword(null, "type", "type", 1017479852)).cljs$core$IFn$_invoke$arity$1(p1__5889_SHARP_));
             };
-          }(new_program, p__4999).call(null, bite) ? null : bite;
+          }(new_program, p__5890).call(null, bite) ? null : bite;
           if (cljs.core.truth_(temp__4090__auto__)) {
             var token = temp__4090__auto__;
             var temp__4090__auto____$1 = cljs.core.get.call(null, cljs.core.deref.call(null, qgame.simulator.shared.canonical_functions), (new cljs.core.Keyword(null, "post-rules", "post-rules", 1543368956)).cljs$core$IFn$_invoke$arity$1(token));
             if (cljs.core.truth_(temp__4090__auto____$1)) {
               var fnc = temp__4090__auto____$1;
               var fnc_PLUS_ = cljs.core.merge.call(null, token, fnc);
-              var vec__5005 = qgame.simulator.parser.package_expression.call(null, fnc_PLUS_, remaining);
-              var expression = cljs.core.nth.call(null, vec__5005, 0, null);
-              var remaining_ = cljs.core.nth.call(null, vec__5005, 1, null);
+              var vec__5896 = qgame.simulator.parser.package_expression.call(null, fnc_PLUS_, remaining);
+              var expression = cljs.core.nth.call(null, vec__5896, 0, null);
+              var remaining_ = cljs.core.nth.call(null, vec__5896, 1, null);
               return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.conj.call(null, new_program, expression), remaining_], null);
             } else {
               return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.core.conj.call(null, new_program, function() {
@@ -33026,23 +33025,23 @@ qgame.simulator.parser.parse_expressions = function() {
             return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new_program, remaining], null);
           }
         }();
-        var new_program_STAR_ = cljs.core.nth.call(null, vec__5004, 0, null);
-        var remaining_STAR_ = cljs.core.nth.call(null, vec__5004, 1, null);
-        var G__5006 = new_program_STAR_;
-        var G__5007 = remaining_STAR_;
-        new_program = G__5006;
-        p__4999 = G__5007;
+        var new_program_STAR_ = cljs.core.nth.call(null, vec__5895, 0, null);
+        var remaining_STAR_ = cljs.core.nth.call(null, vec__5895, 1, null);
+        var G__5897 = new_program_STAR_;
+        var G__5898 = remaining_STAR_;
+        new_program = G__5897;
+        p__5890 = G__5898;
         continue;
       }
       break;
     }
   };
-  parse_expressions = function(new_program, p__4999) {
+  parse_expressions = function(new_program, p__5890) {
     switch(arguments.length) {
       case 1:
         return parse_expressions__1.call(this, new_program);
       case 2:
-        return parse_expressions__2.call(this, new_program, p__4999);
+        return parse_expressions__2.call(this, new_program, p__5890);
     }
     throw new Error("Invalid arity: " + arguments.length);
   };

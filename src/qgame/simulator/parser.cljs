@@ -143,9 +143,9 @@
 
 (defn parse-bit
   [{post-rules :post-rules :as token}]
-  (if-let [bit-str (match-only bit-pattern post-rules)]
+  (when-let [bit-str (match-only bit-pattern post-rules)]
     (assoc token :type :Bit :value (get {"0" 0 "1" 1} bit-str))
-    (error! "Bit parse failure" token)))
+    #_(error! "Bit parse failure" token))) ;Don't want to error here, need to figure out different way of erroring when with_oracle doesn't receive the proper arguments
 
 (defn taste
   "Parses any tokens with the given parse-with, spitting up non-tokens."
@@ -155,10 +155,10 @@
     (error! "Unrecognized argument" bite)))
 
 (defn swallow
-  "Attempts to parse n bites using parse-with. If successful, returns the cud and the now-remaining bites. Given no bound, continues to swallow bites until it encounters an error."
+  "Attempts to parse n bites using parse-with. If successful, returns the cud and the now-remaining bites. Given no bound, continues to swallow bites until it encounters a falsey value."
   ([parse-with bites]
    (let [swallowed (reduce (fn [swallowed bite]
-                             (if-let [parsed (mac/unless :error (taste parse-with bite))]
+                             (if-let [parsed (taste parse-with bite)]
                                (conj swallowed parsed)
                                (reduced swallowed)))
                            [] bites)]
