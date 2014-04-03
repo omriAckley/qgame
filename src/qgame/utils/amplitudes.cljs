@@ -3,8 +3,11 @@
   (:require [qgame.utils.math :as m :refer [abs
                                             add
                                             multiply
+                                            pow
                                             to-phase
-                                            det]]
+                                            det
+                                            complex-conjugate
+                                            eigenvalues]]
             [qgame.utils.general :as g :refer [bit-size
                                                itermap]]))
 
@@ -56,7 +59,56 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn substate-amplitudes
+(defn substate-to-index
+  [substate]
+  (reduce-kv (fn [idx [qubit state]]
+               (if (zero? state)
+                 idx
+                 (bit-flip idx qubit)))
+             0
+             substate))
+
+(defn combine
+  [substate substate*]
+  (let [idx (substate-to-index substate)
+        idx* (m/complex-conjugate (substate-to-index substate*))]
+    (m/mult idx idx*)))
+
+(defn all-combinations
+  [qubits]
+  (let [all-zero-state (zipmap qubits (repeat 0))
+        all-one-state (zipmap qubits (repeat 1))]
+    (g/itermap conj [all-zero-state] all-one-state)))
+
+(defn reduced-entry
+  [partial-substate partial-substate* excluded-qubits]
+  (let [sub-amplitudes (for [remaining-substate (all-combinations excluded-qubits)]
+                         (combine (merge partial-substate remaining-substate)
+                                  (merge partial-substate* remaining-substate)))]
+    (reduce m/add sub-amplitudes)))
+
+(defn reduced-density-matrix
+  [amplitudes qubits]
+  (let [all-combinations (all-combinations qubits)
+        excluded-qubits (remove (set qubits)
+                                (range (get-num-qubits amplitudes)))]
+    (for [row all-combinations]
+      (for [col all-combinations]
+        (reduced-entry row col excluded-qubits)))))
+
+;m/eigenvalues
+(defn tangle-of
+  [{amplitudes :amplitudes} qubit-a qubit-b]
+  (let [rho-ab (reduced-density-matrix amplitudes [qubit-a qubit-b])
+        non-complex (m/abs rho-ab)
+        eigenvals (m/eigenvalues non-complex)
+        lambdas (m/sqrt eigenvals)
+        diff (reduce - (sort > lambdas))]
+    (m/pow (max diff 0) 2)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#_(defn substate-amplitudes
   "Given a particular substate, a particular combination of states of qubits, returns all amplitudes for which that combination is present."
   [amplitudes substate]
   (let [qubits (keys substate)
@@ -69,7 +121,7 @@
         indices (g/itermap bit-flip [seed-index] excluded-qubits)]
     (map (partial get amplitudes) indices)))
 
-(defn inner-amplitudes
+#_(defn inner-amplitudes
   "Gets the lists of sub-amplitudes for a sub-system comprising the given qubits. For each combination of states of the given qubits, returns all amplitudes for which that combination is present."
   [global-amplitudes qubits]
   (let [all-zero-state (zipmap qubits (repeat 0))
@@ -77,14 +129,14 @@
         all-combinations (g/itermap conj [all-zero-state] all-one-state)]
     (mapv (partial substate-amplitudes global-amplitudes) all-combinations)))
 
-(defn self-conj-outer-prod
+#_(defn self-conj-outer-prod
   "Returns the outer product of amplitudes and its conjugate transpose."
   [amplitudes]
   (let [ket (mapv vector amplitudes)
         bra (m/conjugate-transpose ket)]
     (m/multiply ket bra)))
 
-(defn mangled-mean-step
+#_(defn mangled-mean-step
   [accumulated to-incorporate]
   (let [weight (amplitudes-to-probability to-incorporate)]
     (mapv (fn [amp new-amp]
@@ -94,17 +146,17 @@
           accumulated
           to-incorporate)))
 
-(defn get-pairs
+#_(defn get-pairs
   [coll]
   (for [[a & remaining] (take (count coll) (iterate rest coll))
         b remaining]
     [a b]))
 
-(defn to-letter
+#_(defn to-letter
   [qubit-index]
   (nth "ABCDEFGHIJKLMNOPQRST" qubit-index))
 
-(defn reduced-density-matrix
+#_(defn reduced-density-matrix
   [amplitudes qubits]
   (let [inner-amps (inner-amplitudes amplitudes qubits)
         inner-amps* (apply mapv vector inner-amps)
@@ -113,7 +165,7 @@
                       inner-amps*)]
     (self-conj-outer-prod means)))
 
-(defn tangle-of
+#_(defn tangle-of
   [{amplitudes :amplitudes} qubit-a qubit-b]
   (let [rho-ab (reduced-density-matrix amplitudes [qubit-a qubit-b])
         [[a1 _ b1 _]
@@ -172,6 +224,8 @@
                :amps [0.70711 0 0 0 0 0 0 0.70711]}
               {:description "||UUU>+|UUD>+|DDU>+|DDD>>+||UUU>+|UUD>+|UDU>+|UDD>+|DUU>+|DUD>+|DDU>+|DDD>>"
                :amps [0.43301 0.43301 0.25 0.25 0.25 0.25 0.43301 0.43301]}
+              {:description "||UUU>+|UUD>+|DDU>+|DDD>>+||UUU>+|DUU>+|UDD>+|DDD>>+||UUU>+|UDU>+|DUD>+|DDD>>"
+               :amps [0.5 0.16666 0.288675 0.288675 0.288675 0.288675 0.16666 0.5]}
               {:description "|UUUU>+|UUUD>+|UUDU>+|UUDD>+|DDUU>+|DDUD>+|DDDU>+|DDDD>"
                :amps [0.35355 0.35355 0.35355 0.35355 0 0 0 0 0 0 0 0 0.35355 0.35355 0.35355 0.35355]}
               {:description "|UUUU>+|DDDD>"
@@ -216,7 +270,7 @@
                 rho-a [[(+ a1 a2) (+ b1 b2)]
                        [(+ c1 c2) (+ d1 d2)]]
                 tangle (* 4 (m/det rho-a))]]
-    (println "\n" letters ":" rho-a))
+    (println "\n" letters ":" tangle))
   (println "\n"))
 
 #_(defn density-matrix

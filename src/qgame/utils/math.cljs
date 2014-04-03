@@ -1,6 +1,7 @@
 (ns qgame.utils.math
   "Handles all of the math for qgame, including matrix math and complex number math. For all operations, converts the arguments so that any nested collectsion are math.js matrices, calls the operation, and then converts any nested matrices back to vectors."
   (:require [math.js]
+            [numeric.js]
             [clojure.walk :as w :refer [postwalk
                                         prewalk]]))
 
@@ -12,6 +13,8 @@
 ;(.appendChild (.-head js/document) mathscript)
 
 (def math (js/mathjs))
+
+(def numeric js/numeric)
 
 ;Collection to matrix, and matrix to collection conversion
 (defn- to-matrix
@@ -98,6 +101,10 @@
   "Divides the given collections and numbers. Collections must have correct dimensions for matrix division (i.e. for left collection size m x n, the right collection must be n x m)."
   [x y]
   (matrix-safe math.divide x y))
+
+(defn pow
+  [x y]
+  (matrix-safe math.pow x y))
 
 (defn sqrt
   "Square root."
@@ -200,3 +207,13 @@
   "Evaluates a string as a mathematical expressions. For example (eval-math-string \"e^(pi*i)\") should return -1."
   [s]
   (round (math.eval s) 9))
+
+
+(defn eigenvalues
+  [coll]
+  (let [m (w/postwalk (fn [x]
+                        (if (sequential? x)
+                          (to-array x)
+                          x))
+                      coll)]
+    (-> m numeric.eigen .-lambda .-x)))
