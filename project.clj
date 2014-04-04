@@ -13,15 +13,15 @@
                                 :pretty-print true
                                 :foreign-libs [{:file "http://cdnjs.cloudflare.com/ajax/libs/mathjs/0.18.1/math.min.js"
                                                 :provides ["math.js"]}
-                                               {:file "./resources/numeric-1.2.6.min.js"
-                                                :provides ["numeric.js"]}]}}
+                                               {:file "./resources/arndtbruenner_eigenvalues.js"
+                                                :provides ["arndtbruenner_eigenvalues.js"]}]}}
                :prod {:source-paths ["src/qgame"]
                       :compiler {:output-to "static/qgame.min.js"
                                  :optimizations :whitespace ;Eventually do :advanced here
                                  :pretty-print false
                                  :foreign-libs [{:file "http://cdnjs.cloudflare.com/ajax/libs/mathjs/0.18.1/math.min.js"
                                                  :provides ["math.js"]}
-                                                {:file "./resources/numeric-1.2.6.min.js"
-                                                 :provides ["numeric.js"]}]}}}
+                                                {:file "./resources/arndtbruenner_eigenvalues.js"
+                                                 :provides ["arndtbruenner_eigenvalues.js"]}]}}}
               :repl-listen-port 9000}
   :min-lein-version "2.0.0")

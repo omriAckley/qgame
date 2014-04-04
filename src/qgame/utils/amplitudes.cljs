@@ -103,8 +103,7 @@
 (defn tangle-of
   [{amplitudes :amplitudes} qubit-a qubit-b]
   (let [rho-ab (reduced-density-matrix amplitudes [qubit-a qubit-b])
-        non-complex (m/abs rho-ab)
-        eigenvals (m/eigenvalues non-complex)
+        eigenvals (m/abs (m/eigenvalues rho-ab))
         lambdas (m/sqrt eigenvals)
         diff (reduce - (sort > lambdas))]
     (m/pow (max diff 0) 2)))
