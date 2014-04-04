@@ -6,7 +6,7 @@ A reimplementation of [Lee Spector's QGAME in Common Lisp](http://faculty.hampsh
 
 To import using [leingingen](http://leiningen.org/), include these is in your project.clj `defproject` declaration (in addition to whatever other configurations you want):
 
-	:dependencies [[org.clojars.hippiccolo/qgame "0.3.6"]]
+	:dependencies [[org.clojars.hippiccolo/qgame "0.3.7"]]
 	:cljsbuild {:builds [{:compiler {:foreign-libs [{:file "http://cdnjs.cloudflare.com/ajax/libs/mathjs/0.18.1/math.min.js"
 	                                                 :provides ["math.js"]}]}}]}
 
