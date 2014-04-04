@@ -209,17 +209,16 @@
 ;Eigenvalues
 (defn complex?
   [x]
-  (= "complex" (.typeof math x))
+  (= "complex" (.typeof math x)))
 
 (defn- coll->bruenner-matrix
   [coll]
-  (w/postwalk (fn [form]
-                (cond
-                  (sequential? form) (to-array form)
-                  (complex? form) (array (.-re form) (.-im form))
-                  (number? form) (array form 0)
-                  :default form))
-              coll))
+  (to-array
+    (map (fn [n]
+           (if (complex? n)
+             (array (.-re n) (.-im n))
+             (array n 0)))
+         (flatten coll))))
 
 (defn- bruenner-matrix->coll
   [mat]
@@ -234,6 +233,9 @@
 
 (defn eigenvalues
   [coll]
+  {:pre [(= 4 (count coll))
+         (every? (partial = 4) (map count coll))
+         (every? (some-fn number? complex?) (flatten coll))]}
   (let [mat (coll->bruenner-matrix coll)]
     (bruenner-matrix->coll
       (bruenner.eigenvalues mat))))
