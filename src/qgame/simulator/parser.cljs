@@ -213,7 +213,7 @@
 (defn wrap-up
   "Wraps up the parsing stage."
   [program]
-  (remove g/errant? program))
+  (remove (some-fn g/errant? nil?) program))
 
 (defn parse
   "Converts an already-read program into a compilable list of expressions."

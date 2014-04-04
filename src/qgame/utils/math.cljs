@@ -1,7 +1,7 @@
 (ns qgame.utils.math
   "Handles all of the math for qgame, including matrix math and complex number math. For all operations, converts the arguments so that any nested collectsion are math.js matrices, calls the operation, and then converts any nested matrices back to vectors."
   (:require [math.js]
-            [numeric.js]
+            [arndtbruenner_eigenvalues.js]
             [clojure.walk :as w :refer [postwalk
                                         prewalk]]))
 
@@ -13,8 +13,6 @@
 ;(.appendChild (.-head js/document) mathscript)
 
 (def math (js/mathjs))
-
-(def numeric js/numeric)
 
 ;Collection to matrix, and matrix to collection conversion
 (defn- to-matrix
@@ -208,11 +206,36 @@
   [s]
   (round (math.eval s) 9))
 
+;Eigenvalues
+(defn complex?
+  [x]
+  (= "complex" (.typeof math x)))
+
+(defn- coll->bruenner-matrix
+  [coll]
+  (to-array
+    (map (fn [n]
+           (if (complex? n)
+             (array (.-re n) (.-im n))
+             (array n 0)))
+         (flatten coll))))
+
+(defn- bruenner-matrix->coll
+  [mat]
+  (w/prewalk (fn [form]
+               (if (array? form)
+                 (let [[real imag :as v] (vec form)]
+                   (if (and (number? real) (number? imag))
+                     (math.complex. real imag)
+                     v))
+                 form))
+             mat))
+
 (defn eigenvalues
   [coll]
-  (let [mat (w/postwalk (fn [x]
-                          (if (sequential? x)
-                            (to-array x)
-                            x))
-                        coll)]
-    (-> mat numeric.eig .-lambda .-x vec)))
+  {:pre [(= 4 (count coll))
+         (every? (partial = 4) (map count coll))
+         (every? (some-fn number? complex?) (flatten coll))]}
+  (let [mat (coll->bruenner-matrix coll)]
+    (bruenner-matrix->coll
+      (bruenner.eigenvalues mat))))
