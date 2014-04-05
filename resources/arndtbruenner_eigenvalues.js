@@ -1362,7 +1362,7 @@ function solveQuad(p)
 	kx_nullstellen[kx_nullstellen.length]=new Array(x[0],x[1]);
 	p=new Array();
 }
-/*
+
 function solveLin(p)
 {
 	var x=new Array(0,0);
@@ -1373,7 +1373,7 @@ function solveLin(p)
 	kx_ns(x,p,true);
 	return;
 }
-*/
+
 
 /*
 function fix(k,q,l,a,x)

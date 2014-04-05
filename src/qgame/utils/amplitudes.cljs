@@ -7,6 +7,7 @@
                                             to-phase
                                             det
                                             complex-conjugate
+                                            conjugate-transpose
                                             eigenvalues]]
             [qgame.utils.general :as g :refer [bit-size
                                                itermap]]))
@@ -99,11 +100,22 @@
       (for [col all-combinations]
         (reduced-entry amplitudes row col excluded-qubits)))))
 
-;m/eigenvalues
+(defn spin-flip
+  [density-matrix]
+  (let [flipper [[0 0 0 -1]
+                 [0 0 1 0]
+                 [0 1 0 0]
+                 [-1 0 0 0]]
+        rho-ab* (m/conjugate-transpose density-matrix)]
+    (m/multiply (m/multiply flipper rho-ab*)
+                flipper)))
+
 (defn tangle-of
   [{amplitudes :amplitudes} qubit-a qubit-b]
   (let [rho-ab (reduced-density-matrix amplitudes [qubit-a qubit-b])
-        eigenvals (m/abs (m/eigenvalues rho-ab))
+        spin-flipped (spin-flip rho-ab)
+        tangle-mat (m/multiply rho-ab spin-flipped)
+        eigenvals (m/eigenvalues tangle-mat)
         lambdas (m/sqrt eigenvals)
         diff (reduce - (sort > lambdas))]
     (m/pow (max diff 0) 2)))
