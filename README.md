@@ -10,6 +10,13 @@ To import using [leingingen](http://leiningen.org/), include these is in your pr
 	:cljsbuild {:builds [{:compiler {:foreign-libs [{:file "http://cdnjs.cloudflare.com/ajax/libs/mathjs/0.18.1/math.min.js"
 	                                                 :provides ["math.js"]}]}}]}
 
+If you want to be able to calculate pairwise tangle, then you will also need to download the `resources` folder, place it in your project's directory, and include `arndt.js` as a foreign library. Which would make the `:cljsbuild` options look like this:
+
+	:cljsbuild {:builds [{:compiler {:foreign-libs [{:file "http://cdnjs.cloudflare.com/ajax/libs/mathjs/0.18.1/math.min.js"
+	                                                 :provides ["math.js"]}
+	                                                {:file "./resources/arndt.js"
+	                                                 :provides ["arndt.js"]}]}}]}
+
 Then in your ClojureScript namespace declaration:
 
 	(ns your-mind-blowing-namespace
@@ -86,12 +93,11 @@ And so it's right column is `1 1 1 0`. When calling `with_oracle 1 1 1 0`, the i
 
 ## Contributors
 
-[Arndt Brünner](http://www.arndt-bruenner.de/)
-Who graciously reimplemented the code from [his online eigenvalue/eigenvector calculator](http://www.arndt-bruenner.de/mathe/scripts/engl_eigenwert2.htm) as a library for this quantum computer simulator!
+[Arndt Brünner](http://www.arndt-bruenner.de/), who has graciously reimplemented the code from [his online eigenvalue/eigenvector calculator](http://www.arndt-bruenner.de/mathe/scripts/engl_eigenwert2.htm) as a library for this quantum computer simulator!
 
 ## Past Collaborators
 
-[Haoxi Zhan](https://github.com/zhx2013)
-[Evan Ricketts](https://github.com/bitpit)
-[Mitchel Fields](https://github.com/msf12)
-[Breton Handy](http://www.linkedin.com/pub/breton-k-handy/3a/b57/962)
+-  [Haoxi Zhan](https://github.com/zhx2013)
+-  [Evan Ricketts](https://github.com/bitpit)
+-  [Mitchel Fields](https://github.com/msf12)
+-  [Breton Handy](http://www.linkedin.com/pub/breton-k-handy/3a/b57/962)
