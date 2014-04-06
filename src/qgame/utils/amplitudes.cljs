@@ -2,13 +2,15 @@
   "Various functions for working with amplitudes."
   (:require [qgame.utils.math :as m :refer [abs
                                             add
+                                            subtract
                                             multiply
                                             pow
                                             to-phase
                                             det
                                             complex-conjugate
                                             conjugate-transpose
-                                            eigenvalues]]
+                                            eigenvalues
+                                            round]]
             [qgame.utils.general :as g :refer [bit-size
                                                itermap]]))
 
@@ -116,9 +118,11 @@
         spin-flipped (spin-flip rho-ab)
         tangle-mat (m/multiply rho-ab spin-flipped)
         eigenvals (m/eigenvalues tangle-mat)
-        lambdas (m/sqrt eigenvals)
-        diff (reduce - (sort > lambdas))]
-    (m/pow (max diff 0) 2)))
+        lambdas (sort #(> (.-re %1) (.-re %2))
+                      (m/sqrt eigenvals))
+        diff (reduce m/subtract lambdas)
+        tangle (m/pow (max diff 0) 2)]
+    (m/abs (m/round tangle 8))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -3,7 +3,7 @@
             [qgame.utils.math :as m]
             [qgame.utils.amplitudes :as a]))
 
-(doseq [case [{:description "|UU>+|DD>"
+#_(doseq [case [{:description "|UU>+|DD>"
                :amplitudes [0.70711 0 0 0.70711]}
               {:description "|UU>+|UD>+|DU>+|DD>"
                :amplitudes [0.5 0.5 0.5 0.5]}

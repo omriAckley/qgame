@@ -4,3 +4,5 @@
   (:require [clojure.browser.repl :as repl :refer [connect]]))
 
 (repl/connect (str "http://localhost:" (macros/get-repl-listen-port) "/repl"))
+
+(js/console.log "Connected to ClojureScript REPL")

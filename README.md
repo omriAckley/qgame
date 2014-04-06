@@ -83,3 +83,15 @@ An oracle can be passed as a keyword argument to `execute-program`. To clarify, 
 </table>
 
 And so it's right column is `1 1 1 0`. When calling `with_oracle 1 1 1 0`, the interpreter would construct the gate matrix equivalent of logical NAND, convert that to a quantum gate, and then use that as the oracle quantum gate. Ultimately, this quantum gate would be a function that takes amplitudes and three qubits. It would use the first two qubits as "input", and treat the third as output. If the first two qubits were both equal to 1, the third qubit would be set to 0. Otherwise, it would be set to 1. However, since qubits can be "sort of 0" and "sort of 1" at the same damn time, this quantum gate actually alters the third qubit in "fuzzier" ways.
+
+## Contributors
+
+[Arndt Brünner](http://www.arndt-bruenner.de/)
+Who graciously reimplemented the code from [his online eigenvalue/eigenvector calculator](http://www.arndt-bruenner.de/mathe/scripts/engl_eigenwert2.htm) as a library for this quantum computer simulator!
+
+## Past Collaborators
+
+[Haoxi Zhan](https://github.com/zhx2013)
+[Evan Ricketts](https://github.com/bitpit)
+[Mitchel Fields](https://github.com/msf12)
+[Breton Handy](http://www.linkedin.com/pub/breton-k-handy/3a/b57/962)
