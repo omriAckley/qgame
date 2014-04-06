@@ -5,7 +5,8 @@
                                                   bit-pattern]])
   (:use [qgame.simulator.shared :only [stage
                                        current-qgame-fn
-                                       on-error]]))
+                                       on-error
+                                       on-warning]]))
 
 (defmulti get-message
   (fn [title context] title))
@@ -22,12 +23,7 @@
   ([title]
    (log-and-return-error! title {}))
   ([title context]
-   (let [{{:keys [stage current-qgame-fn title message]} :error :as context+}
-         (to-error title context)
-         report
-         {:message (str "qgame error during " stage ", in qgame function " current-qgame-fn ": " title "\n" message)
-          :more (clj->js context+)}]
-     (js/console.log (:message report) "\n" (:more report))
+   (let [context+ (to-error title context)]
      (when-let [on-err @on-error]
        (on-err context+))
      context+)))
@@ -44,14 +40,9 @@
   ([title]
    (log-and-return-warning! title {}))
   ([title context]
-   (let [{{:keys [stage current-qgame-fn title message]} :warning :as context+}
-         (to-warning title context)
-         report
-         {:message (str "qgame warning during " stage ", in qgame function " current-qgame-fn ": " title "\n" message)
-          :more (clj->js context+)}]
-     (js/console.log (report :message) "\n" (report :more))
-     (when-let [on-err @on-error]
-       (on-err context+))
+   (let [context+ (to-warning title context)]
+     (when-let [on-warn @on-warning]
+       (on-warn context+))
      context+)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

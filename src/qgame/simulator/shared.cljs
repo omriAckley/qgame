@@ -35,3 +35,5 @@
          "with_oracle" q/with_oracle}))
 
 (def on-error (atom nil))
+
+(def on-warning (atom nil))

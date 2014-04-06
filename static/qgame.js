@@ -29828,11 +29828,12 @@ qgame.utils.amplitudes.tangle_of = function tangle_of(p__4976, qubit_a, qubit_b)
     };
   }(rho_ab, spin_flipped, tangle_mat, eigenvals), qgame.utils.math.sqrt.call(null, eigenvals));
   var diff = cljs.core.reduce.call(null, qgame.utils.math.subtract, lambdas);
-  return qgame.utils.math.pow.call(null, function() {
+  var tangle = qgame.utils.math.pow.call(null, function() {
     var x__3710__auto__ = diff;
     var y__3711__auto__ = 0;
     return x__3710__auto__ > y__3711__auto__ ? x__3710__auto__ : y__3711__auto__;
   }(), 2);
+  return qgame.utils.math.abs.call(null, qgame.utils.math.round.call(null, tangle, 8));
 };
 goog.provide("qgame.simulator.flow");
 goog.require("cljs.core");
@@ -30260,6 +30261,7 @@ qgame.simulator.shared.current_qgame_fn = cljs.core.atom.call(null, null);
 qgame.simulator.shared.canonical_functions = cljs.core.atom.call(null, cljs.core.PersistentHashMap.fromArrays(["qnot", "nand", "utheta", "srn", "cnot", "swap", "with_oracle", "cphase", "else", "end", "hadamard", "u2", "measure", "oracle"], [qgame.simulator.qgates.qnot, qgame.simulator.qgates.nand, qgame.simulator.qgates.utheta, qgame.simulator.qgates.srn, qgame.simulator.qgates.cnot, qgame.simulator.qgates.swap, qgame.simulator.qgates.with_oracle, qgame.simulator.qgates.cphase, qgame.simulator.flow.else$, 
 qgame.simulator.flow.end, qgame.simulator.qgates.hadamard, qgame.simulator.qgates.u2, qgame.simulator.flow.measure, null]));
 qgame.simulator.shared.on_error = cljs.core.atom.call(null, null);
+qgame.simulator.shared.on_warning = cljs.core.atom.call(null, null);
 goog.provide("qgame.simulator.parser");
 goog.require("cljs.core");
 goog.require("qgame.utils.math");
@@ -30687,14 +30689,14 @@ goog.require("qgame.simulator.shared");
 goog.require("qgame.simulator.parser");
 goog.require("qgame.simulator.parser");
 qgame.simulator.error.get_message = function() {
-  var method_table__4308__auto__ = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
-  var prefer_table__4309__auto__ = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
-  var method_cache__4310__auto__ = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
-  var cached_hierarchy__4311__auto__ = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
-  var hierarchy__4312__auto__ = cljs.core.get.call(null, cljs.core.PersistentArrayMap.EMPTY, new cljs.core.Keyword(null, "hierarchy", "hierarchy", 3129050535), cljs.core.get_global_hierarchy.call(null));
+  var method_table__4261__auto__ = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
+  var prefer_table__4262__auto__ = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
+  var method_cache__4263__auto__ = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
+  var cached_hierarchy__4264__auto__ = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.EMPTY);
+  var hierarchy__4265__auto__ = cljs.core.get.call(null, cljs.core.PersistentArrayMap.EMPTY, new cljs.core.Keyword(null, "hierarchy", "hierarchy", 3129050535), cljs.core.get_global_hierarchy.call(null));
   return new cljs.core.MultiFn("get-message", function(title, context) {
     return title;
-  }, new cljs.core.Keyword(null, "default", "default", 2558708147), hierarchy__4312__auto__, method_table__4308__auto__, prefer_table__4309__auto__, method_cache__4310__auto__, cached_hierarchy__4311__auto__);
+  }, new cljs.core.Keyword(null, "default", "default", 2558708147), hierarchy__4265__auto__, method_table__4261__auto__, prefer_table__4262__auto__, method_cache__4263__auto__, cached_hierarchy__4264__auto__);
 }();
 qgame.simulator.error.to_error = function to_error(title, context) {
   return cljs.core.assoc.call(null, context, new cljs.core.Keyword(null, "error", "error", 1110689146), new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null, "stage", "stage", 1123661424), cljs.core.deref.call(null, qgame.simulator.shared.stage), new cljs.core.Keyword(null, "current-qgame-fn", "current-qgame-fn", 3886099512), cljs.core.deref.call(null, qgame.simulator.shared.current_qgame_fn), new cljs.core.Keyword(null, "title", "title", 1124275658), title, new cljs.core.Keyword(null, 
@@ -30706,21 +30708,11 @@ qgame.simulator.error.log_and_return_error_BANG_ = function() {
     return log_and_return_error_BANG_.call(null, title, cljs.core.PersistentArrayMap.EMPTY);
   };
   var log_and_return_error_BANG___2 = function(title, context) {
-    var map__5293 = qgame.simulator.error.to_error.call(null, title, context);
-    var map__5293__$1 = cljs.core.seq_QMARK_.call(null, map__5293) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5293) : map__5293;
-    var context_PLUS_ = map__5293__$1;
-    var map__5294 = cljs.core.get.call(null, map__5293__$1, new cljs.core.Keyword(null, "error", "error", 1110689146));
-    var map__5294__$1 = cljs.core.seq_QMARK_.call(null, map__5294) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5294) : map__5294;
-    var message = cljs.core.get.call(null, map__5294__$1, new cljs.core.Keyword(null, "message", "message", 1968829305));
-    var title__$1 = cljs.core.get.call(null, map__5294__$1, new cljs.core.Keyword(null, "title", "title", 1124275658));
-    var current_qgame_fn = cljs.core.get.call(null, map__5294__$1, new cljs.core.Keyword(null, "current-qgame-fn", "current-qgame-fn", 3886099512));
-    var stage = cljs.core.get.call(null, map__5294__$1, new cljs.core.Keyword(null, "stage", "stage", 1123661424));
-    var report = new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "message", "message", 1968829305), [cljs.core.str("qgame error during "), cljs.core.str(stage), cljs.core.str(", in qgame function "), cljs.core.str(current_qgame_fn), cljs.core.str(": "), cljs.core.str(title__$1), cljs.core.str("\n"), cljs.core.str(message)].join(""), new cljs.core.Keyword(null, "more", "more", 1017261767), cljs.core.clj__GT_js.call(null, context_PLUS_)], null);
-    console.log((new cljs.core.Keyword(null, "message", "message", 1968829305)).cljs$core$IFn$_invoke$arity$1(report), "\n", (new cljs.core.Keyword(null, "more", "more", 1017261767)).cljs$core$IFn$_invoke$arity$1(report));
-    var temp__4092__auto___5295 = cljs.core.deref.call(null, qgame.simulator.shared.on_error);
-    if (cljs.core.truth_(temp__4092__auto___5295)) {
-      var on_err_5296 = temp__4092__auto___5295;
-      on_err_5296.call(null, context_PLUS_);
+    var context_PLUS_ = qgame.simulator.error.to_error.call(null, title, context);
+    var temp__4092__auto___5009 = cljs.core.deref.call(null, qgame.simulator.shared.on_error);
+    if (cljs.core.truth_(temp__4092__auto___5009)) {
+      var on_err_5010 = temp__4092__auto___5009;
+      on_err_5010.call(null, context_PLUS_);
     } else {
     }
     return context_PLUS_;
@@ -30748,21 +30740,11 @@ qgame.simulator.error.log_and_return_warning_BANG_ = function() {
     return log_and_return_warning_BANG_.call(null, title, cljs.core.PersistentArrayMap.EMPTY);
   };
   var log_and_return_warning_BANG___2 = function(title, context) {
-    var map__5299 = qgame.simulator.error.to_warning.call(null, title, context);
-    var map__5299__$1 = cljs.core.seq_QMARK_.call(null, map__5299) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5299) : map__5299;
-    var context_PLUS_ = map__5299__$1;
-    var map__5300 = cljs.core.get.call(null, map__5299__$1, new cljs.core.Keyword(null, "warning", "warning", 2138350350));
-    var map__5300__$1 = cljs.core.seq_QMARK_.call(null, map__5300) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5300) : map__5300;
-    var message = cljs.core.get.call(null, map__5300__$1, new cljs.core.Keyword(null, "message", "message", 1968829305));
-    var title__$1 = cljs.core.get.call(null, map__5300__$1, new cljs.core.Keyword(null, "title", "title", 1124275658));
-    var current_qgame_fn = cljs.core.get.call(null, map__5300__$1, new cljs.core.Keyword(null, "current-qgame-fn", "current-qgame-fn", 3886099512));
-    var stage = cljs.core.get.call(null, map__5300__$1, new cljs.core.Keyword(null, "stage", "stage", 1123661424));
-    var report = new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "message", "message", 1968829305), [cljs.core.str("qgame warning during "), cljs.core.str(stage), cljs.core.str(", in qgame function "), cljs.core.str(current_qgame_fn), cljs.core.str(": "), cljs.core.str(title__$1), cljs.core.str("\n"), cljs.core.str(message)].join(""), new cljs.core.Keyword(null, "more", "more", 1017261767), cljs.core.clj__GT_js.call(null, context_PLUS_)], null);
-    console.log(report.call(null, new cljs.core.Keyword(null, "message", "message", 1968829305)), "\n", report.call(null, new cljs.core.Keyword(null, "more", "more", 1017261767)));
-    var temp__4092__auto___5301 = cljs.core.deref.call(null, qgame.simulator.shared.on_error);
-    if (cljs.core.truth_(temp__4092__auto___5301)) {
-      var on_err_5302 = temp__4092__auto___5301;
-      on_err_5302.call(null, context_PLUS_);
+    var context_PLUS_ = qgame.simulator.error.to_warning.call(null, title, context);
+    var temp__4092__auto___5011 = cljs.core.deref.call(null, qgame.simulator.shared.on_warning);
+    if (cljs.core.truth_(temp__4092__auto___5011)) {
+      var on_warn_5012 = temp__4092__auto___5011;
+      on_warn_5012.call(null, context_PLUS_);
     } else {
     }
     return context_PLUS_;
@@ -30793,12 +30775,12 @@ cljs.core._add_method.call(null, qgame.simulator.error.get_message, "Unrecognize
   return[cljs.core.str("Bite "), cljs.core.str((new cljs.core.Keyword(null, "text", "text", 1017460895)).cljs$core$IFn$_invoke$arity$1(bite)), cljs.core.str(" does not taste like a token.")].join("");
 });
 cljs.core._add_method.call(null, qgame.simulator.error.get_message, "Too few parameters", function(title, expression) {
-  var map__5303 = expression;
-  var map__5303__$1 = cljs.core.seq_QMARK_.call(null, map__5303) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5303) : map__5303;
-  var swallowed = cljs.core.get.call(null, map__5303__$1, new cljs.core.Keyword(null, "swallowed", "swallowed", 3934694966));
-  var param_names = cljs.core.get.call(null, map__5303__$1, new cljs.core.Keyword(null, "param-names", "param-names", 740923770));
-  var num_qubits = cljs.core.get.call(null, map__5303__$1, new cljs.core.Keyword(null, "num-qubits", "num-qubits", 1175408835));
-  var fn_name = cljs.core.get.call(null, map__5303__$1, new cljs.core.Keyword(null, "fn-name", "fn-name", 4539105250));
+  var map__5013 = expression;
+  var map__5013__$1 = cljs.core.seq_QMARK_.call(null, map__5013) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5013) : map__5013;
+  var swallowed = cljs.core.get.call(null, map__5013__$1, new cljs.core.Keyword(null, "swallowed", "swallowed", 3934694966));
+  var param_names = cljs.core.get.call(null, map__5013__$1, new cljs.core.Keyword(null, "param-names", "param-names", 740923770));
+  var num_qubits = cljs.core.get.call(null, map__5013__$1, new cljs.core.Keyword(null, "num-qubits", "num-qubits", 1175408835));
+  var fn_name = cljs.core.get.call(null, map__5013__$1, new cljs.core.Keyword(null, "fn-name", "fn-name", 4539105250));
   return[cljs.core.str("Function "), cljs.core.str(fn_name), cljs.core.str(" requires "), cljs.core.str(num_qubits + cljs.core.count.call(null, param_names)), cljs.core.str(" arguments, swallowed only "), cljs.core.str(cljs.core.count.call(null, swallowed)), cljs.core.str(".")].join("");
 });
 cljs.core._add_method.call(null, qgame.simulator.error.get_message, "Lonely", function(title, token) {
@@ -30828,15 +30810,15 @@ cljs.core._add_method.call(null, qgame.simulator.error.get_message, "Math evalua
 cljs.core._add_method.call(null, qgame.simulator.error.get_message, "Extra end", function(title, expression) {
   return[cljs.core.str("Encountered an extra 'end' instruction.")].join("");
 });
-cljs.core._add_method.call(null, qgame.simulator.error.get_message, "Lingering status", function(title, p__5304) {
-  var map__5305 = p__5304;
-  var map__5305__$1 = cljs.core.seq_QMARK_.call(null, map__5305) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5305) : map__5305;
-  var status = cljs.core.get.call(null, map__5305__$1, new cljs.core.Keyword(null, "status", "status", 4416389988));
-  var G__5306 = status;
-  if (cljs.core._EQ_.call(null, "else_clause", G__5306)) {
+cljs.core._add_method.call(null, qgame.simulator.error.get_message, "Lingering status", function(title, p__5014) {
+  var map__5015 = p__5014;
+  var map__5015__$1 = cljs.core.seq_QMARK_.call(null, map__5015) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5015) : map__5015;
+  var status = cljs.core.get.call(null, map__5015__$1, new cljs.core.Keyword(null, "status", "status", 4416389988));
+  var G__5016 = status;
+  if (cljs.core._EQ_.call(null, "else_clause", G__5016)) {
     return "Some 'measure' missing an 'end'";
   } else {
-    if (cljs.core._EQ_.call(null, "then_clause", G__5306)) {
+    if (cljs.core._EQ_.call(null, "then_clause", G__5016)) {
       return "Some 'measure' missing two 'end's";
     } else {
       if (new cljs.core.Keyword(null, "else", "else", 1017020587)) {
@@ -31132,19 +31114,52 @@ goog.require("qgame.simulator.compiler");
 goog.require("qgame.simulator.executor");
 goog.require("qgame.simulator.executor");
 goog.require("qgame.simulator.shared");
+qgame.simulator.interpreter.default_error = function default_error(p__5058) {
+  var map__5061 = p__5058;
+  var map__5061__$1 = cljs.core.seq_QMARK_.call(null, map__5061) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5061) : map__5061;
+  var context = map__5061__$1;
+  var map__5062 = cljs.core.get.call(null, map__5061__$1, new cljs.core.Keyword(null, "error", "error", 1110689146));
+  var map__5062__$1 = cljs.core.seq_QMARK_.call(null, map__5062) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5062) : map__5062;
+  var message = cljs.core.get.call(null, map__5062__$1, new cljs.core.Keyword(null, "message", "message", 1968829305));
+  var title = cljs.core.get.call(null, map__5062__$1, new cljs.core.Keyword(null, "title", "title", 1124275658));
+  var current_qgame_fn = cljs.core.get.call(null, map__5062__$1, new cljs.core.Keyword(null, "current-qgame-fn", "current-qgame-fn", 3886099512));
+  var stage = cljs.core.get.call(null, map__5062__$1, new cljs.core.Keyword(null, "stage", "stage", 1123661424));
+  return console.log([cljs.core.str("qgame error during "), cljs.core.str(stage), cljs.core.str(", in qgame function "), cljs.core.str(current_qgame_fn), cljs.core.str(": "), cljs.core.str(title), cljs.core.str("\n"), cljs.core.str(message)].join(""), "\n", cljs.core.clj__GT_js.call(null, context));
+};
+qgame.simulator.interpreter.default_warning = function default_warning(p__5063) {
+  var map__5066 = p__5063;
+  var map__5066__$1 = cljs.core.seq_QMARK_.call(null, map__5066) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5066) : map__5066;
+  var context = map__5066__$1;
+  var map__5067 = cljs.core.get.call(null, map__5066__$1, new cljs.core.Keyword(null, "error", "error", 1110689146));
+  var map__5067__$1 = cljs.core.seq_QMARK_.call(null, map__5067) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5067) : map__5067;
+  var message = cljs.core.get.call(null, map__5067__$1, new cljs.core.Keyword(null, "message", "message", 1968829305));
+  var title = cljs.core.get.call(null, map__5067__$1, new cljs.core.Keyword(null, "title", "title", 1124275658));
+  var current_qgame_fn = cljs.core.get.call(null, map__5067__$1, new cljs.core.Keyword(null, "current-qgame-fn", "current-qgame-fn", 3886099512));
+  var stage = cljs.core.get.call(null, map__5067__$1, new cljs.core.Keyword(null, "stage", "stage", 1123661424));
+  return console.log([cljs.core.str("qgame warning during "), cljs.core.str(stage), cljs.core.str(", in qgame function "), cljs.core.str(current_qgame_fn), cljs.core.str(": "), cljs.core.str(title), cljs.core.str("\n"), cljs.core.str(message)].join(""), "\n", cljs.core.clj__GT_js.call(null, context));
+};
 qgame.simulator.interpreter.interpret = function() {
   var interpret = null;
   var interpret__1 = function(raw) {
-    var processed = qgame.simulator.compiler.compile.call(null, qgame.simulator.parser.parse.call(null, qgame.simulator.reader.read.call(null, raw)));
-    return qgame.simulator.executor.execute.call(null, processed);
+    return interpret.call(null, cljs.core.PersistentArrayMap.EMPTY, raw);
   };
-  var interpret__2 = function(p__5352, raw) {
-    var map__5354 = p__5352;
-    var map__5354__$1 = cljs.core.seq_QMARK_.call(null, map__5354) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5354) : map__5354;
-    var on_err = cljs.core.get.call(null, map__5354__$1, new cljs.core.Keyword(null, "on-err", "on-err", 4294768617));
-    var in_exec = cljs.core.get.call(null, map__5354__$1, new cljs.core.Keyword(null, "in-exec", "in-exec", 2906402731));
-    var pre_exec = cljs.core.get.call(null, map__5354__$1, new cljs.core.Keyword(null, "pre-exec", "pre-exec", 3967568109));
-    cljs.core.reset_BANG_.call(null, qgame.simulator.shared.on_error, on_err);
+  var interpret__2 = function(p__5068, raw) {
+    var map__5070 = p__5068;
+    var map__5070__$1 = cljs.core.seq_QMARK_.call(null, map__5070) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5070) : map__5070;
+    var on_warn = cljs.core.get.call(null, map__5070__$1, new cljs.core.Keyword(null, "on-warn", "on-warn", 3936972070));
+    var on_err = cljs.core.get.call(null, map__5070__$1, new cljs.core.Keyword(null, "on-err", "on-err", 4294768617));
+    var in_exec = cljs.core.get.call(null, map__5070__$1, new cljs.core.Keyword(null, "in-exec", "in-exec", 2906402731));
+    var pre_exec = cljs.core.get.call(null, map__5070__$1, new cljs.core.Keyword(null, "pre-exec", "pre-exec", 3967568109));
+    if (cljs.core.truth_(on_err)) {
+      cljs.core.reset_BANG_.call(null, qgame.simulator.shared.on_error, on_err);
+    } else {
+      cljs.core.reset_BANG_.call(null, qgame.simulator.shared.on_error, qgame.simulator.interpreter.default_error);
+    }
+    if (cljs.core.truth_(on_warn)) {
+      cljs.core.reset_BANG_.call(null, qgame.simulator.shared.on_warning, on_warn);
+    } else {
+      cljs.core.reset_BANG_.call(null, qgame.simulator.shared.on_warning, qgame.simulator.interpreter.default_warning);
+    }
     var processed = qgame.simulator.compiler.compile.call(null, qgame.simulator.parser.parse.call(null, qgame.simulator.reader.read.call(null, raw)));
     if (cljs.core.truth_(pre_exec)) {
       pre_exec.call(null, processed);
@@ -31152,12 +31167,12 @@ qgame.simulator.interpreter.interpret = function() {
     }
     return qgame.simulator.executor.execute.call(null, cljs.core.assoc.call(null, processed, new cljs.core.Keyword(null, "renderer", "renderer", 519058485), in_exec));
   };
-  interpret = function(p__5352, raw) {
+  interpret = function(p__5068, raw) {
     switch(arguments.length) {
       case 1:
-        return interpret__1.call(this, p__5352);
+        return interpret__1.call(this, p__5068);
       case 2:
-        return interpret__2.call(this, p__5352, raw);
+        return interpret__2.call(this, p__5068, raw);
     }
     throw new Error("Invalid arity: " + arguments.length);
   };
