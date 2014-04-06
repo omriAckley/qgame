@@ -1,7 +1,7 @@
 (ns qgame.utils.math
   "Handles all of the math for qgame, including matrix math and complex number math. For all operations, converts the arguments so that any nested collectsion are math.js matrices, calls the operation, and then converts any nested matrices back to vectors."
   (:require [math.js]
-            [bruenner.js]
+            [arndt.js]
             [clojure.walk :as w :refer [postwalk
                                         prewalk]]))
 

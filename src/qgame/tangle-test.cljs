@@ -17,6 +17,10 @@
                :amplitudes [0.70711 0 0 0 0 0 0 0.70711]}
               #_{:description "||UUU>+|UUD>+|DDU>+|DDD>>+||UUU>+|UUD>+|UDU>+|UDD>+|DUU>+|DUD>+|DDU>+|DDD>>"
                :amplitudes [0.43301 0.43301 0.25 0.25 0.25 0.25 0.43301 0.43301]}
+              {:description "|UUD>+|UDU>+|DUU>"
+               :amplitudes [0 0.57735 0.57735 0 0.57735 0 0 0]}
+              {:description "|UUD>+|UDU>+|DUU>+|DDU>+|DUD>+|UDD>"
+               :amplitudes [0 0.408248 0.408248 0.408248 0.408248 0.408248 0.408248 0]}
               {:description "|UUUU>+|UUUD>+|UUDU>+|UUDD>+|DDUU>+|DDUD>+|DDDU>+|DDDD>"
                :amplitudes [0.35355 0.35355 0.35355 0.35355 0 0 0 0 0 0 0 0 0.35355 0.35355 0.35355 0.35355]}
               {:description "|UUUU>+|DDDD>"
@@ -33,7 +37,7 @@
                           (for [[a & remaining] (take (count coll) (iterate rest coll))
                                 b remaining]
                             [a b]))]]
-  (println "\nCase : " description)
+  (println "\nCase :" description)
   (doseq [pair (get-pairs (reverse (range n)))
           :let [letters (mapv #(to-letter (- (dec n) %))
                               pair)

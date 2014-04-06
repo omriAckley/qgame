@@ -1,3 +1,5 @@
+//This code has been repurposed, by its original author, Arndt Brünner, from this website: http://www.arndt-bruenner.de/mathe/scripts/engl_eigenwert2.htm
+
 // Returns the 4 eigenvalues -- output is Array((re1,im1),(re2,im2),...) -- of matrix m, 
 // which must have the Array-structure
 // (((a11re,a11im),(a12re,a12im),...,(a14re,a14im)),((a21re,a21im),...,(a24re,a24im)),... etc.
@@ -11,6 +13,7 @@ function solve4(k_)
 {
 	var i,j,x=new Array(0,0),y=new Array(0,0),X=new Array(),nX=0,t,w=Math.pow(k_[0][0]*k_[0][0]+k_[0][1]*k_[0][1],0.125)*2,cp=false;
 	var k=new Array(5);for(i=0;i<=4;i++){k[i]=new Array(k_[i][0],k_[i][1]);if(k[i][1]!=0)cp=true;}
+	while((k[0][0]==0)&&(k[0][1]==0)){hkpd(k,x,y);X[nX++]=new Array(0,0);}
 	for(i=0;(i<5000)&&(nX<4);i++)
 	{
 		x[0]=Math.random()*Math.random()*Math.random();x[0]*=x[0]*50*(i%50+10);if(Math.random()>0.5)x[0]=-x[0];x[1]=0;
@@ -50,6 +53,7 @@ function hk(k,x,y) // Horner, complex
 function hkpd(k,x,y)  // Horner, complex, reduces polynomial
 {
 	var i,im,kk=new Array(new Array(0,0),new Array(0,0),new Array(0,0),new Array(0,0));y[0]=k[4][0];y[1]=k[4][1];
+	if(x[0]*x[0]+x[1]*x[1]<1e-15){for(i=0;i<4;i++){k[i][0]=k[i+1][0];k[i][1]=k[i+1][1]};k[4][0]=k[4][1]=0;return;}
 	for(i=3;i>=0;i--){im=(kk[i][1]=y[0]*x[1]+y[1]*x[0])+k[i][1];y[0]=(kk[i][0]=y[0]*x[0]-y[1]*x[1])+k[i][0];y[1]=im;}
 	for(i=0;i<4;i++){k[i][0]=kk[i][0];k[i][1]=kk[i][1];}k[4][0]=k[4][1]=0;
 	if(y[0]*y[0]+y[1]*y[1]>1e-15)alert("Error: |y|="+Math.sqrt(y[0]*y[0]+y[1]*y[1])+"!=0");
