@@ -30646,21 +30646,21 @@ qgame.simulator.reader.chew = function() {
     return chew.call(null, s, cljs.core.PersistentVector.EMPTY);
   };
   var chew__2 = function(s, bites) {
-    var s_ = clojure.string.replace_first.call(null, s, qgame.utils.general.regex_join.call(null, "^", qgame.simulator.reader.whitespace_equivalent_pattern), "");
+    var s_ = clojure.string.replace_first.call(null, s, qgame.utils.general.regex_join.call(null, "^", qgame.simulator.reader.ignore_pattern), "");
     var bites__$1 = bites;
     while (true) {
       if (cljs.core.truth_(clojure.string.blank_QMARK_.call(null, s_))) {
         return bites__$1;
       } else {
         var pos = cljs.core.count.call(null, s) - cljs.core.count.call(null, s_);
-        var vec__5237 = clojure.string.split.call(null, s_, qgame.simulator.reader.ignore_pattern, 2);
-        var text = cljs.core.nth.call(null, vec__5237, 0, null);
-        var s__ = cljs.core.nth.call(null, vec__5237, 1, null);
+        var vec__5072 = clojure.string.split.call(null, s_, qgame.simulator.reader.ignore_pattern, 2);
+        var text = cljs.core.nth.call(null, vec__5072, 0, null);
+        var s__ = cljs.core.nth.call(null, vec__5072, 1, null);
         var bite = new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null, "text", "text", 1017460895), text, new cljs.core.Keyword(null, "character-position", "character-position", 2475872959), pos], null);
-        var G__5238 = [cljs.core.str(s__)].join("");
-        var G__5239 = cljs.core.conj.call(null, bites__$1, bite);
-        s_ = G__5238;
-        bites__$1 = G__5239;
+        var G__5073 = [cljs.core.str(s__)].join("");
+        var G__5074 = cljs.core.conj.call(null, bites__$1, bite);
+        s_ = G__5073;
+        bites__$1 = G__5074;
         continue;
       }
       break;
@@ -30679,14 +30679,14 @@ qgame.simulator.reader.chew = function() {
   chew.cljs$core$IFn$_invoke$arity$2 = chew__2;
   return chew;
 }();
-qgame.simulator.reader.split_into_bites = function split_into_bites(p__5241) {
-  var map__5243 = p__5241;
-  var map__5243__$1 = cljs.core.seq_QMARK_.call(null, map__5243) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5243) : map__5243;
-  var line_number = cljs.core.get.call(null, map__5243__$1, new cljs.core.Keyword(null, "line-number", "line-number", 4279856820));
-  var line = cljs.core.get.call(null, map__5243__$1, new cljs.core.Keyword(null, "line", "line", 1017226086));
+qgame.simulator.reader.split_into_bites = function split_into_bites(p__5076) {
+  var map__5078 = p__5076;
+  var map__5078__$1 = cljs.core.seq_QMARK_.call(null, map__5078) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5078) : map__5078;
+  var line_number = cljs.core.get.call(null, map__5078__$1, new cljs.core.Keyword(null, "line-number", "line-number", 4279856820));
+  var line = cljs.core.get.call(null, map__5078__$1, new cljs.core.Keyword(null, "line", "line", 1017226086));
   var bites = qgame.simulator.reader.chew.call(null, line);
-  return cljs.core.map.call(null, function(p1__5240_SHARP_) {
-    return cljs.core.assoc.call(null, p1__5240_SHARP_, new cljs.core.Keyword(null, "line-number", "line-number", 4279856820), line_number);
+  return cljs.core.map.call(null, function(p1__5075_SHARP_) {
+    return cljs.core.assoc.call(null, p1__5075_SHARP_, new cljs.core.Keyword(null, "line-number", "line-number", 4279856820), line_number);
   }, bites);
 };
 qgame.simulator.reader.read = function read(program) {

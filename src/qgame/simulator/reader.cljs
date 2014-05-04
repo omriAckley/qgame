@@ -30,7 +30,7 @@
   ([s]
    (chew s []))
   ([s bites]
-   (loop [s- (s/replace-first s (g/regex-join "^" whitespace-equivalent-pattern) "")
+   (loop [s- (s/replace-first s (g/regex-join "^" ignore-pattern) "")
           bites bites]
      (if (s/blank? s-)
        bites
