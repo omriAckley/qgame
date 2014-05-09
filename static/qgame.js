@@ -29548,25 +29548,25 @@ qgame.utils.amplitudes.amplitudes_to_probability = function amplitudes_to_probab
 };
 qgame.utils.amplitudes.qubits_to_amplitude_indices = function qubits_to_amplitude_indices(qubits, tot_num_qubits) {
   var excluded_qubits = cljs.core.remove.call(null, cljs.core.reduce.call(null, cljs.core.conj, cljs.core.PersistentHashSet.EMPTY, qubits), cljs.core.range.call(null, tot_num_qubits));
-  var iter__4167__auto__ = function iter__4915(s__4916) {
+  var iter__4120__auto__ = function iter__4911(s__4912) {
     return new cljs.core.LazySeq(null, function() {
-      var s__4916__$1 = s__4916;
+      var s__4912__$1 = s__4912;
       while (true) {
-        var temp__4092__auto__ = cljs.core.seq.call(null, s__4916__$1);
+        var temp__4092__auto__ = cljs.core.seq.call(null, s__4912__$1);
         if (temp__4092__auto__) {
-          var s__4916__$2 = temp__4092__auto__;
-          if (cljs.core.chunked_seq_QMARK_.call(null, s__4916__$2)) {
-            var c__4165__auto__ = cljs.core.chunk_first.call(null, s__4916__$2);
-            var size__4166__auto__ = cljs.core.count.call(null, c__4165__auto__);
-            var b__4918 = cljs.core.chunk_buffer.call(null, size__4166__auto__);
+          var s__4912__$2 = temp__4092__auto__;
+          if (cljs.core.chunked_seq_QMARK_.call(null, s__4912__$2)) {
+            var c__4118__auto__ = cljs.core.chunk_first.call(null, s__4912__$2);
+            var size__4119__auto__ = cljs.core.count.call(null, c__4118__auto__);
+            var b__4914 = cljs.core.chunk_buffer.call(null, size__4119__auto__);
             if (function() {
-              var i__4917 = 0;
+              var i__4913 = 0;
               while (true) {
-                if (i__4917 < size__4166__auto__) {
-                  var seed_index = cljs.core._nth.call(null, c__4165__auto__, i__4917);
-                  cljs.core.chunk_append.call(null, b__4918, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits));
-                  var G__4919 = i__4917 + 1;
-                  i__4917 = G__4919;
+                if (i__4913 < size__4119__auto__) {
+                  var seed_index = cljs.core._nth.call(null, c__4118__auto__, i__4913);
+                  cljs.core.chunk_append.call(null, b__4914, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits));
+                  var G__4915 = i__4913 + 1;
+                  i__4913 = G__4915;
                   continue;
                 } else {
                   return true;
@@ -29574,13 +29574,13 @@ qgame.utils.amplitudes.qubits_to_amplitude_indices = function qubits_to_amplitud
                 break;
               }
             }()) {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4918), iter__4915.call(null, cljs.core.chunk_rest.call(null, s__4916__$2)));
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4914), iter__4911.call(null, cljs.core.chunk_rest.call(null, s__4912__$2)));
             } else {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4918), null);
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4914), null);
             }
           } else {
-            var seed_index = cljs.core.first.call(null, s__4916__$2);
-            return cljs.core.cons.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits), iter__4915.call(null, cljs.core.rest.call(null, s__4916__$2)));
+            var seed_index = cljs.core.first.call(null, s__4912__$2);
+            return cljs.core.cons.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), qubits), iter__4911.call(null, cljs.core.rest.call(null, s__4912__$2)));
           }
         } else {
           return null;
@@ -29589,7 +29589,7 @@ qgame.utils.amplitudes.qubits_to_amplitude_indices = function qubits_to_amplitud
       }
     }, null, null);
   };
-  return iter__4167__auto__.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [0], null), excluded_qubits));
+  return iter__4120__auto__.call(null, qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [0], null), excluded_qubits));
 };
 qgame.utils.amplitudes.qubit_state_amplitudes = function qubit_state_amplitudes(amplitudes, qubit, binary_state) {
   var excluded_qubits = cljs.core.remove.call(null, cljs.core.PersistentHashSet.fromArray([qubit], true), cljs.core.range.call(null, qgame.utils.amplitudes.get_num_qubits.call(null, amplitudes)));
@@ -29597,17 +29597,17 @@ qgame.utils.amplitudes.qubit_state_amplitudes = function qubit_state_amplitudes(
   var indices = qgame.utils.general.itermap.call(null, cljs.core.bit_flip, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [seed_index], null), excluded_qubits);
   return cljs.core.map.call(null, cljs.core.partial.call(null, cljs.core.get, amplitudes), indices);
 };
-qgame.utils.amplitudes.probability_of = function probability_of(p__4920, qubit, binary_state) {
-  var map__4922 = p__4920;
-  var map__4922__$1 = cljs.core.seq_QMARK_.call(null, map__4922) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4922) : map__4922;
-  var amplitudes = cljs.core.get.call(null, map__4922__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
+qgame.utils.amplitudes.probability_of = function probability_of(p__4916, qubit, binary_state) {
+  var map__4918 = p__4916;
+  var map__4918__$1 = cljs.core.seq_QMARK_.call(null, map__4918) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4918) : map__4918;
+  var amplitudes = cljs.core.get.call(null, map__4918__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
   var sub_amplitudes = qgame.utils.amplitudes.qubit_state_amplitudes.call(null, amplitudes, qubit, binary_state);
   return qgame.utils.amplitudes.amplitudes_to_probability.call(null, sub_amplitudes);
 };
-qgame.utils.amplitudes.phase_of = function phase_of(p__4923, qubit, binary_state) {
-  var map__4925 = p__4923;
-  var map__4925__$1 = cljs.core.seq_QMARK_.call(null, map__4925) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4925) : map__4925;
-  var amplitudes = cljs.core.get.call(null, map__4925__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
+qgame.utils.amplitudes.phase_of = function phase_of(p__4919, qubit, binary_state) {
+  var map__4921 = p__4919;
+  var map__4921__$1 = cljs.core.seq_QMARK_.call(null, map__4921) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4921) : map__4921;
+  var amplitudes = cljs.core.get.call(null, map__4921__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
   var sub_amplitudes = qgame.utils.amplitudes.qubit_state_amplitudes.call(null, amplitudes, qubit, binary_state);
   var amplitude = cljs.core.reduce.call(null, qgame.utils.math.add, sub_amplitudes);
   return qgame.utils.math.to_phase.call(null, amplitude);
@@ -29635,25 +29635,25 @@ qgame.utils.amplitudes.all_combinations = function all_combinations(qubits) {
 };
 qgame.utils.amplitudes.reduced_entry = function reduced_entry(amplitudes, partial_substate, partial_substate_STAR_, excluded_qubits) {
   var sub_amplitudes = function() {
-    var iter__4167__auto__ = function iter__4930(s__4931) {
+    var iter__4120__auto__ = function iter__4926(s__4927) {
       return new cljs.core.LazySeq(null, function() {
-        var s__4931__$1 = s__4931;
+        var s__4927__$1 = s__4927;
         while (true) {
-          var temp__4092__auto__ = cljs.core.seq.call(null, s__4931__$1);
+          var temp__4092__auto__ = cljs.core.seq.call(null, s__4927__$1);
           if (temp__4092__auto__) {
-            var s__4931__$2 = temp__4092__auto__;
-            if (cljs.core.chunked_seq_QMARK_.call(null, s__4931__$2)) {
-              var c__4165__auto__ = cljs.core.chunk_first.call(null, s__4931__$2);
-              var size__4166__auto__ = cljs.core.count.call(null, c__4165__auto__);
-              var b__4933 = cljs.core.chunk_buffer.call(null, size__4166__auto__);
+            var s__4927__$2 = temp__4092__auto__;
+            if (cljs.core.chunked_seq_QMARK_.call(null, s__4927__$2)) {
+              var c__4118__auto__ = cljs.core.chunk_first.call(null, s__4927__$2);
+              var size__4119__auto__ = cljs.core.count.call(null, c__4118__auto__);
+              var b__4929 = cljs.core.chunk_buffer.call(null, size__4119__auto__);
               if (function() {
-                var i__4932 = 0;
+                var i__4928 = 0;
                 while (true) {
-                  if (i__4932 < size__4166__auto__) {
-                    var remaining_substate = cljs.core._nth.call(null, c__4165__auto__, i__4932);
-                    cljs.core.chunk_append.call(null, b__4933, qgame.utils.amplitudes.combine.call(null, amplitudes, cljs.core.merge.call(null, partial_substate, remaining_substate), cljs.core.merge.call(null, partial_substate_STAR_, remaining_substate)));
-                    var G__4934 = i__4932 + 1;
-                    i__4932 = G__4934;
+                  if (i__4928 < size__4119__auto__) {
+                    var remaining_substate = cljs.core._nth.call(null, c__4118__auto__, i__4928);
+                    cljs.core.chunk_append.call(null, b__4929, qgame.utils.amplitudes.combine.call(null, amplitudes, cljs.core.merge.call(null, partial_substate, remaining_substate), cljs.core.merge.call(null, partial_substate_STAR_, remaining_substate)));
+                    var G__4930 = i__4928 + 1;
+                    i__4928 = G__4930;
                     continue;
                   } else {
                     return true;
@@ -29661,13 +29661,13 @@ qgame.utils.amplitudes.reduced_entry = function reduced_entry(amplitudes, partia
                   break;
                 }
               }()) {
-                return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4933), iter__4930.call(null, cljs.core.chunk_rest.call(null, s__4931__$2)));
+                return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4929), iter__4926.call(null, cljs.core.chunk_rest.call(null, s__4927__$2)));
               } else {
-                return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4933), null);
+                return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4929), null);
               }
             } else {
-              var remaining_substate = cljs.core.first.call(null, s__4931__$2);
-              return cljs.core.cons.call(null, qgame.utils.amplitudes.combine.call(null, amplitudes, cljs.core.merge.call(null, partial_substate, remaining_substate), cljs.core.merge.call(null, partial_substate_STAR_, remaining_substate)), iter__4930.call(null, cljs.core.rest.call(null, s__4931__$2)));
+              var remaining_substate = cljs.core.first.call(null, s__4927__$2);
+              return cljs.core.cons.call(null, qgame.utils.amplitudes.combine.call(null, amplitudes, cljs.core.merge.call(null, partial_substate, remaining_substate), cljs.core.merge.call(null, partial_substate_STAR_, remaining_substate)), iter__4926.call(null, cljs.core.rest.call(null, s__4927__$2)));
             }
           } else {
             return null;
@@ -29676,51 +29676,51 @@ qgame.utils.amplitudes.reduced_entry = function reduced_entry(amplitudes, partia
         }
       }, null, null);
     };
-    return iter__4167__auto__.call(null, qgame.utils.amplitudes.all_combinations.call(null, excluded_qubits));
+    return iter__4120__auto__.call(null, qgame.utils.amplitudes.all_combinations.call(null, excluded_qubits));
   }();
   return cljs.core.reduce.call(null, qgame.utils.math.add, sub_amplitudes);
 };
 qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(amplitudes, qubits) {
   var all_combinations = qgame.utils.amplitudes.all_combinations.call(null, qubits);
   var excluded_qubits = cljs.core.remove.call(null, cljs.core.set.call(null, qubits), cljs.core.range.call(null, qgame.utils.amplitudes.get_num_qubits.call(null, amplitudes)));
-  var iter__4167__auto__ = function iter__4955(s__4956) {
+  var iter__4120__auto__ = function iter__4951(s__4952) {
     return new cljs.core.LazySeq(null, function() {
-      var s__4956__$1 = s__4956;
+      var s__4952__$1 = s__4952;
       while (true) {
-        var temp__4092__auto__ = cljs.core.seq.call(null, s__4956__$1);
+        var temp__4092__auto__ = cljs.core.seq.call(null, s__4952__$1);
         if (temp__4092__auto__) {
-          var s__4956__$2 = temp__4092__auto__;
-          if (cljs.core.chunked_seq_QMARK_.call(null, s__4956__$2)) {
-            var c__4165__auto__ = cljs.core.chunk_first.call(null, s__4956__$2);
-            var size__4166__auto__ = cljs.core.count.call(null, c__4165__auto__);
-            var b__4958 = cljs.core.chunk_buffer.call(null, size__4166__auto__);
+          var s__4952__$2 = temp__4092__auto__;
+          if (cljs.core.chunked_seq_QMARK_.call(null, s__4952__$2)) {
+            var c__4118__auto__ = cljs.core.chunk_first.call(null, s__4952__$2);
+            var size__4119__auto__ = cljs.core.count.call(null, c__4118__auto__);
+            var b__4954 = cljs.core.chunk_buffer.call(null, size__4119__auto__);
             if (function() {
-              var i__4957 = 0;
+              var i__4953 = 0;
               while (true) {
-                if (i__4957 < size__4166__auto__) {
-                  var row = cljs.core._nth.call(null, c__4165__auto__, i__4957);
-                  cljs.core.chunk_append.call(null, b__4958, function() {
-                    var iter__4167__auto__ = function(i__4957, row, c__4165__auto__, size__4166__auto__, b__4958, s__4956__$2, temp__4092__auto__) {
-                      return function iter__4967(s__4968) {
-                        return new cljs.core.LazySeq(null, function(i__4957, row, c__4165__auto__, size__4166__auto__, b__4958, s__4956__$2, temp__4092__auto__) {
+                if (i__4953 < size__4119__auto__) {
+                  var row = cljs.core._nth.call(null, c__4118__auto__, i__4953);
+                  cljs.core.chunk_append.call(null, b__4954, function() {
+                    var iter__4120__auto__ = function(i__4953, row, c__4118__auto__, size__4119__auto__, b__4954, s__4952__$2, temp__4092__auto__) {
+                      return function iter__4963(s__4964) {
+                        return new cljs.core.LazySeq(null, function(i__4953, row, c__4118__auto__, size__4119__auto__, b__4954, s__4952__$2, temp__4092__auto__) {
                           return function() {
-                            var s__4968__$1 = s__4968;
+                            var s__4964__$1 = s__4964;
                             while (true) {
-                              var temp__4092__auto____$1 = cljs.core.seq.call(null, s__4968__$1);
+                              var temp__4092__auto____$1 = cljs.core.seq.call(null, s__4964__$1);
                               if (temp__4092__auto____$1) {
-                                var s__4968__$2 = temp__4092__auto____$1;
-                                if (cljs.core.chunked_seq_QMARK_.call(null, s__4968__$2)) {
-                                  var c__4165__auto____$1 = cljs.core.chunk_first.call(null, s__4968__$2);
-                                  var size__4166__auto____$1 = cljs.core.count.call(null, c__4165__auto____$1);
-                                  var b__4970 = cljs.core.chunk_buffer.call(null, size__4166__auto____$1);
+                                var s__4964__$2 = temp__4092__auto____$1;
+                                if (cljs.core.chunked_seq_QMARK_.call(null, s__4964__$2)) {
+                                  var c__4118__auto____$1 = cljs.core.chunk_first.call(null, s__4964__$2);
+                                  var size__4119__auto____$1 = cljs.core.count.call(null, c__4118__auto____$1);
+                                  var b__4966 = cljs.core.chunk_buffer.call(null, size__4119__auto____$1);
                                   if (function() {
-                                    var i__4969 = 0;
+                                    var i__4965 = 0;
                                     while (true) {
-                                      if (i__4969 < size__4166__auto____$1) {
-                                        var col = cljs.core._nth.call(null, c__4165__auto____$1, i__4969);
-                                        cljs.core.chunk_append.call(null, b__4970, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits));
-                                        var G__4975 = i__4969 + 1;
-                                        i__4969 = G__4975;
+                                      if (i__4965 < size__4119__auto____$1) {
+                                        var col = cljs.core._nth.call(null, c__4118__auto____$1, i__4965);
+                                        cljs.core.chunk_append.call(null, b__4966, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits));
+                                        var G__4971 = i__4965 + 1;
+                                        i__4965 = G__4971;
                                         continue;
                                       } else {
                                         return true;
@@ -29728,13 +29728,13 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
                                       break;
                                     }
                                   }()) {
-                                    return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4970), iter__4967.call(null, cljs.core.chunk_rest.call(null, s__4968__$2)));
+                                    return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4966), iter__4963.call(null, cljs.core.chunk_rest.call(null, s__4964__$2)));
                                   } else {
-                                    return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4970), null);
+                                    return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4966), null);
                                   }
                                 } else {
-                                  var col = cljs.core.first.call(null, s__4968__$2);
-                                  return cljs.core.cons.call(null, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits), iter__4967.call(null, cljs.core.rest.call(null, s__4968__$2)));
+                                  var col = cljs.core.first.call(null, s__4964__$2);
+                                  return cljs.core.cons.call(null, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits), iter__4963.call(null, cljs.core.rest.call(null, s__4964__$2)));
                                 }
                               } else {
                                 return null;
@@ -29742,13 +29742,13 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
                               break;
                             }
                           };
-                        }(i__4957, row, c__4165__auto__, size__4166__auto__, b__4958, s__4956__$2, temp__4092__auto__), null, null);
+                        }(i__4953, row, c__4118__auto__, size__4119__auto__, b__4954, s__4952__$2, temp__4092__auto__), null, null);
                       };
-                    }(i__4957, row, c__4165__auto__, size__4166__auto__, b__4958, s__4956__$2, temp__4092__auto__);
-                    return iter__4167__auto__.call(null, all_combinations);
+                    }(i__4953, row, c__4118__auto__, size__4119__auto__, b__4954, s__4952__$2, temp__4092__auto__);
+                    return iter__4120__auto__.call(null, all_combinations);
                   }());
-                  var G__4976 = i__4957 + 1;
-                  i__4957 = G__4976;
+                  var G__4972 = i__4953 + 1;
+                  i__4953 = G__4972;
                   continue;
                 } else {
                   return true;
@@ -29756,34 +29756,34 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
                 break;
               }
             }()) {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4958), iter__4955.call(null, cljs.core.chunk_rest.call(null, s__4956__$2)));
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4954), iter__4951.call(null, cljs.core.chunk_rest.call(null, s__4952__$2)));
             } else {
-              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4958), null);
+              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4954), null);
             }
           } else {
-            var row = cljs.core.first.call(null, s__4956__$2);
+            var row = cljs.core.first.call(null, s__4952__$2);
             return cljs.core.cons.call(null, function() {
-              var iter__4167__auto__ = function(row, s__4956__$2, temp__4092__auto__) {
-                return function iter__4971(s__4972) {
-                  return new cljs.core.LazySeq(null, function(row, s__4956__$2, temp__4092__auto__) {
+              var iter__4120__auto__ = function(row, s__4952__$2, temp__4092__auto__) {
+                return function iter__4967(s__4968) {
+                  return new cljs.core.LazySeq(null, function(row, s__4952__$2, temp__4092__auto__) {
                     return function() {
-                      var s__4972__$1 = s__4972;
+                      var s__4968__$1 = s__4968;
                       while (true) {
-                        var temp__4092__auto____$1 = cljs.core.seq.call(null, s__4972__$1);
+                        var temp__4092__auto____$1 = cljs.core.seq.call(null, s__4968__$1);
                         if (temp__4092__auto____$1) {
-                          var s__4972__$2 = temp__4092__auto____$1;
-                          if (cljs.core.chunked_seq_QMARK_.call(null, s__4972__$2)) {
-                            var c__4165__auto__ = cljs.core.chunk_first.call(null, s__4972__$2);
-                            var size__4166__auto__ = cljs.core.count.call(null, c__4165__auto__);
-                            var b__4974 = cljs.core.chunk_buffer.call(null, size__4166__auto__);
+                          var s__4968__$2 = temp__4092__auto____$1;
+                          if (cljs.core.chunked_seq_QMARK_.call(null, s__4968__$2)) {
+                            var c__4118__auto__ = cljs.core.chunk_first.call(null, s__4968__$2);
+                            var size__4119__auto__ = cljs.core.count.call(null, c__4118__auto__);
+                            var b__4970 = cljs.core.chunk_buffer.call(null, size__4119__auto__);
                             if (function() {
-                              var i__4973 = 0;
+                              var i__4969 = 0;
                               while (true) {
-                                if (i__4973 < size__4166__auto__) {
-                                  var col = cljs.core._nth.call(null, c__4165__auto__, i__4973);
-                                  cljs.core.chunk_append.call(null, b__4974, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits));
-                                  var G__4977 = i__4973 + 1;
-                                  i__4973 = G__4977;
+                                if (i__4969 < size__4119__auto__) {
+                                  var col = cljs.core._nth.call(null, c__4118__auto__, i__4969);
+                                  cljs.core.chunk_append.call(null, b__4970, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits));
+                                  var G__4973 = i__4969 + 1;
+                                  i__4969 = G__4973;
                                   continue;
                                 } else {
                                   return true;
@@ -29791,13 +29791,13 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
                                 break;
                               }
                             }()) {
-                              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4974), iter__4971.call(null, cljs.core.chunk_rest.call(null, s__4972__$2)));
+                              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4970), iter__4967.call(null, cljs.core.chunk_rest.call(null, s__4968__$2)));
                             } else {
-                              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4974), null);
+                              return cljs.core.chunk_cons.call(null, cljs.core.chunk.call(null, b__4970), null);
                             }
                           } else {
-                            var col = cljs.core.first.call(null, s__4972__$2);
-                            return cljs.core.cons.call(null, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits), iter__4971.call(null, cljs.core.rest.call(null, s__4972__$2)));
+                            var col = cljs.core.first.call(null, s__4968__$2);
+                            return cljs.core.cons.call(null, qgame.utils.amplitudes.reduced_entry.call(null, amplitudes, row, col, excluded_qubits), iter__4967.call(null, cljs.core.rest.call(null, s__4968__$2)));
                           }
                         } else {
                           return null;
@@ -29805,11 +29805,11 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
                         break;
                       }
                     };
-                  }(row, s__4956__$2, temp__4092__auto__), null, null);
+                  }(row, s__4952__$2, temp__4092__auto__), null, null);
                 };
-              }(row, s__4956__$2, temp__4092__auto__);
-              return iter__4167__auto__.call(null, all_combinations);
-            }(), iter__4955.call(null, cljs.core.rest.call(null, s__4956__$2)));
+              }(row, s__4952__$2, temp__4092__auto__);
+              return iter__4120__auto__.call(null, all_combinations);
+            }(), iter__4951.call(null, cljs.core.rest.call(null, s__4952__$2)));
           }
         } else {
           return null;
@@ -29818,7 +29818,7 @@ qgame.utils.amplitudes.reduced_density_matrix = function reduced_density_matrix(
       }
     }, null, null);
   };
-  return iter__4167__auto__.call(null, all_combinations);
+  return iter__4120__auto__.call(null, all_combinations);
 };
 qgame.utils.amplitudes.spin_flip = function spin_flip(density_matrix) {
   var flipper = new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [0, 0, 0, -1], null), new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [0, 0, 1, 0], null), new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [0, 1, 0, 0], null), new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [-1, 0, 0, 
@@ -29826,24 +29826,24 @@ qgame.utils.amplitudes.spin_flip = function spin_flip(density_matrix) {
   var rho_ab_STAR_ = qgame.utils.math.conjugate_transpose.call(null, density_matrix);
   return qgame.utils.math.multiply.call(null, qgame.utils.math.multiply.call(null, flipper, rho_ab_STAR_), flipper);
 };
-qgame.utils.amplitudes.tangle_of = function tangle_of(p__4980, qubit_a, qubit_b) {
-  var map__4982 = p__4980;
-  var map__4982__$1 = cljs.core.seq_QMARK_.call(null, map__4982) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4982) : map__4982;
-  var amplitudes = cljs.core.get.call(null, map__4982__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
+qgame.utils.amplitudes.tangle_of = function tangle_of(p__4976, qubit_a, qubit_b) {
+  var map__4978 = p__4976;
+  var map__4978__$1 = cljs.core.seq_QMARK_.call(null, map__4978) ? cljs.core.apply.call(null, cljs.core.hash_map, map__4978) : map__4978;
+  var amplitudes = cljs.core.get.call(null, map__4978__$1, new cljs.core.Keyword(null, "amplitudes", "amplitudes", 1792075714));
   var rho_ab = qgame.utils.amplitudes.reduced_density_matrix.call(null, amplitudes, new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [qubit_a, qubit_b], null));
   var spin_flipped = qgame.utils.amplitudes.spin_flip.call(null, rho_ab);
   var tangle_mat = qgame.utils.math.multiply.call(null, rho_ab, spin_flipped);
   var eigenvals = qgame.utils.math.eigenvalues.call(null, tangle_mat);
   var lambdas = cljs.core.sort.call(null, function(rho_ab, spin_flipped, tangle_mat, eigenvals) {
-    return function(p1__4978_SHARP_, p2__4979_SHARP_) {
-      return p1__4978_SHARP_.re > p2__4979_SHARP_.re;
+    return function(p1__4974_SHARP_, p2__4975_SHARP_) {
+      return p1__4974_SHARP_.re > p2__4975_SHARP_.re;
     };
   }(rho_ab, spin_flipped, tangle_mat, eigenvals), qgame.utils.math.sqrt.call(null, eigenvals));
   var diff = cljs.core.reduce.call(null, qgame.utils.math.subtract, lambdas);
   var tangle = qgame.utils.math.pow.call(null, function() {
-    var x__3757__auto__ = diff;
-    var y__3758__auto__ = 0;
-    return x__3757__auto__ > y__3758__auto__ ? x__3757__auto__ : y__3758__auto__;
+    var x__3710__auto__ = diff;
+    var y__3711__auto__ = 0;
+    return x__3710__auto__ > y__3711__auto__ ? x__3710__auto__ : y__3711__auto__;
   }(), 2);
   return qgame.utils.math.abs.call(null, qgame.utils.math.round.call(null, tangle, 8));
 };

@@ -58,7 +58,7 @@
   [{amplitudes :amplitudes} qubit binary-state]
   (let [sub-amplitudes (qubit-state-amplitudes amplitudes qubit binary-state)
         amplitude (reduce m/add sub-amplitudes)]
-    (to-phase amplitude)))
+    (m/to-phase amplitude)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
