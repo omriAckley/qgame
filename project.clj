@@ -22,7 +22,6 @@
                                  :foreign-libs [{:file "http://cdnjs.cloudflare.com/ajax/libs/mathjs/0.18.1/math.min.js"
                                                  :provides ["math.js"]}
                                                 {:file "./resources/arndt.js"
-                                            :min-lein-version "2.0.0")
-       :provides ["arndt.js"]}]}}}
+                                                 :provides ["arndt.js"]}]}}}
               :repl-listen-port 9000}
   :min-lein-version "2.0.0")
