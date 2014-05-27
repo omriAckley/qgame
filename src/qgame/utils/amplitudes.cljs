@@ -126,6 +126,19 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn substate-amplitudes
+  "Given a particular substate, a particular combination of states of qubits, returns all amplitudes for which that combination is present."
+  [amplitudes substate]
+  (let [qubits (keys substate)
+        excluded-qubits (remove (set qubits)
+                                (range (get-num-qubits amplitudes)))
+        flip-digits (keep (fn [[qubit state]]
+                            (when-not (zero? state) qubit))
+                          substate)
+        seed-index (reduce bit-flip 0 flip-digits)
+        indices (g/itermap bit-flip [seed-index] excluded-qubits)]
+    (map (partial get amplitudes) indices)))
+
 ;#_(defn substate-amplitudes
 ;  "Given a particular substate, a particular combination of states of qubits, returns all amplitudes for which that combination is present."
 ;  [amplitudes substate]
