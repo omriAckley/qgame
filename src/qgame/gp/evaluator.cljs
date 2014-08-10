@@ -51,4 +51,5 @@
   (let [{:keys [program read-from cases]} (apply hash-map args)]
     (reduce (fn [m case]
               (assoc m case (evaluate program read-from case)))
-            {})))
+            {}
+            cases)))

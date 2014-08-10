@@ -39472,14 +39472,14 @@ qgame.gp.evaluator.evaluate = function evaluate(program, read_from, oracle_case)
 };
 qgame.gp.evaluator.test_quantum_program = function() {
   var test_quantum_program__delegate = function(args) {
-    var map__5772 = cljs.core.apply.call(null, cljs.core.hash_map, args);
-    var map__5772__$1 = cljs.core.seq_QMARK_.call(null, map__5772) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5772) : map__5772;
-    var cases = cljs.core.get.call(null, map__5772__$1, new cljs.core.Keyword(null, "cases", "cases", 1108336309));
-    var read_from = cljs.core.get.call(null, map__5772__$1, new cljs.core.Keyword(null, "read-from", "read-from", 4148846835));
-    var program = cljs.core.get.call(null, map__5772__$1, new cljs.core.Keyword(null, "program", "program", 704516598));
+    var map__5076 = cljs.core.apply.call(null, cljs.core.hash_map, args);
+    var map__5076__$1 = cljs.core.seq_QMARK_.call(null, map__5076) ? cljs.core.apply.call(null, cljs.core.hash_map, map__5076) : map__5076;
+    var cases = cljs.core.get.call(null, map__5076__$1, new cljs.core.Keyword(null, "cases", "cases", 1108336309));
+    var read_from = cljs.core.get.call(null, map__5076__$1, new cljs.core.Keyword(null, "read-from", "read-from", 4148846835));
+    var program = cljs.core.get.call(null, map__5076__$1, new cljs.core.Keyword(null, "program", "program", 704516598));
     return cljs.core.reduce.call(null, function(m, case$) {
       return cljs.core.assoc.call(null, m, case$, qgame.gp.evaluator.evaluate.call(null, program, read_from, case$));
-    }, cljs.core.PersistentArrayMap.EMPTY);
+    }, cljs.core.PersistentArrayMap.EMPTY, cases);
   };
   var test_quantum_program = function(var_args) {
     var args = null;
@@ -39489,10 +39489,38 @@ qgame.gp.evaluator.test_quantum_program = function() {
     return test_quantum_program__delegate.call(this, args);
   };
   test_quantum_program.cljs$lang$maxFixedArity = 0;
-  test_quantum_program.cljs$lang$applyTo = function(arglist__5773) {
-    var args = cljs.core.seq(arglist__5773);
+  test_quantum_program.cljs$lang$applyTo = function(arglist__5077) {
+    var args = cljs.core.seq(arglist__5077);
     return test_quantum_program__delegate(args);
   };
   test_quantum_program.cljs$core$IFn$_invoke$arity$variadic = test_quantum_program__delegate;
   return test_quantum_program;
 }();
+goog.provide("qgame.gp.generator");
+goog.require("cljs.core");
+goog.require("qgame.simulator.shared");
+goog.require("qgame.simulator.shared");
+goog.require("qgame.simulator.shared");
+qgame.gp.generator.gate_syms = cljs.core.map.call(null, cljs.core.juxt.call(null, cljs.core.comp.call(null, cljs.core.symbol, new cljs.core.Keyword(null, "name", "name", 1017277949), new cljs.core.Keyword(null, "fn-meta", "fn-meta", 4539079516)), cljs.core.comp.call(null, cljs.core.count, new cljs.core.Keyword(null, "param-names", "param-names", 740923770)), new cljs.core.Keyword(null, "num-qubits", "num-qubits", 1175408835)), cljs.core.vals.call(null, cljs.core.apply.call(null, cljs.core.dissoc, 
+qgame.simulator.shared.canonical_functions, new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, ["with_oracle", "measure", "else", "end"], null))));
+qgame.gp.generator.rand_param = function rand_param() {
+  return null;
+};
+qgame.gp.generator.rand_qubit = function rand_qubit(max_qubits) {
+  return null;
+};
+qgame.gp.generator.rand_expression = function rand_expression(max_qubits, oracle_size) {
+  var _rand_qubit = cljs.core.partial.call(null, qgame.gp.generator.rand_qubit, max_qubits);
+  var vec__5079 = cljs.core.rand_nth.call(null, qgame.gp.generator.gate_syms);
+  var sym = cljs.core.nth.call(null, vec__5079, 0, null);
+  var num_params = cljs.core.nth.call(null, vec__5079, 1, null);
+  var num_qubits = cljs.core.nth.call(null, vec__5079, 2, null);
+  if (cljs.core._EQ_.call(null, new cljs.core.Symbol(null, "oracle", "oracle", 1645573943, null), sym)) {
+    return cljs.core.cons.call(null, new cljs.core.Symbol(null, "oracle", "oracle", 1645573943, null), cljs.core.repeatedly.call(null, oracle_size, _rand_qubit));
+  } else {
+    return cljs.core.concat.call(null, cljs.core.list(new cljs.core.Symbol(null, "sym", "sym", -1640417152, null)), cljs.core.repeatedly.call(null, num_params, qgame.gp.generator.rand_param), cljs.core.repeatedly.call(null, num_qubits, _rand_qubit));
+  }
+};
+qgame.gp.generator.rand_program = function rand_program(max_qubits, oracle_size, prog_size) {
+  return null;
+};
